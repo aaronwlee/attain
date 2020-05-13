@@ -1,4 +1,4 @@
-import Router from "../router.ts";
+import { Router } from "../mod.ts";
 import {
   green,
   cyan,
@@ -7,17 +7,23 @@ import {
 
 const logger = new Router();
 
-logger.use(async (req, res) => {
+logger.use((req, res) => {
   const start = Date.now();
-  await res.readyToSend
-  const ms = Date.now() - start;
-  res.getHeaders.set("X-Response-Time", `${ms}ms`);
+  res.readyToSend.then((_) => {
+    const ms = Date.now() - start;
+    res.getHeaders.set("X-Response-Time", `${ms}ms`);
+  });
 });
 
-logger.use(async (req, res) => {
-  await res.readyToSend
-  const rt = res.getHeaders.get("X-Response-Time");
-  console.log(`${green(req.method)} ${cyan(String(res.getStatus))} ${req.url.pathname} - ${bold(String(rt))}`);
-})
+logger.use((req, res) => {
+  res.readyToSend.then((_) => {
+    const rt = res.getHeaders.get("X-Response-Time");
+    console.log(
+      `${green(req.method)} ${
+        cyan(String(res.getStatus))
+      } ${req.url.pathname} - ${bold(String(rt))}`,
+    );
+  });
+});
 
 export default logger;

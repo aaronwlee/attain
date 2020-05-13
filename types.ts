@@ -12,7 +12,7 @@ export interface AttainResponse extends Omit<DenoResponse, "headers"> {
   headers: Headers;
 }
 
-export type CallBackType = (request: Request, response: Response) => Promise<AttainResponse> | Promise<void> | AttainResponse | void;
+export type CallBackType = (request: Request, response: Response) => Promise<any> | void;
 
 export interface MiddlewareProps {
   url?: string;

@@ -30,7 +30,7 @@ import { preferredEncodings } from "./encoding.ts";
 import httpErrors from "./http-errors.ts";
 import { isMediaType } from "./type-is.ts";
 import { preferredMediaTypes } from "./mediaType.ts";
-import { SupportMethodType } from "./type.ts";
+import { SupportMethodType } from "./types.ts";
 
 export type BodyType =
   | "json"

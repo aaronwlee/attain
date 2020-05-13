@@ -1,18 +1,25 @@
-import Router from "../router.ts";
-import second from "./second.ts";
-
+import { Router } from "../mod.ts";
+import second from "./api.ts";
 const api = new Router();
-
 
 api.use("/", second);
 
-api.get("/hello", (req, res) => {
-  console.log("here '/hello'")
-  res.status(200).send({ status: "Hello" });
-})
+const sleep = (time: number) =>
+  new Promise((resolve) => setTimeout(() => resolve(), time));
+
+api.get("/hello", async (req, res) => {
+  console.log("here '/hello'");
+  await sleep(1000);
+  res.status(200).send(`
+  <!doctype html>
+  <html lang="en">
+    <body>
+      <h1>Hello</h1>
+    </body>
+  </html>
+  `);
+});
 
 api.use("/post", second);
-
-
 
 export default api;

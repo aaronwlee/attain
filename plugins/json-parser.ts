@@ -1,10 +1,10 @@
-import Router from "../router.ts";
+import { Router } from "../mod.ts";
 
 const parser = new Router();
 
 parser.post(async (req, res) => {
   const params = await req.body();
   req.params = params.value;
-}, true);
+});
 
 export default parser;

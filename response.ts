@@ -1,5 +1,5 @@
 import { ServerRequest, Response as DenoResponse, Deferred, deferred } from "./deps.ts";
-import { AttainResponse } from "./type.ts";
+import { AttainResponse } from "./types.ts";
 
 type ContentsType = Uint8Array | Deno.Reader | string | object | boolean;
 
@@ -21,7 +21,11 @@ class Response {
       headers: new Headers()
     }
 
-    this.getHeaders.set("X-Powered-By", "Deno.js, Attain 0.0.1")
+    this.getHeaders.set("X-Powered-By", "Deno.js, Attain 0.0.1");
+    this.getHeaders.set("Connection", "keep-alive");
+    // this.getHeaders.set("Content-Encoding", "gzip");
+    // this.getHeaders.set("Transfer-Encoding", "chunked");
+    this.getHeaders.set("Vary", "Accept-Encoding");
   }
 
   get getHeaders(): Headers {
@@ -77,8 +81,8 @@ class Response {
         this.body(encoder.encode(JSON.stringify(contents)));
         this.setContentType("application/json; charset=utf-8")
       }
+      this.end();
       this.done.resolve();
-      // this.end();
     } catch (error) {
       console.error(error);
       this.done.reject(Error(error));
@@ -87,6 +91,7 @@ class Response {
 
   public async end(): Promise<void> {
     try {
+      this.getHeaders.set("Date", new Date().toUTCString());
       await this.serverRequest.respond(this.response);
     } catch (error) {
       console.error(error);

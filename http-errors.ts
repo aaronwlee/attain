@@ -27,7 +27,7 @@
  */
 
 import { STATUS_TEXT } from "./deps.ts";
-import { ErrorStatus } from "./type.ts";
+import { ErrorStatus } from "./types.ts";
 
 const errorStatusMap = new Map<string, ErrorStatus>();
 errorStatusMap.set("BadRequest", 400);
