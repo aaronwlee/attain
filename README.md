@@ -1,7 +1,14 @@
-# Attain
+# Attain - [Deno](https://deno.land/)
 
 A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. <br />
 This middleware framework is inspired by [express](https://github.com/expressjs/express)
+
+Download and use
+```js
+import { App, Router } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+// or
+import { App, Router } from "https://deno.land/x/attain/mod.ts";
+```
 
 
 ## Start
@@ -62,8 +69,9 @@ const api = new Router();
 // or
 // const api = new App();
 
-const sleep = (time: number) => 
+const sleep = (time: number) => {
   new Promise((resolve) => setTimeout(() => resolve(), time));
+};
 
 api.get("/hello", async (req, res) => {
   console.log("here '/hello'");
@@ -103,9 +111,42 @@ console.log("http://localhost:3500");
 ```
 
 ```
-# start with: deno -A ./main.ts
+# start with: deno run -A ./main.ts
 ```
 
+## Extra plugins
+ - __logger__ : `logging response method status path time`
+ - __parser__ : `parsing the request body and save it to request.params`
+```ts
+import { App } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+import logger from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/logger.ts";
+import parser from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/json-parser.ts";
+
+const app = new App();
+
+// logging response method status path time
+app.use(logger);
+
+// parsing the request body and save it to request.params
+app.use(parser);
+
+app.use("/", (req, res) => {
+  res.status(200).send("hello");
+});
+
+app.post("/submit", (req, res) => {
+  console.log(req.params);
+  res.status(200).send({ data: "has received" });
+});
+
+app.use((req, res) => {
+  res.status(404).send("page not found");
+});
+
+app.listen({ port: 4000 });
+console.log("Start listening on http://localhost:4000");
+
+```
 
 ---
 
