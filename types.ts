@@ -4,6 +4,7 @@ import Response from "./response.ts";
 
 export interface ListenProps {
   port: number;
+  debug?: boolean;
 }
 
 export type SupportMethodType = "ALL" | "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

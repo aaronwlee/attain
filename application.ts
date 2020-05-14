@@ -21,18 +21,7 @@ export class App extends Router {
           if (!continueToken) {
             break;
           }
-          if (middleware.method === "ALL") {
-            if (!middleware.url) {
-              middleware.callBack
-                ? await middleware.callBack(request, response)
-                : await this.handleRequest(request, response, middleware.next);
-            } else if (pathToRegExp(middleware.url).exec(currentUrl)) {
-              middleware.callBack
-                ? await middleware.callBack(request, response)
-                : await this.handleRequest(request, response, middleware.next);
-            }
-          }
-          if (middleware.method === currentMethod) {
+          if (middleware.method === currentMethod || middleware.method === "ALL") {
             if (!middleware.url) {
               middleware.callBack
                 ? await middleware.callBack(request, response)
@@ -61,14 +50,9 @@ export class App extends Router {
     }
   };
 
-  public listen = async ({ port }: ListenProps) => {
-    // this.use((request, response) => {
-    //   response.headers.set("Content-Type", "text/html; charset=utf-8");
-    //   response.status = 404;
-    //   response.body = "<h2>Page not found</h2>";
-    //   request.respond(response);
-    // });
-    console.log(JSON.stringify(this.middlewares, null, 2));
+  public listen = async ({ port, debug = false }: ListenProps) => {
+
+    debug && console.log(JSON.stringify(this.middlewares, null, 2));
 
     const s = serve({ port });
     for await (const req of s) {

@@ -14,12 +14,14 @@ class Response {
   private serverRequest: ServerRequest;
   private response: AttainResponse;
   public done: Deferred<Error | undefined> = deferred();
+  private pending: Function[];
 
   constructor(_serverRequest: ServerRequest) {
     this.serverRequest = _serverRequest;
     this.response = {
       headers: new Headers()
     }
+    this.pending = [];
 
     this.getHeaders.set("X-Powered-By", "Deno.js, Attain 0.0.1");
     this.getHeaders.set("Connection", "keep-alive");
@@ -44,6 +46,9 @@ class Response {
     return this.done;
   }
 
+  public whenReady(...fn: Function[]): void {
+    this.pending.push(...fn);
+  }
 
   public status(status: number) {
     if(this.getStatus) {
@@ -82,16 +87,23 @@ class Response {
         this.setContentType("application/json; charset=utf-8")
       }
       this.end();
-      this.done.resolve();
     } catch (error) {
       console.error(error);
       this.done.reject(Error(error));
     }
   }
 
+  private async executePending(): Promise<void> {
+    for await (const p of this.pending) {
+      await p();
+    }
+  }
+
   public async end(): Promise<void> {
     try {
       this.getHeaders.set("Date", new Date().toUTCString());
+      this.done.resolve();
+      await this.executePending();
       await this.serverRequest.respond(this.response);
     } catch (error) {
       console.error(error);

@@ -5,12 +5,8 @@ import logger from "../plugins/logger.ts";
 
 const app = new App();
 
-// app.use((req, res) => {
-
-// })
-
-app.use(parser);
 app.use(logger);
+app.use(parser);
 
 app.use("/api", api);
 
