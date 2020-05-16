@@ -17,6 +17,7 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
 __Make Sure__: If you already load the previous version, you have to reload this module by `--reload` (may have a problem) or directly get into `C:\Users\${userName}\AppData\Local\deno\deps\https` folder and delete.
 
 *Current* - ***0.2*** - *(feat)*: [aaronwlee](https://github.com/aaronwlee)
+* Enhanced the parser plugin to load the body as well as the search params.
 * Implemented static file serve middleware plugin.
 * Embedded the URL parameters parser.
 * Moved all plugins to the `mod.ts`.
