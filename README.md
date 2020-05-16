@@ -22,6 +22,11 @@ const sampleMiddleware = (req: Request, res: Response) => {
   console.log("before send")
 };
 
+app.use("/:id", (req, res) => {
+  console.log(req.params);
+  res.status(200).send(`id: ${req.params.id}`);
+})
+
 app.use(sampleMiddleware, (req, res) => {
   res.status(200).send({status: "Good"});
 });
@@ -157,7 +162,7 @@ app.use("/", (req, res) => {
   res.status(200).send("hello");
 });
 
-app.use("/:id", sampleMiddleware, (req, res) => {
+app.use("/:id", (req, res) => {
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
 })
