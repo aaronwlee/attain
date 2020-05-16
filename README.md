@@ -166,6 +166,7 @@ const app = new App();
 app.use(logger);
 
 // Parsing the request body and save it to request.params
+// Also, updated to parse the queries from search params
 app.use(parser);
 
 // Serve static files
@@ -183,8 +184,9 @@ app.use("/:id", (req, res) => {
 })
 
 app.post("/submit", (req, res) => {
-  // This data has parsed by the parser middleware.
+  // By the parser middleware, the body and search query get parsed and saved.
   console.log(req.params);
+  console.log(req.query);
   res.status(200).send({ data: "has received" });
 });
 

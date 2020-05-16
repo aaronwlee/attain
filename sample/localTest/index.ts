@@ -12,6 +12,11 @@ app.use(parser);
 
 app.use(staticServe({ path: "./sample/localTest" }));
 
+app.use("/hello", (req, res) => {
+  console.log("req.query", req.query);
+  res.send("/hello");
+});
+
 app.use("/:id", sampleMiddleware, (req, res) => {
   console.log(req.params);
   res.send("asd");

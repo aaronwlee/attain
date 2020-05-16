@@ -1,7 +1,5 @@
-import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
+import { App, Router, Request, Response, logger, parser } from "https://deno.land/x/attain/mod.ts";
 import api from "./router.ts";
-import logger from "https://deno.land/x/attain/plugins/logger.ts";
-import parser from "https://deno.land/x/attain/plugins/json-parser.ts";
 
 const app = new App();
 
