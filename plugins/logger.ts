@@ -1,13 +1,11 @@
-import { Router } from "../mod.ts";
+import { Request, Response } from "../mod.ts";
 import {
   green,
   cyan,
   bold,
 } from "https://deno.land/std@0.50.0/fmt/colors.ts";
 
-const logger = new Router();
-
-logger.use((req, res) => {
+export const logger = (req: Request, res: Response) => {
   const start = Date.now();
   res.whenReady(
     () => {
@@ -23,6 +21,4 @@ logger.use((req, res) => {
       );
     },
   );
-});
-
-export default logger;
+};

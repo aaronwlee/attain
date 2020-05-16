@@ -1,5 +1,6 @@
 import { ServerRequest, Response as DenoResponse, Deferred, deferred } from "./deps.ts";
 import { AttainResponse } from "./types.ts";
+import version from "./version.ts";
 
 type ContentsType = Uint8Array | Deno.Reader | string | object | boolean;
 
@@ -23,7 +24,7 @@ export class Response {
     }
     this.pending = [];
 
-    this.getHeaders.set("X-Powered-By", "Deno.js, Attain 0.0.1");
+    this.getHeaders.set("X-Powered-By", `Deno.js, Attain v${version}`);
     this.getHeaders.set("Connection", "keep-alive");
     // this.getHeaders.set("Content-Encoding", "gzip");
     // this.getHeaders.set("Transfer-Encoding", "chunked");

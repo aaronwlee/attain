@@ -9,9 +9,20 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
 // or
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 ```
+```
+# deno run --allow-net main.ts
+```
+
+## Update History 
+__Make Sure__: If you already load the previous version, you have to reload this module by `--reload` (may have a problem) or directly get into `C:\Users\${userName}\AppData\Local\deno\deps\https` folder and delete.
+
+*Current* - ***0.2*** - *(feat)*: [aaronwlee](https://github.com/aaronwlee)
+* Implemented static file serve middleware plugin.
+* Embedded the URL parameters parser.
+* Moved all plugins to the `mod.ts`.
 
 
-## Start
+## Getting Start
 
 ```ts
 import { App, Request, Response } from "https://deno.land/x/attain/mod.ts";
@@ -143,31 +154,36 @@ console.log("http://localhost:3500");
 ```
 
 ## Extra plugins
- - __logger__ : `logging "response - method - status - path - time"`
- - __parser__ : `parsing the request body and save it to request.params`
+ - __logger__ : `Logging response "response - method - status - path - time"`
+ - __parser__ : `Parsing the request body and save it to request.params`
+ - __staticServe__ : `It'll serve the static files from a provided path by joining the request path.`
 ```ts
-import { App } from "https://deno.land/x/attain/mod.ts";
-import logger from "https://deno.land/x/attain/plugins/logger.ts";
-import parser from "https://deno.land/x/attain/plugins/json-parser.ts";
+import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
-// logging response method status path time
+// Logging response method status path time
 app.use(logger);
 
-// parsing the request body and save it to request.params
+// Parsing the request body and save it to request.params
 app.use(parser);
+
+// Serve static files
+// This path must be started from your command line path.
+app.use(staticServe({ path: "./public" }));
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");
 });
 
 app.use("/:id", (req, res) => {
+  // This data has parsed by the embedded URL parser.
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
 })
 
 app.post("/submit", (req, res) => {
+  // This data has parsed by the parser middleware.
   console.log(req.params);
   res.status(200).send({ data: "has received" });
 });

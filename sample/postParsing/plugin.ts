@@ -1,8 +1,5 @@
-import { App } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
-import logger from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/logger.ts";
-import parser from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/json-parser.ts";
-// import logger from "https://deno.land/x/attain/plugins/logger.ts";
-// import parser from "https://deno.land/x/attain/plugins/json-parser.ts";
+import { App, logger, parser, staticServe } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+// import { App, logger, parser } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
@@ -11,6 +8,9 @@ app.use(logger);
 
 // parsing the request body and save it to request.params
 app.use(parser);
+
+// serve static files
+app.use(staticServe({ path: "./public" }));
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");
