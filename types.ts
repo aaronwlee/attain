@@ -1,19 +1,28 @@
 import { ServerRequest, Response as DenoResponse } from "./deps.ts";
-import { Request } from "./request.ts"
-import Response from "./response.ts";
+import { Request } from "./request.ts";
+import { Response } from "./response.ts";
 
 export interface ListenProps {
   port: number;
   debug?: boolean;
 }
 
-export type SupportMethodType = "ALL" | "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type SupportMethodType =
+  | "ALL"
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "PATCH"
+  | "DELETE";
 
 export interface AttainResponse extends Omit<DenoResponse, "headers"> {
   headers: Headers;
 }
 
-export type CallBackType = (request: Request, response: Response) => Promise<any> | void;
+export type CallBackType = (
+  request: Request,
+  response: Response,
+) => Promise<any> | void;
 
 export interface MiddlewareProps {
   url?: string;

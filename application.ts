@@ -2,7 +2,7 @@ import { Router } from "./router.ts";
 import { ServerRequest, serve } from "./deps.ts";
 import { AttainResponse, MiddlewareProps, ListenProps } from "./types.ts";
 import { Request } from "./request.ts";
-import Response from "./response.ts";
+import { Response } from "./response.ts";
 import { pathToRegExp } from "./path-to-regexp.ts";
 
 export class App extends Router {
@@ -21,7 +21,9 @@ export class App extends Router {
           if (!continueToken) {
             break;
           }
-          if (middleware.method === currentMethod || middleware.method === "ALL") {
+          if (
+            middleware.method === currentMethod || middleware.method === "ALL"
+          ) {
             if (!middleware.url) {
               middleware.callBack
                 ? await middleware.callBack(request, response)
@@ -51,7 +53,6 @@ export class App extends Router {
   };
 
   public listen = async ({ port, debug = false }: ListenProps) => {
-
     debug && console.log(JSON.stringify(this.middlewares, null, 2));
 
     const s = serve({ port });
@@ -63,36 +64,3 @@ export class App extends Router {
     }
   };
 }
-
-// const promisfy = current.map(async middleware => {
-//   if (middleware.method === "ALL") {
-//     if (!middleware.url) {
-//       return middleware.callBack ?
-//         await middleware.callBack(request, response)
-//         :
-//         await this.handleRequest(request, response, middleware.next)
-//     } else if (pathToRegExp(middleware.url).exec(currentUrl)) {
-//       return middleware.callBack ?
-//         await middleware.callBack(request, response)
-//         :
-//         await this.handleRequest(request, response, middleware.next)
-//     }
-//   }
-//   if (middleware.method === currentMethod) {
-//     if (!middleware.url) {
-//       return middleware.callBack ?
-//         await middleware.callBack(request, response)
-//         :
-//         await this.handleRequest(request, response, middleware.next)
-//     } else if (pathToRegExp(middleware.url).exec(currentUrl)) {
-//       return middleware.callBack ?
-//         await middleware.callBack(request, response)
-//         :
-//         await this.handleRequest(request, response, middleware.next)
-//     }
-//   }
-// })
-
-// for await (const temp of promisfy) {
-//   await temp;
-// }

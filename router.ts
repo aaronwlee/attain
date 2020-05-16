@@ -33,117 +33,104 @@ const appendNextPaths = (
 export class Router {
   public middlewares: MiddlewareProps[] = [];
 
-  // public use(app: App | Router): void;
-  // public use(...callBack: [CallBackType]): void;
-  // public use(url: string, callBack: CallBackType): void;
-  // public use(url: string, app: App | Router): void;
-  // public use(url: string, ...others: [CallBackType | App | Router])
-  // public use(...arg) {
+  private isString(arg: any): boolean {
+    return typeof arg === "string";
+  }
 
-  // }
-  // public use(first: string | CallBackType | App | Router, second?: CallBackType | App | Router | boolean, third: boolean = false) {
-  //   if (typeof first === "string") {
-  //     if (second instanceof App || second instanceof Router) {
-  //       this.middlewares.push({ method: "ALL", url: appendParentsPaths(first), next: appendNextPaths(first, second.middlewares) });
-  //     } else if (typeof second === "function") {
-  //       this.middlewares.push({ method: "ALL", url: first, callBack: second as CallBackType, require: third });
-  //     }
-  //   } else if (first instanceof App || first instanceof Router) {
-  //     this.middlewares.push({ method: "ALL", next: first.middlewares });
-  //   } else {
-  //     this.middlewares.push({ method: "ALL", callBack: first as CallBackType, require: typeof second === "boolean" && second ? second : false });
-  //   }
-  // }
+  /**
+   * @false Callback
+   * @true Instance
+   */
+  private isInstance(arg: any): boolean {
+    return arg instanceof App || arg instanceof Router;
+  }
 
   private saveMiddlewares(
-    first: string | CallBackType | App | Router,
-    second: CallBackType | App | Router | undefined = undefined,
     type: SupportMethodType,
+    args: any[]
   ) {
-    if (typeof first === "string") {
-      if (second instanceof App || second instanceof Router) {
-        this.middlewares.push(
-          {
-            method: type,
-            url: appendParentsPaths(first),
-            next: appendNextPaths(first, second.middlewares),
-          },
-        );
-      } else if (typeof second === "function") {
-        this.middlewares.push(
-          { method: type, url: first, callBack: second as CallBackType },
-        );
+    let temp: MiddlewareProps = { method: type };
+    args.forEach((arg) => {
+      if (this.isString(arg)) {
+        temp.url = arg;
+      } else {
+        if (this.isInstance(arg)) {
+          if (temp.url) {
+            temp.next = appendNextPaths(temp.url, arg.middlewares);
+            temp.url = appendParentsPaths(temp.url);
+          } else {
+            temp.next = arg.middlewares;
+          }
+        } else {
+          temp.callBack = arg;
+        }
       }
-    } else if (first instanceof App || first instanceof Router) {
-      this.middlewares.push({ method: type, next: first.middlewares });
-    } else {
-      this.middlewares.push({ method: type, callBack: first as CallBackType });
-    }
+
+      if (temp.callBack || temp.next) {
+        this.middlewares.push(temp);
+        console.log(temp);
+        temp = { method: type };
+      }
+    });
   }
 
   public use(app: App | Router): void;
-  public use(callBack: CallBackType): void;
-  public use(url: string, callBack: CallBackType): void;
+  public use(...callBack: CallBackType[]): void;
+  public use(url: string, ...callBack: CallBackType[]): void;
   public use(url: string, app: App | Router): void;
   public use(
-    first: string | CallBackType | App | Router,
-    second?: CallBackType | App | Router,
+    ...args: any
   ) {
-    this.saveMiddlewares(first, second, "ALL");
+    this.saveMiddlewares("ALL", args);
   }
 
   public get(app: App | Router): void;
-  public get(callBack: CallBackType): void;
-  public get(url: string, callBack: CallBackType): void;
+  public get(...callBack: CallBackType[]): void;
+  public get(url: string, ...callBack: CallBackType[]): void;
   public get(url: string, app: App | Router): void;
   public get(
-    first: string | CallBackType | App | Router,
-    second?: CallBackType | App | Router,
+    ...args: any
   ) {
-    this.saveMiddlewares(first, second, "GET");
+    this.saveMiddlewares("GET", args);
   }
 
   public post(app: App | Router): void;
-  public post(callBack: CallBackType): void;
-  public post(url: string, callBack: CallBackType): void;
+  public post(...callBack: CallBackType[]): void;
+  public post(url: string, ...callBack: CallBackType[]): void;
   public post(url: string, app: App | Router): void;
   public post(
-    first: string | CallBackType | App | Router,
-    second?: CallBackType | App | Router,
+    ...args: any
   ) {
-    this.saveMiddlewares(first, second, "POST");
+    this.saveMiddlewares("POST", args);
   }
 
   public put(app: App | Router): void;
-  public put(callBack: CallBackType): void;
-  public put(url: string, callBack: CallBackType): void;
+  public put(...callBack: CallBackType[]): void;
+  public put(url: string, ...callBack: CallBackType[]): void;
   public put(url: string, app: App | Router): void;
   public put(
-    first: string | CallBackType | App | Router,
-    second?: CallBackType | App | Router,
+    ...args: any
   ) {
-    this.saveMiddlewares(first, second, "PUT");
+    this.saveMiddlewares("PUT", args);
   }
 
   public patch(app: App | Router): void;
-  public patch(callBack: CallBackType): void;
-  public patch(url: string, callBack: CallBackType): void;
+  public patch(...callBack: CallBackType[]): void;
+  public patch(url: string, ...callBack: CallBackType[]): void;
   public patch(url: string, app: App | Router): void;
   public patch(
-    first: string | CallBackType | App | Router,
-    second?: CallBackType | App | Router,
+    ...args: any
   ) {
-    this.saveMiddlewares(first, second, "PATCH");
+    this.saveMiddlewares("PATCH", args);
   }
 
   public delete(app: App | Router): void;
-  public delete(callBack: CallBackType): void;
-  public delete(url: string, callBack: CallBackType): void;
+  public delete(...callBack: CallBackType[]): void;
+  public delete(url: string, ...callBack: CallBackType[]): void;
   public delete(url: string, app: App | Router): void;
   public delete(
-    first: string | CallBackType | App | Router,
-    second?: CallBackType | App | Router,
+    ...args: any
   ) {
-    this.saveMiddlewares(first, second, "DELETE");
+    this.saveMiddlewares("DELETE", args);
   }
 }

@@ -10,7 +10,7 @@ const isHtml = (value: string): boolean => {
   return /^\s*<(?:!DOCTYPE|html|body)/i.test(value);
 }
 
-class Response {
+export class Response {
   private serverRequest: ServerRequest;
   private response: AttainResponse;
   public done: Deferred<Error | undefined> = deferred();
@@ -111,6 +111,4 @@ class Response {
     }
   }
 
-}
-
-export default Response;
+};
