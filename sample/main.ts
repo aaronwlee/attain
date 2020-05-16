@@ -1,7 +1,7 @@
-import { App, Router, Request, Response } from "../mod.ts";
+import { App, Router } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
 import api from "./router.ts";
-import parser from "../plugins/json-parser.ts";
-import logger from "../plugins/logger.ts";
+import logger from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/logger.ts";
+import parser from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/json-parser.ts";
 
 const app = new App();
 

@@ -62,7 +62,7 @@ export class Router {
             temp.next = arg.middlewares;
           }
         } else {
-          temp.callBack = arg;
+          temp.callBack = arg as CallBackType;
         }
       }
 
@@ -75,7 +75,9 @@ export class Router {
   }
 
   public use(app: App | Router): void;
+  public use(callBack: CallBackType): void;
   public use(...callBack: CallBackType[]): void;
+  public use(url: string, callBack: CallBackType): void;
   public use(url: string, ...callBack: CallBackType[]): void;
   public use(url: string, app: App | Router): void;
   public use(
@@ -85,7 +87,9 @@ export class Router {
   }
 
   public get(app: App | Router): void;
+  public get(callBack: CallBackType): void;
   public get(...callBack: CallBackType[]): void;
+  public get(url: string, callBack: CallBackType): void;
   public get(url: string, ...callBack: CallBackType[]): void;
   public get(url: string, app: App | Router): void;
   public get(
@@ -95,7 +99,9 @@ export class Router {
   }
 
   public post(app: App | Router): void;
+  public post(callBack: CallBackType): void;
   public post(...callBack: CallBackType[]): void;
+  public post(url: string, callBack: CallBackType): void;
   public post(url: string, ...callBack: CallBackType[]): void;
   public post(url: string, app: App | Router): void;
   public post(
@@ -105,7 +111,9 @@ export class Router {
   }
 
   public put(app: App | Router): void;
+  public put(callBack: CallBackType): void;
   public put(...callBack: CallBackType[]): void;
+  public put(url: string, callBack: CallBackType): void;
   public put(url: string, ...callBack: CallBackType[]): void;
   public put(url: string, app: App | Router): void;
   public put(
@@ -115,7 +123,9 @@ export class Router {
   }
 
   public patch(app: App | Router): void;
+  public patch(callBack: CallBackType): void;
   public patch(...callBack: CallBackType[]): void;
+  public patch(url: string, callBack: CallBackType): void;
   public patch(url: string, ...callBack: CallBackType[]): void;
   public patch(url: string, app: App | Router): void;
   public patch(
@@ -125,7 +135,9 @@ export class Router {
   }
 
   public delete(app: App | Router): void;
+  public delete(callBack: CallBackType): void;
   public delete(...callBack: CallBackType[]): void;
+  public delete(url: string, callBack: CallBackType): void;
   public delete(url: string, ...callBack: CallBackType[]): void;
   public delete(url: string, app: App | Router): void;
   public delete(
