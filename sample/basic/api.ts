@@ -1,4 +1,4 @@
-import { App } from "../mod.ts";
+import { App } from "https://deno.land/x/attain/mod.ts";
 
 const second = new App();
 second.get("/", async (req, res) => {

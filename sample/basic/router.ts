@@ -1,4 +1,4 @@
-import { Router } from "../mod.ts";
+import { Router } from "https://deno.land/x/attain/mod.ts";
 import second from "./api.ts";
 const api = new Router();
 

@@ -4,6 +4,7 @@ import { AttainResponse, MiddlewareProps, ListenProps } from "./types.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { pathToRegExp } from "./path-to-regexp.ts";
+import { checkPathAndParseURLParams } from "./utils.ts";
 
 export class App extends Router {
   private handleRequest: any = async (
@@ -28,7 +29,7 @@ export class App extends Router {
               middleware.callBack
                 ? await middleware.callBack(request, response)
                 : await this.handleRequest(request, response, middleware.next);
-            } else if (pathToRegExp(middleware.url).exec(currentUrl)) {
+            } else if (checkPathAndParseURLParams(request, middleware.url, currentUrl)) {
               middleware.callBack
                 ? await middleware.callBack(request, response)
                 : await this.handleRequest(request, response, middleware.next);

@@ -1,40 +1,40 @@
 import { MiddlewareProps, CallBackType, SupportMethodType } from "./types.ts";
 import { App } from "./application.ts";
 
-const appendParentsPaths = (currentPath: string) => {
-  let newPath: string = currentPath;
-  if (currentPath !== "/") {
-    newPath += "(.*)";
-  }
-  return newPath;
-};
-
-const appendNextPaths = (
-  parentsPath: string,
-  middlewares: MiddlewareProps[],
-) => {
-  const newMiddlewares: MiddlewareProps[] = [];
-  middlewares.forEach((middleware) => {
-    if (middleware.url && parentsPath !== "/") {
-      newMiddlewares.push({
-        ...middleware,
-        url: `${parentsPath}${middleware.url === "/" ? "" : middleware.url}`,
-        next: middleware.next
-          ? appendNextPaths(parentsPath, middleware.next)
-          : middleware.next,
-      });
-    } else {
-      newMiddlewares.push(middleware);
-    }
-  });
-  return newMiddlewares;
-};
-
 export class Router {
   public middlewares: MiddlewareProps[] = [];
 
   private isString(arg: any): boolean {
     return typeof arg === "string";
+  }
+
+  private appendParentsPaths(currentPath: string): string {
+    let newPath: string = currentPath;
+    if (currentPath !== "/") {
+      newPath += "(.*)";
+    }
+    return newPath;
+  }
+
+  private appendNextPaths(
+    parentsPath: string,
+    middlewares: MiddlewareProps[],
+  ): MiddlewareProps[] {
+    const newMiddlewares: MiddlewareProps[] = [];
+    middlewares.forEach((middleware) => {
+      if (middleware.url && parentsPath !== "/") {
+        newMiddlewares.push({
+          ...middleware,
+          url: `${parentsPath}${middleware.url === "/" ? "" : middleware.url}`,
+          next: middleware.next
+            ? this.appendNextPaths(parentsPath, middleware.next)
+            : middleware.next,
+        });
+      } else {
+        newMiddlewares.push(middleware);
+      }
+    });
+    return newMiddlewares;
   }
 
   /**
@@ -47,7 +47,7 @@ export class Router {
 
   private saveMiddlewares(
     type: SupportMethodType,
-    args: any[]
+    args: any[],
   ) {
     let temp: MiddlewareProps = { method: type };
     args.forEach((arg) => {
@@ -56,8 +56,8 @@ export class Router {
       } else {
         if (this.isInstance(arg)) {
           if (temp.url) {
-            temp.next = appendNextPaths(temp.url, arg.middlewares);
-            temp.url = appendParentsPaths(temp.url);
+            temp.next = this.appendNextPaths(temp.url, arg.middlewares);
+            temp.url = this.appendParentsPaths(temp.url);
           } else {
             temp.next = arg.middlewares;
           }

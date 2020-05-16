@@ -5,20 +5,24 @@ This middleware framework is inspired by [express](https://github.com/expressjs/
 
 Download and use
 ```js
-import { App, Router } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
 // or
-import { App, Router } from "https://deno.land/x/attain/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 ```
 
 
 ## Start
 
 ```ts
-import { App } from "https://deno.land/x/attain/mod.ts";
+import { App, Request, Response } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
-app.use((req, res) => {
+const sampleMiddleware = (req: Request, res: Response) => {
+  console.log("before send")
+};
+
+app.use(sampleMiddleware, (req, res) => {
   res.status(200).send({status: "Good"});
 });
 
@@ -36,14 +40,17 @@ const app = new App();
 
 app.use((req, res) => {
   console.log("First step");
+}, (req, res) => {
+  console.log("Second step");
 });
 
 app.use((req, res) => {
-  console.log("Second step");
+  console.log("Third step");
 });
 
 // last step
 app.use((req, res) => {
+  console.log("Last step");
   res.status(200).send({status: "Good"});
 });
 
@@ -73,8 +80,9 @@ const sleep = (time: number) => {
   new Promise((resolve) => setTimeout(() => resolve(), time));
 };
 
-api.get("/hello", async (req, res) => {
-  console.log("here '/hello'");
+// It will stop here for 1 second.
+api.get("/block", async (req, res) => {
+  console.log("here '/block'");
   await sleep(1000);
   res.status(200).send(`
   <!doctype html>
@@ -85,6 +93,21 @@ api.get("/hello", async (req, res) => {
   </html>
   `);
 });
+
+// It will not stop here
+api.get("/nonblock", (req, res) => {
+  console.log("here '/nonblock'");
+  sleep(1000).then(_ => {
+      res.status(200).send(`
+      <!doctype html>
+      <html lang="en">
+        <body>
+          <h1>Hello</h1>
+        </body>
+      </html>
+      `);
+  });
+})
 
 export default api;
 
@@ -115,12 +138,12 @@ console.log("http://localhost:3500");
 ```
 
 ## Extra plugins
- - __logger__ : `logging response method status path time`
+ - __logger__ : `logging "response - method - status - path - time"`
  - __parser__ : `parsing the request body and save it to request.params`
 ```ts
-import { App } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
-import logger from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/logger.ts";
-import parser from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/json-parser.ts";
+import { App } from "https://deno.land/x/attain/mod.ts";
+import logger from "https://deno.land/x/attain/plugins/logger.ts";
+import parser from "https://deno.land/x/attain/plugins/json-parser.ts";
 
 const app = new App();
 
@@ -133,6 +156,11 @@ app.use(parser);
 app.use("/", (req, res) => {
   res.status(200).send("hello");
 });
+
+app.use("/:id", sampleMiddleware, (req, res) => {
+  console.log(req.params);
+  res.status(200).send(`id: ${req.params.id}`);
+})
 
 app.post("/submit", (req, res) => {
   console.log(req.params);

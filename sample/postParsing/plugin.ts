@@ -1,6 +1,8 @@
 import { App } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
 import logger from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/logger.ts";
 import parser from "https://raw.githubusercontent.com/aaronwlee/Attain/master/plugins/json-parser.ts";
+// import logger from "https://deno.land/x/attain/plugins/logger.ts";
+// import parser from "https://deno.land/x/attain/plugins/json-parser.ts";
 
 const app = new App();
 
