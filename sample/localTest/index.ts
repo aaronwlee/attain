@@ -10,7 +10,7 @@ const sampleMiddleware = (req: Request, res: Response) => {
 app.use(logger);
 app.use(parser);
 
-app.use(staticServe({ path: "./sample/localTest" }));
+app.use(staticServe("./sample/localTest"));
 
 app.use("/hello", (req, res) => {
   console.log("req.query", req.query);

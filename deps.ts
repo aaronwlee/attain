@@ -1,4 +1,8 @@
-export { serve, ServerRequest, Response } from "https://deno.land/std/http/server.ts";
+export {
+  serve,
+  ServerRequest,
+  Response,
+} from "https://deno.land/std/http/server.ts";
 export { STATUS_TEXT } from "https://deno.land/std/http/http_status.ts";
 
 export {
@@ -6,6 +10,10 @@ export {
 } from "https://deno.land/x/media_types@v2.2.0/mod.ts";
 
 export {
-  deferred, 
-  Deferred
+  deferred,
+  Deferred,
 } from "https://deno.land/std/async/mod.ts";
+
+export {
+  Sha1,
+} from "https://deno.land/std/hash/sha1.ts";

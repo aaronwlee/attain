@@ -10,7 +10,7 @@ app.use(logger);
 app.use(parser);
 
 // serve static files
-app.use(staticServe({ path: "./public" }));
+app.use(staticServe("./public"));
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");

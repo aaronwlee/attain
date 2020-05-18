@@ -96,6 +96,7 @@ export class Request {
   #rawBodyPromise?: Promise<Uint8Array>;
   #serverRequest: ServerRequest;
   #url?: URL;
+  #startDate: number;
 
   [dynamicProperty: string]: any;
 
@@ -110,6 +111,10 @@ export class Request {
   /** The `Headers` supplied in the request. */
   get headers(): Headers {
     return this.#serverRequest.headers;
+  }
+
+  get startDate(): number {
+    return this.#startDate;
   }
 
   /** The HTTP Method used by the request. */
@@ -144,6 +149,7 @@ export class Request {
     serverRequest: ServerRequest,
   ) {
     this.#serverRequest = serverRequest;
+    this.#startDate = Date.now();
   }
 
   /** Returns an array of media types, accepted by the requestor, in order of

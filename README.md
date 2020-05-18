@@ -16,7 +16,14 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
 ## Update History 
 __Make Sure__: If you already load the previous version, you have to reload this module by `--reload` (may have a problem) or directly get into `C:\Users\${userName}\AppData\Local\deno\deps\https` folder and delete.
 
-*Current* - ***0.2*** - *(feat)*: [aaronwlee](https://github.com/aaronwlee)
+*Current* - ***0.3***: [aaronwlee](https://github.com/aaronwlee)
+* Added ETag in the header
+* Optimized middlewares by cached
+* Supporting more response classes' methods
+* Supporting more mime
+* Updated logger plugin sample
+
+***0.2***: [aaronwlee](https://github.com/aaronwlee)
 * Enhanced the parser plugin to load the body as well as the search params.
 * Implemented static file serve middleware plugin.
 * Embedded the URL parameters parser.
@@ -172,7 +179,7 @@ app.use(parser);
 
 // Serve static files
 // This path must be started from your command line path.
-app.use(staticServe({ path: "./public" }));
+app.use(staticServe("./public", {maxAge: 1000}));
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");

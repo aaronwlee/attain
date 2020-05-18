@@ -6,24 +6,12 @@ import {
   dirname,
   resolve,
 } from "https://deno.land/std/path/mod.ts";
+import { lookup } from "https://cdn.pika.dev/mime-types";
 
-const MEDIA_TYPES: Record<string, string> = {
-  ".md": "text/markdown",
-  ".html": "text/html",
-  ".htm": "text/html",
-  ".json": "application/json",
-  ".map": "application/json",
-  ".txt": "text/plain",
-  ".ts": "text/typescript",
-  ".tsx": "text/tsx",
-  ".js": "application/javascript",
-  ".jsx": "text/jsx",
-  ".gz": "application/gzip",
-  ".css": "text/css",
-};
 /** Returns the content-type based on the extension of a path. */
 function contentType(path: string): string | undefined {
-  return MEDIA_TYPES[extname(path)];
+  const result = lookup(extname(path));
+  return result ? result : undefined;
 }
 
 const serveFile = async (
@@ -34,26 +22,41 @@ const serveFile = async (
     [Deno.open(filePath), Deno.stat(filePath)],
   );
 
-  res.getHeaders.set("content-length", fileInfo.size.toString());
+  res.setHeader("content-length", fileInfo.size.toString());
   const contentTypeValue = contentType(filePath);
   if (contentTypeValue) {
-    res.getHeaders.set("content-type", contentTypeValue);
+    res.setHeader("content-type", contentTypeValue);
   }
+  fileInfo.mtime &&
+    res.setHeader("Last-Modified", fileInfo.mtime.toUTCString());
 
   res.body(file);
-  res.end();
 };
 
-export const staticServe = ({ path }: { path: string }) =>
+export const staticServe = (
+  path: string,
+  options?: { maxAge?: number },
+) =>
   async (req: Request, res: Response) => {
-    // const path = "./sample/localTest";
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      return;
+    }
+    const maxAge = options && options.maxAge || 0;
     const fullPath = posix.join(path, req.url.pathname);
     try {
       let fileInfo = await Deno.stat(fullPath);
       if (fileInfo.isFile) {
         await serveFile(res, fullPath);
+        res.setHeader("Cache-Control", `public`);
+        res.headers.append("Cache-Control", `max-age=${maxAge / 1000 | 0}`);
+        var t = new Date();
+        t.setSeconds(t.getSeconds() + maxAge);
+        res.setHeader("Expires", t.toUTCString())
+        res.status(200).end();
       }
     } catch (e) {
-      console.log(fullPath, "is not served file, skip!");
+      if (e instanceof Deno.errors.PermissionDenied) {
+        console.error(e);
+      }
     }
   };

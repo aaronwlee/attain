@@ -1,5 +1,7 @@
 import { pathToRegExp } from "./path-to-regexp.ts";
 import { Request } from "./request.ts";
+import { Response } from "./response.ts";
+import { Sha1 } from "./deps.ts";
 
 export const checkPathAndParseURLParams = (
   req: Request,
@@ -7,12 +9,14 @@ export const checkPathAndParseURLParams = (
   currentURL: string,
 ) => {
   const matchResult = pathToRegExp(middlewareURL).exec(currentURL);
-  if (matchResult) {
-    const params = middlewareURL.split("/").filter((splited) => splited.includes(":"));
+  if (matchResult && matchResult.length > 1) {
+    const params = middlewareURL.split("/").filter((splited) =>
+      splited.includes(":")
+    );
     if (params) {
       params.forEach((param, i) => {
-        if(!req.params) {
-          req.params = {}
+        if (!req.params) {
+          req.params = {};
         }
         req.params[param.substring(1)] = matchResult[i + 1];
       });
@@ -21,3 +25,108 @@ export const checkPathAndParseURLParams = (
   return matchResult ? true : false;
 };
 
+
+export const etag = (entity: Uint8Array, len: number) => {
+  if (!entity) {
+    // fast-path empty
+    return `W/"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"`;
+  }
+
+  // compute hash of entity
+  const sha1 = new Sha1();
+  sha1.hash();
+  sha1.update(entity);
+  sha1.digest();
+  const hash = sha1.toString().substring(0, 27);
+
+  return `W/"${len.toString(16)}-${hash}"`
+};
+
+
+export const fresh = (req: Request, res: Response) => {
+  const modifiedSince = req.headers.get("if-modified-since");
+  const noneMatch = req.headers.get("if-none-match");
+
+  if (!modifiedSince && !noneMatch) {
+    return false
+  }
+
+  const CACHE_CONTROL_NO_CACHE_REGEXP = /(?:^|,)\s*?no-cache\s*?(?:,|$)/;
+  const cacheControl = req.headers.get("cache-control")
+  if (cacheControl && CACHE_CONTROL_NO_CACHE_REGEXP.test(cacheControl)) {
+    return false
+  }
+
+  if (noneMatch && noneMatch !== '*') {
+    const etag = res.getHeader("etag")
+
+    if (!etag) {
+      return false
+    }
+
+    let etagStale = true
+    const matches = parseTokenList(noneMatch)
+    for (let i = 0; i < matches.length; i++) {
+      const match = matches[i]
+      if (match === etag || match === 'W/' + etag || 'W/' + match === etag) {
+        etagStale = false
+        break
+      }
+    }
+
+    if (etagStale) {
+      return false
+    }
+  }
+
+  // if-modified-since
+  if (modifiedSince) {
+    const lastModified = res.getHeader("last-modified");
+    const modifiedStale = !lastModified || !(parseHttpDate(lastModified) <= parseHttpDate(modifiedSince))
+
+    if (modifiedStale) {
+      return false
+    }
+  }
+
+  return true
+}
+
+
+const parseHttpDate = (date: any) => {
+  const timestamp = date && Date.parse(date)
+
+  // istanbul ignore next: guard against date.js Date.parse patching
+  return typeof timestamp === 'number'
+    ? timestamp
+    : NaN
+}
+
+const  parseTokenList = (str: string) => {
+  let end = 0
+  const list = []
+  let start = 0
+
+  // gather tokens
+  for (let i = 0, len = str.length; i < len; i++) {
+    switch (str.charCodeAt(i)) {
+      case 0x20: /*   */
+        if (start === end) {
+          start = end = i + 1
+        }
+        break
+      case 0x2c: /* , */
+        list.push(str.substring(start, end))
+        start = end = i + 1
+        break
+      default:
+        end = i + 1
+        break
+    }
+  }
+
+  // final token
+  list.push(str.substring(start, end))
+
+  return list
+}

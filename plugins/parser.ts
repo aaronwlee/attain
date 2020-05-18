@@ -12,6 +12,9 @@ const setQueryVariable = (req: Request) => {
 };
 
 export const parser = async (req: Request, res: Response) => {
+  if (req.method === "GET" || req.method === "HEAD") {
+    return;
+  }
   const params = await req.body();
   req.params = params.value;
   setQueryVariable(req);

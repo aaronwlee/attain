@@ -1,10 +1,10 @@
 import { Router } from "./router.ts";
-import { ServerRequest, serve } from "./deps.ts";
-import { AttainResponse, MiddlewareProps, ListenProps } from "./types.ts";
+import { serve } from "./deps.ts";
+import { MiddlewareProps, ListenProps } from "./types.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { pathToRegExp } from "./path-to-regexp.ts";
-import { checkPathAndParseURLParams } from "./utils.ts";
+import { checkPathAndParseURLParams, fresh } from "./utils.ts";
+import { cache, getCached } from "./state.ts";
 
 export class App extends Router {
   private handleRequest: any = async (
@@ -19,9 +19,6 @@ export class App extends Router {
     try {
       if (current) {
         for await (const middleware of current) {
-          if (!continueToken) {
-            break;
-          }
           if (
             middleware.method === currentMethod || middleware.method === "ALL"
           ) {
@@ -29,11 +26,17 @@ export class App extends Router {
               middleware.callBack
                 ? await middleware.callBack(request, response)
                 : await this.handleRequest(request, response, middleware.next);
-            } else if (checkPathAndParseURLParams(request, middleware.url, currentUrl)) {
+            } else if (
+              checkPathAndParseURLParams(request, middleware.url, currentUrl)
+            ) {
               middleware.callBack
                 ? await middleware.callBack(request, response)
                 : await this.handleRequest(request, response, middleware.next);
             }
+          }
+          if (!continueToken) {
+            cache(request, response, middleware);
+            break;
           }
         }
 
@@ -53,15 +56,44 @@ export class App extends Router {
     }
   };
 
-  public listen = async ({ port, debug = false }: ListenProps) => {
+  public listen = async (
+    { port, debug = false, optimize = true }: ListenProps,
+  ) => {
     debug && console.log(JSON.stringify(this.middlewares, null, 2));
 
     const s = serve({ port });
     for await (const req of s) {
-      const response = new Response(req);
       const request = new Request(req);
+      const response = new Response(req, request);
 
-      this.handleRequest(request, response, this.middlewares);
+      this.checkCacheAndSend(request, response, { optimize });
     }
+  };
+
+  private checkCacheAndSend = async (
+    req: Request,
+    res: Response,
+    { optimize }: any,
+  ) => {
+    const cached = getCached(req.url.pathname, req.method);
+
+    if (!cached) {
+      this.normalProcedure(req, res);
+      return;
+    }
+
+    if (!fresh(req, cached.res)) {
+      this.normalProcedure(req, res);
+      return;
+    }
+
+    res.setHeaders(cached.res.headers);
+    res.pending = cached.res.pending;
+    this.handleRequest(req, res, optimize ? cached.lastMiddleware : this.middlewares);
+    return;
+  };
+
+  private normalProcedure = (req: Request, res: Response) => {
+    this.handleRequest(req, res, this.middlewares);
   };
 }

@@ -5,9 +5,11 @@ import { Response } from "./response.ts";
 export interface ListenProps {
   port: number;
   debug?: boolean;
+  optimize?: boolean;
 }
 
 export type SupportMethodType =
+  | "HEAD"
   | "ALL"
   | "GET"
   | "POST"
