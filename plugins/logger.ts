@@ -6,13 +6,13 @@ import {
 } from "https://deno.land/std@0.50.0/fmt/colors.ts";
 
 export const logger = (_: Request, res: Response) => {
-  res.whenReady(
-    (doneReq, doneRes) => {
-      const ms = Date.now() - doneReq.startDate;
+  res.pend(
+    (pendReq, pendRes) => {
+      const ms = Date.now() - pendReq.startDate;
       console.log(
-        `${green(doneReq.method)} ${
-          cyan(String(doneRes.getStatus))
-        } ${doneReq.url.pathname} - ${bold(String(ms))}ms`,
+        `${green(pendReq.method)} ${
+          cyan(String(pendRes.getStatus))
+        } ${pendReq.url.pathname} - ${bold(String(ms))}ms`,
       );
     }
   );

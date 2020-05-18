@@ -17,10 +17,11 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
 __Make Sure__: If you already load the previous version, you have to reload this module by `--reload` (may have a problem) or directly get into `C:\Users\${userName}\AppData\Local\deno\deps\https` folder and delete.
 
 *Current* - ***0.3***: [aaronwlee](https://github.com/aaronwlee)
+* Fixed Query bug
 * Added ETag in the header
-* Optimized middlewares by cached
+* Optimized middlewares by cached yet -- needs help or times...
 * Supporting more response classes' methods
-* Supporting more mime
+* Supporting serve more static with various mimes
 * Updated logger plugin sample
 
 ***0.2***: [aaronwlee](https://github.com/aaronwlee)

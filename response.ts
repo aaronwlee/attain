@@ -25,16 +25,16 @@ const isHtml = (value: string): boolean => {
 export class Response {
   private serverRequest: ServerRequest;
   private response: AttainResponse;
-  private request: Request;
+  private request: Request | undefined;
   public done: Deferred<Error | undefined> = deferred();
+  public executePending: Deferred<Error | undefined> = deferred();
   public pending: Function[];
 
-  constructor(_serverRequest: ServerRequest, req: Request) {
+  constructor(_serverRequest: ServerRequest) {
     this.serverRequest = _serverRequest;
     this.response = {
       headers: new Headers(),
     };
-    this.request = req;
     this.pending = [];
 
     this.setHeader("X-Powered-By", `Deno.js, Attain v${version}`);
@@ -60,13 +60,18 @@ export class Response {
     return this.done;
   }
 
-  public whenReady(...fn: CallBackType[]): void {
+  public pend(...fn: CallBackType[]): void {
     this.pending.push(...fn);
   }
 
   public status(status: number) {
     this.response.status = status;
     return this;
+  }
+
+  public setRequest(request: Request) {
+    this.request = request;
+    this.executePending.resolve();
   }
 
   public body(body: ContentsType) {
@@ -126,7 +131,7 @@ export class Response {
     }
   }
 
-  private async executePending(): Promise<void> {
+  private async executePendingJobs(): Promise<void> {
     for await (const p of this.pending) {
       await p(this.request, this);
     }
@@ -148,7 +153,8 @@ export class Response {
       }
 
       this.done.resolve();
-      await this.executePending();
+      await this.executePending;
+      await this.executePendingJobs();
       await this.serverRequest.respond(this.response);
     } catch (error) {
       console.error(error);

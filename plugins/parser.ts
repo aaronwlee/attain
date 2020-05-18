@@ -1,20 +1,21 @@
 import { Request, Response } from "../mod.ts";
 
 const setQueryVariable = (req: Request) => {
-  const queries = req.url.search.substring(1).split("&") || [];
-  if (!req.query) {
-    req.query = {};
+  const queries = req.url.search && req.url.search.substring(1).split("&") || [];
+  if (queries.length > 0 && queries[0] !== "") {
+    if (!req.query) {
+      req.query = {};
+    }
+    console.log("queries", queries)
+    queries.map((qs) => {
+      const pair = qs.split("=");
+      req.query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+    });
   }
-  queries.map((qs) => {
-    const pair = qs.split("=");
-    req.query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
-  });
+ 
 };
 
 export const parser = async (req: Request, res: Response) => {
-  if (req.method === "GET" || req.method === "HEAD") {
-    return;
-  }
   const params = await req.body();
   req.params = params.value;
   setQueryVariable(req);

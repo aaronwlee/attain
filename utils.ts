@@ -34,7 +34,6 @@ export const etag = (entity: Uint8Array, len: number) => {
 
   // compute hash of entity
   const sha1 = new Sha1();
-  sha1.hash();
   sha1.update(entity);
   sha1.digest();
   const hash = sha1.toString().substring(0, 27);

@@ -15,7 +15,7 @@ export class App extends Router {
     const currentMethod = request.method;
     const currentUrl = request.url.pathname;
     let continueToken = true;
-    response.readyToSend.then((e) => continueToken = false);
+    response.readyToSend.then(() => continueToken = false);
     try {
       if (current) {
         for await (const middleware of current) {
@@ -36,6 +36,7 @@ export class App extends Router {
           }
           if (!continueToken) {
             cache(request, response, middleware);
+            response.setRequest(request);
             break;
           }
         }
@@ -57,43 +58,35 @@ export class App extends Router {
   };
 
   public listen = async (
-    { port, debug = false, optimize = true }: ListenProps,
+    { port, debug = false }: ListenProps,
   ) => {
     debug && console.log(JSON.stringify(this.middlewares, null, 2));
 
     const s = serve({ port });
     for await (const req of s) {
       const request = new Request(req);
-      const response = new Response(req, request);
+      const response = new Response(req);
 
-      this.checkCacheAndSend(request, response, { optimize });
+      this.checkCacheAndSend(request, response);
     }
   };
 
   private checkCacheAndSend = async (
     req: Request,
     res: Response,
-    { optimize }: any,
   ) => {
+    /**
+     * @todo update more functions for the cache handler
+     * 
+     */
     const cached = getCached(req.url.pathname, req.method);
+    console.log(req.url);
 
-    if (!cached) {
-      this.normalProcedure(req, res);
-      return;
+    if (cached && fresh(req, cached.res)) {
+      console.log("here");
+      res.setHeaders(cached.res.headers);
     }
 
-    if (!fresh(req, cached.res)) {
-      this.normalProcedure(req, res);
-      return;
-    }
-
-    res.setHeaders(cached.res.headers);
-    res.pending = cached.res.pending;
-    this.handleRequest(req, res, optimize ? cached.lastMiddleware : this.middlewares);
-    return;
-  };
-
-  private normalProcedure = (req: Request, res: Response) => {
-    this.handleRequest(req, res, this.middlewares);
+    return this.handleRequest(req, res, this.middlewares);
   };
 }

@@ -13,13 +13,13 @@ app.use(parser);
 app.use(staticServe("./sample/localTest"));
 
 app.use("/hello", (req, res) => {
-  console.log("req.query", req.query);
-  res.send("/hello");
+  console.log("req.query", JSON.stringify(req.query));
+  res.status(200).send("/hello");
 });
 
 app.use("/:id", sampleMiddleware, (req, res) => {
-  console.log(req.params);
-  res.send("asd");
+  console.log(JSON.stringify(req.params));
+  res.status(200).send("asd");
 });
 
 app.use(sampleMiddleware, (req, res) => {

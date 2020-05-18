@@ -1,4 +1,4 @@
-import { App, logger, parser, staticServe } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
 // import { App, logger, parser } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
