@@ -2,6 +2,7 @@ import { pathToRegExp } from "./path-to-regexp.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { Sha1 } from "./deps.ts";
+import { lookup } from "https://cdn.pika.dev/mime-types";
 
 export const checkPathAndParseURLParams = (
   req: Request,
@@ -129,3 +130,25 @@ const  parseTokenList = (str: string) => {
 
   return list
 }
+
+export const acceptParams = (str: string, index: number = 0) => {
+  var parts = str.split(/ *; */);
+  var ret: any = { value: parts[0], quality: 1, params: {}, originalIndex: index };
+
+  for (var i = 1; i < parts.length; ++i) {
+    var pms = parts[i].split(/ *= */);
+    if ('q' === pms[0]) {
+      ret.quality = parseFloat(pms[1]);
+    } else {
+      ret.params[pms[0]] = pms[1];
+    }
+  }
+
+  return ret;
+}
+
+export const normalizeType = (type: string) => {
+  return ~type.indexOf('/')
+    ? acceptParams(type)
+    : { value: lookup(type), params: {} };
+};

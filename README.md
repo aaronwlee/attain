@@ -17,7 +17,10 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
 __Make Sure__: If you already load the previous version, you have to reload this module by `--reload` (may have a problem) or directly get into `C:\Users\${userName}\AppData\Local\deno\deps\https` folder and delete.
 
 *Current* - ***0.3***: [aaronwlee](https://github.com/aaronwlee)
-* Fixed Query bug
+* Fixed /:id type method error
+* Supporting redirect method in response.
+* Removed unnecessary console logs.
+* Fixed Query bug.
 * Added ETag in the header
 * Optimized middlewares by cached yet -- needs help or times...
 * Supporting more response classes' methods
@@ -185,6 +188,10 @@ app.use(staticServe("./public", {maxAge: 1000}));
 app.use("/", (req, res) => {
   res.status(200).send("hello");
 });
+
+app.use("/google", (req, res) => {
+  res.redirect("https://www.google.ca");
+})
 
 app.use("/:id", (req, res) => {
   // This data has parsed by the embedded URL parser.

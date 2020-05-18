@@ -124,7 +124,6 @@ export class Request {
 
   /** Shortcut to `request.url.protocol === "https"`. */
   get secure(): boolean {
-    console.log("this.url.protocol", this.url.protocol);
     return this.url.protocol === "https:";
   }
 

@@ -8,7 +8,7 @@ import { Request } from "./request.ts";
 import { AttainResponse, CallBackType } from "./types.ts";
 import version from "./version.ts";
 import vary from "https://cdn.pika.dev/vary";
-import { etag } from "./utils.ts";
+import { etag, normalizeType } from "./utils.ts";
 
 type ContentsType = Uint8Array | Deno.Reader | string | object | boolean;
 function instanceOfReader(object: any): object is Deno.Reader {
@@ -25,7 +25,7 @@ const isHtml = (value: string): boolean => {
 export class Response {
   private serverRequest: ServerRequest;
   private response: AttainResponse;
-  private request: Request | undefined;
+  public request: Request;
   public done: Deferred<Error | undefined> = deferred();
   public executePending: Deferred<Error | undefined> = deferred();
   public pending: Function[];
@@ -35,6 +35,7 @@ export class Response {
     this.response = {
       headers: new Headers(),
     };
+    this.request = new Request(this.serverRequest);
     this.pending = [];
 
     this.setHeader("X-Powered-By", `Deno.js, Attain v${version}`);
@@ -60,6 +61,12 @@ export class Response {
     return this.done;
   }
 
+  private async executePendingJobs(): Promise<void> {
+    for await (const p of this.pending) {
+      await p(this.request, this);
+    }
+  }
+
   public pend(...fn: CallBackType[]): void {
     this.pending.push(...fn);
   }
@@ -67,11 +74,6 @@ export class Response {
   public status(status: number) {
     this.response.status = status;
     return this;
-  }
-
-  public setRequest(request: Request) {
-    this.request = request;
-    this.executePending.resolve();
   }
 
   public body(body: ContentsType) {
@@ -121,6 +123,25 @@ export class Response {
     return this;
   }
 
+  private format(obj: any) {
+    const defaultFn = obj.default;
+    if (defaultFn) delete obj.default;
+    const keys: any = Object.keys(obj);
+
+    const key: any = keys.length > 0 ? this.request.accepts(keys) : false;
+
+    this.vary("Accept");
+
+    if (key) {
+      this.setHeader("Content-type", normalizeType(key).value);
+      this.body(key());
+    } else if (defaultFn) {
+      this.body(defaultFn());
+    } else {
+      this.status(406);
+    }
+  }
+
   public async send(contents: ContentsType): Promise<void | this> {
     try {
       this.body(contents);
@@ -131,17 +152,36 @@ export class Response {
     }
   }
 
-  private async executePendingJobs(): Promise<void> {
-    for await (const p of this.pending) {
-      await p(this.request, this);
+  public redirect(url: string | "back") {
+    let loc = url;
+    if (url === "back") {
+      loc = this.serverRequest.headers.get("Referrer") || "/";
     }
+    this.setHeader("Location", encodeURI(loc));
+
+    this.format({
+      text: function () {
+        return 302 + ". Redirecting to " + loc;
+      },
+      html: function () {
+        var u = escape(loc);
+        return "<p>" + 302 + '. Redirecting to <a href="' + u + '">' + u +
+          "</a></p>";
+      },
+      default: function () {
+        return "";
+      },
+    });
+
+    this.status(302).end();
   }
 
   public async end(): Promise<void> {
     try {
       this.setHeader("Date", new Date().toUTCString());
       const currentETag = this.getHeader("etag");
-      const len = this.getHeader("content-length") || this.getBody.length.toString();
+      const len = this.getHeader("content-length") ||
+        this.getBody.length.toString();
       const newETag = etag(
         this.getBody,
         parseInt(len, 10),
