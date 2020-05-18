@@ -68,8 +68,7 @@ export class Router {
 
       if (temp.callBack || temp.next) {
         this.middlewares.push(temp);
-        console.log(temp);
-        temp = { method: type };
+        temp = temp.url ? { method: type, url: temp.url } : { method: type };
       }
     });
   }

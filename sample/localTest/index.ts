@@ -1,5 +1,11 @@
-import { App, Request, Response, logger, parser, staticServe } from "../../mod.ts";
-
+import {
+  App,
+  Request,
+  Response,
+  logger,
+  parser,
+  staticServe,
+} from "../../mod.ts";
 
 const app = new App();
 
@@ -21,6 +27,10 @@ app.use("/:id", sampleMiddleware, (req, res) => {
   console.log(JSON.stringify(req.params));
   res.status(200).send("asd");
 });
+
+app.get("/page/back", (req, res) => {
+  res.redirect("back");
+}) 
 
 app.use(sampleMiddleware, (req, res) => {
   res.status(404).send(`

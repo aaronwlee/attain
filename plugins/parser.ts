@@ -6,7 +6,6 @@ const setQueryVariable = (req: Request) => {
     if (!req.query) {
       req.query = {};
     }
-    console.log("queries", queries)
     queries.map((qs) => {
       const pair = qs.split("=");
       req.query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");

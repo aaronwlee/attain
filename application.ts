@@ -36,7 +36,7 @@ export class App extends Router {
           }
           if (!continueToken) {
             cache(request, response, middleware);
-            response.setRequest(request);
+            response.executePending.resolve();
             break;
           }
         }
@@ -48,15 +48,6 @@ export class App extends Router {
     }
   };
 
-  private show = (e: any) => {
-    console.log(e);
-    if (e.next) {
-      e.next.forEach((a: any) => {
-        this.show(a);
-      });
-    }
-  };
-
   public listen = async (
     { port, debug = false }: ListenProps,
   ) => {
@@ -64,8 +55,8 @@ export class App extends Router {
 
     const s = serve({ port });
     for await (const req of s) {
-      const request = new Request(req);
       const response = new Response(req);
+      const request = response.request;
 
       this.checkCacheAndSend(request, response);
     }
@@ -80,10 +71,8 @@ export class App extends Router {
      * 
      */
     const cached = getCached(req.url.pathname, req.method);
-    console.log(req.url);
 
     if (cached && fresh(req, cached.res)) {
-      console.log("here");
       res.setHeaders(cached.res.headers);
     }
 
