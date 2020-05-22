@@ -7,7 +7,7 @@ import {
 import { Request } from "./request.ts";
 import { AttainResponse, CallBackType } from "./types.ts";
 import version from "./version.ts";
-import vary from "https://cdn.pika.dev/vary";
+// import vary from "https://cdn.pika.dev/vary";
 import { etag, normalizeType } from "./utils.ts";
 
 type ContentsType = Uint8Array | Deno.Reader | string | object | boolean;
@@ -118,10 +118,10 @@ export class Response {
     return this;
   }
 
-  public vary(field: string) {
-    vary(this, field);
-    return this;
-  }
+  // public vary(field: string) {
+  //   vary(this, field);
+  //   return this;
+  // }
 
   private format(obj: any) {
     const defaultFn = obj.default;
@@ -130,7 +130,7 @@ export class Response {
 
     const key: any = keys.length > 0 ? this.request.accepts(keys) : false;
 
-    this.vary("Accept");
+    // this.vary("Accept");
 
     if (key) {
       this.setHeader("Content-type", normalizeType(key).value);

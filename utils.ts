@@ -1,8 +1,7 @@
 import { pathToRegExp } from "./path-to-regexp.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { Sha1 } from "./deps.ts";
-import { lookup } from "https://cdn.pika.dev/mime-types";
+import { Sha1, lookup } from "./deps.ts";
 
 export const checkPathAndParseURLParams = (
   req: Request,
