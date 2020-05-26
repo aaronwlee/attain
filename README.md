@@ -250,7 +250,7 @@ console.log("http://localhost:3500");
  - __staticServe__ : `It'll serve the static files from a provided path by joining the request path.`
 
  > Out of box
- - [__Attain-GraphQL__](https://github.com/aaronwlee/Attain-GraphQL) : `GraphQL middleware`
+ - [__Attain-GraphQL__](https://deno.land/x/attain_graphql#attain-graphql) : `GraphQL middleware`
  - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
 ```ts
 import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
