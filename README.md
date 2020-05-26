@@ -248,6 +248,9 @@ console.log("http://localhost:3500");
  - __logger__ : `Logging response "response - method - status - path - time"`
  - __parser__ : `Parsing the request body and save it to request.params`
  - __staticServe__ : `It'll serve the static files from a provided path by joining the request path.`
+
+ > Out of box
+ - [__Attain-GraphQL__](https://github.com/aaronwlee/Attain-GraphQL) : `GraphQL middleware`
 ```ts
 import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
 
