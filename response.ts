@@ -7,7 +7,6 @@ import {
 import { Request } from "./request.ts";
 import { AttainResponse, CallBackType } from "./types.ts";
 import version from "./version.ts";
-// import vary from "https://cdn.pika.dev/vary";
 import { etag, normalizeType } from "./utils.ts";
 
 type ContentsType = Uint8Array | Deno.Reader | string | object | boolean;
@@ -25,8 +24,8 @@ const isHtml = (value: string): boolean => {
 export class Response {
   private serverRequest: ServerRequest;
   private response: AttainResponse;
+  private done: Deferred<Error | undefined> = deferred();
   public request: Request;
-  public done: Deferred<Error | undefined> = deferred();
   public executePending: Deferred<Error | undefined> = deferred();
   public pending: Function[];
 
@@ -118,19 +117,12 @@ export class Response {
     return this;
   }
 
-  // public vary(field: string) {
-  //   vary(this, field);
-  //   return this;
-  // }
-
   private format(obj: any) {
     const defaultFn = obj.default;
     if (defaultFn) delete obj.default;
     const keys: any = Object.keys(obj);
 
     const key: any = keys.length > 0 ? this.request.accepts(keys) : false;
-
-    // this.vary("Accept");
 
     if (key) {
       this.setHeader("Content-type", normalizeType(key).value);

@@ -13,26 +13,15 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
 # deno run --allow-net main.ts
 ```
 
-## Update History 
-__Make Sure__: If you already load the previous version, you have to reload this module by `--reload` (may have a problem) or directly get into `C:\Users\${userName}\AppData\Local\deno\deps\https` folder and delete.
-
-*Current* - ***0.3***: [aaronwlee](https://github.com/aaronwlee)
-* Fixed /:id type method error
-* Supporting redirect method in response.
-* Removed unnecessary console logs.
-* Fixed Query bug.
-* Added ETag in the header
-* Optimized middlewares by cached yet -- needs help or times...
-* Supporting more response classes' methods
-* Supporting serve more static with various mimes
-* Updated logger plugin sample
-
-***0.2***: [aaronwlee](https://github.com/aaronwlee)
-* Enhanced the parser plugin to load the body as well as the search params.
-* Implemented static file serve middleware plugin.
-* Embedded the URL parameters parser.
-* Moved all plugins to the `mod.ts`.
-
+## Contents
+- [Getting Start](#getting-start)
+  - [Procedure explain](#procedure-explain)
+- [Response](#response)
+- [Request](#request)
+- [Router](#router)
+- [App](#app)
+- [Nested Routing](#nested-routing)
+- [Extra plugins](#extra-plugins)
 
 ## Getting Start
 
@@ -45,7 +34,7 @@ const sampleMiddleware = (req: Request, res: Response) => {
   console.log("before send")
 };
 
-app.use("/:id", (req, res) => {
+app.get("/:id", (req, res) => {
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
 })
@@ -58,7 +47,7 @@ app.listen({ port: 3500 });
 
 console.log("http://localhost:3500");
 ```
-
+### Procedure explain
 The middleware process the function step by step based on registered order.  
 
 ```ts
@@ -70,10 +59,6 @@ app.use((req, res) => {
   console.log("First step");
 }, (req, res) => {
   console.log("Second step");
-});
-
-app.use((req, res) => {
-  console.log("Third step");
 });
 
 // last step
@@ -90,6 +75,80 @@ app.listen({ port: 3500 });
 
 console.log("http://localhost:3500");
 ```
+
+
+### Response
+> ### Properties
+>- `executePending: Deferred<Error | undefined>`
+> <br /> An event trigger the pended jobs.
+> <br /> EX) `response.executePending.resolve();`
+>- `pending: Function[]`
+> <br /> List of pended jobs. To push the job, use the pend() method.
+
+> ### Methods
+>> Getter
+>- `getResponse(): AttainResponse`
+> <br /> Get current response object, It will contain the body, status and headers.
+>- `headers(): Headers`
+> <br /> Get current header map
+>- `getStatus(): number | undefined`
+> <br /> Get current status
+>- `getBody(): Uint8Array`
+> <br /> Get current body contents
+>- `readyToSend(): Deferred<Error | undefined>`
+> <br /> An event right before responding.
+> <br /> EX) `response.readyToSend.then(() => console.log("pended job executed"));`
+>> Functions
+>- `pend(...fn: CallBackType[]): void`
+> <br /> Pend the jobs. It'll start right before responding.
+>- `status(status: number)`
+> <br /> Set status number
+>- `body(body: ContentsType)`
+> <br /> Set body. Allows setting `Uint8Array, Deno.Reader, string, object, boolean`. This will not respond.
+>- `setHeaders(headers: Headers)`
+> <br /> You can overwrite the response header.
+>- `getHeader(name: string)`
+> <br /> Get a header from the response by key name.
+>- `setHeader(name: string, value: string)`
+> <br /> Set a header.
+>- `setContentType(type: string)`
+> <br /> This is a shortcut for the "Content-Type" in the header. It will try to find "Content-Type" from the header then set or append the values.
+>- `send(contents: ContentsType): Promise<void | this>`
+> <br /> Setting the body then executing the end() method.
+>- `redirect(url: string | "back")`
+> <br /> Redirecting the current response.
+>- `end(): Promise<void>`
+> <br /> Executing the pended job then respond back to the current request. It'll end the current procedure.
+
+### Request 
+> [Oak](https://github.com/oakserver/oak/tree/master#request)
+> This method use the Oak request, check this out.
+
+### Router
+> ### Methods
+>- `use(app: App | Router): void`
+>- `use(callBack: CallBackType): void`
+>- `use(...callBack: CallBackType[]): void`
+>- `use(url: string, callBack: CallBackType): void`
+>- `use(url: string, ...callBack: CallBackType[]): void`
+>- `use(url: string, app: App | Router): void`
+>- `get...`
+>- `post...`
+>- `put...`
+>- `patch...`
+>- `delete...`
+> <br/> These are middleware methods.
+
+### App
+> ### Properties
+>- `listen(options)`
+> <br/> `options: {port: number, debug: boolean}` 
+> <br/> Start the Attain server.
+> ### *App extends Router*
+> ### Methods
+> This has all router's methods
+
+
 
 ## Nested Routing
 

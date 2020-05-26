@@ -4,7 +4,6 @@ import { MiddlewareProps, ListenProps } from "./types.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { checkPathAndParseURLParams, fresh } from "./utils.ts";
-import { cache, getCached } from "./state.ts";
 
 export class App extends Router {
   private handleRequest: any = async (
@@ -35,7 +34,7 @@ export class App extends Router {
             }
           }
           if (!continueToken) {
-            cache(request, response, middleware);
+            // cache(request, response, middleware);
             response.executePending.resolve();
             break;
           }
@@ -58,24 +57,7 @@ export class App extends Router {
       const response = new Response(req);
       const request = response.request;
 
-      this.checkCacheAndSend(request, response);
+      this.handleRequest(request, response, this.middlewares);
     }
-  };
-
-  private checkCacheAndSend = async (
-    req: Request,
-    res: Response,
-  ) => {
-    /**
-     * @todo update more functions for the cache handler
-     * 
-     */
-    const cached = getCached(req.url.pathname, req.method);
-
-    if (cached && fresh(req, cached.res)) {
-      res.setHeaders(cached.res.headers);
-    }
-
-    return this.handleRequest(req, res, this.middlewares);
   };
 }
