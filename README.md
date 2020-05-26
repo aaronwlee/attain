@@ -251,6 +251,7 @@ console.log("http://localhost:3500");
 
  > Out of box
  - [__Attain-GraphQL__](https://github.com/aaronwlee/Attain-GraphQL) : `GraphQL middleware`
+ - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
 ```ts
 import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
 
