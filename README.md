@@ -16,10 +16,11 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
 ## Contents
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
-- [Response](#response)
-- [Request](#request)
-- [Router](#router)
-- [App](#app)
+- [Methods and Properies](#methods-and-properies)
+  - [Response](#response)
+  - [Request](#request)
+  - [Router](#router)
+  - [App](#app)
 - [Nested Routing](#nested-routing)
 - [Extra plugins](#extra-plugins)
 
@@ -76,7 +77,7 @@ app.listen({ port: 3500 });
 console.log("http://localhost:3500");
 ```
 
-
+## Methods and Properies
 ### Response
 > ### Properties
 >- `executePending: Deferred<Error | undefined>`
