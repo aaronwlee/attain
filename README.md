@@ -81,7 +81,7 @@ console.log("http://localhost:3500");
 ### Response
  #### Properties
 - `executePending: Deferred<Error | undefined>`
- <br /> An event trigger the pended jobs.
+ <br /> An event trigger the pended jobs. Automatically triggered by the end()
  <br /> EX) `response.executePending.resolve();`
 
 - `pending: Function[]`
@@ -102,7 +102,7 @@ console.log("http://localhost:3500");
  <br /> Get current body contents
 
 - `readyToSend(): Deferred<Error | undefined>`
- <br /> An event right before responding.
+ <br /> An event right before responding. Automatically triggered by the end()
  <br /> EX) `response.readyToSend.then(() => console.log("pended job executed"));`
 
  Functions
