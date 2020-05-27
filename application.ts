@@ -1,5 +1,5 @@
 import { Router } from "./router.ts";
-import { serve } from "./deps.ts";
+import { serve, serveTLS } from "./deps.ts";
 import { MiddlewareProps, ListenProps } from "./types.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
@@ -48,16 +48,22 @@ export class App extends Router {
   };
 
   public listen = async (
-    { port, debug = false }: ListenProps,
+    { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }: ListenProps,
   ) => {
     debug && console.log(JSON.stringify(this.middlewares, null, 2));
 
-    const s = serve({ port });
+    if (secure) {
+      if (!keyFile || !certFile) {
+        throw "TLS mode require keyFile and certFile options."
+      }
+    }
+
+    const s = secure && keyFile && certFile ? serveTLS({ hostname, port, keyFile, certFile }) : serve({ hostname, port });
     for await (const req of s) {
       const response = new Response(req);
       const request = response.request;
 
-      this.handleRequest(request, response, this.middlewares);
+      this.handleRequest(request, response, this.middlewares).catch((error: any) => console.error("Unhandled Attain error: ", error));
     }
   };
 }
