@@ -133,7 +133,7 @@ console.log("http://localhost:3500");
 
 - `sendFile(filePath: string): Promise<void>`
  <br /> Transfers the file at the given path. Sets the Content-Type response HTTP header field based on the filename's extension.
- <br /> <span style="color: red;"> Required to be await </span>
+ <br /> <span style="color: red;"> *Required to be await* </span>
  <br /> These response headers might be needed to set for fully functioning
 
 | Property        | Description                |
@@ -145,7 +145,7 @@ console.log("http://localhost:3500");
 
 - `download(filePath: string, name?: string): Promise<void>`
  <br /> Transfers the file at the path as an "attachment". Typically, browsers will prompt the user to download and save it as a name if provided.
- <br /> <span style="color: red;"> Required to be await </span>
+ <br /> <span style="color: red;"> *Required to be await* </span>
 
 - `redirect(url: string | "back")`
  <br /> Redirecting the current response.
@@ -279,6 +279,7 @@ console.log("http://localhost:3500");
  > Out of box
  - [__Attain-GraphQL__](https://deno.land/x/attain_graphql#attain-graphql) : `GraphQL middleware`
  - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
+
 ```ts
 import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
 
