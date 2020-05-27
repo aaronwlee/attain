@@ -161,7 +161,17 @@ These are middleware methods.
 ### App
  #### Properties
 - `listen(options)`
- <br/> `options: {port: number, debug: boolean}` 
+ <br/> 
+ ```ts
+  options: {
+    port: number;             // required
+    debug?: boolean;          // debug mode
+    hostname?: string;        // hostname default as 0.0.0.0
+    secure?: boolean;         // https use
+    certFile?: string;        // if secure is true, it's required
+    keyFile?: string;         // if secure is true, it's required
+  }
+```
  <br/> Start the Attain server.
 
  #### *App extends Router*

@@ -30,7 +30,7 @@ app.use("/:id", sampleMiddleware, (req, res) => {
 
 app.get("/page/back", (req, res) => {
   res.redirect("back");
-}) 
+})
 
 app.use(sampleMiddleware, (req, res) => {
   res.status(404).send(`
@@ -43,6 +43,6 @@ app.use(sampleMiddleware, (req, res) => {
   `);
 });
 
-app.listen({ port: 3500, debug: true });
+app.listen({ port: 3500, secure: true, keyFile: "./sample/localTest/cert/secret.key", certFile: "./sample/localTest/cert/secret.crt", debug: true });
 
 console.log("http://localhost:3500");

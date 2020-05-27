@@ -5,7 +5,10 @@ import { Response } from "./response.ts";
 export interface ListenProps {
   port: number;
   debug?: boolean;
-  optimize?: boolean;
+  hostname?: string; 
+  secure?: boolean;
+  certFile?: string;
+  keyFile?: string;
 }
 
 export type SupportMethodType =
