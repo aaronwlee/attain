@@ -23,6 +23,7 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.t
   - [App](#app)
 - [Nested Routing](#nested-routing)
 - [Extra plugins](#extra-plugins)
+- [How To](#how-to)
 
 ## Getting Start
 
@@ -323,6 +324,9 @@ app.listen({ port: 4000 });
 console.log("Start listening on http://localhost:4000");
 
 ```
+
+## How To
+[Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
 
 ---
 
