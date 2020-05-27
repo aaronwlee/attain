@@ -110,6 +110,10 @@ export class Response {
 
   public setContentType(type: string) {
     if (this.headers.has("Content-Type")) {
+      const contentType = this.headers.get("Content-Type")
+      if (contentType && contentType.includes(type)) {
+        return this;
+      }
       this.headers.append("Content-Type", type);
     } else {
       this.setHeader("Content-Type", type);
