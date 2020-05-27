@@ -161,7 +161,7 @@ These are middleware methods.
 ### App
  #### Properties
 - `listen(options)`
- <br/> 
+
  ```ts
   options: {
     port: number;             // required
@@ -172,6 +172,7 @@ These are middleware methods.
     keyFile?: string;         // if secure is true, it's required
   }
 ```
+
  <br/> Start the Attain server.
 
  #### *App extends Router*
