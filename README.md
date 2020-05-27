@@ -279,6 +279,7 @@ console.log("http://localhost:3500");
  > Out of box
  - [__Attain-GraphQL__](https://deno.land/x/attain_graphql#attain-graphql) : `GraphQL middleware`
  - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
+ - [__session__](https://deno.land/x/session): `cookie session`
 
 ```ts
 import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
