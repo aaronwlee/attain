@@ -98,7 +98,7 @@ export class Request {
   #url?: URL;
   #startDate: number;
 
-  [dynamicProperty: string]: any;
+  [dynamicProperty: string]: any
 
   /** Is `true` if the request has a body, otherwise `false`. */
   get hasBody(): boolean {

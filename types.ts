@@ -5,7 +5,7 @@ import { Response } from "./response.ts";
 export interface ListenProps {
   port: number;
   debug?: boolean;
-  hostname?: string; 
+  hostname?: string;
   secure?: boolean;
   certFile?: string;
   keyFile?: string;

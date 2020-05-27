@@ -14,6 +14,6 @@ export const logger = (_: Request, res: Response) => {
           cyan(String(pendRes.getStatus))
         } ${pendReq.url.pathname} - ${bold(String(ms))}ms`,
       );
-    }
+    },
   );
 };

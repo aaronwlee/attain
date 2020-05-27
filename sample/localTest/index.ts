@@ -18,19 +18,19 @@ app.use(parser);
 
 app.use(staticServe("./sample/localTest"));
 
-app.use("/hello", (req, res) => {
-  console.log("req.query", JSON.stringify(req.query));
-  res.status(200).send("/hello");
-});
+// app.use("/hello", (req, res) => {
+//   console.log("req.query", JSON.stringify(req.query));
+//   res.status(200).send("/hello");
+// });
 
-app.use("/:id", sampleMiddleware, (req, res) => {
-  console.log(JSON.stringify(req.params));
-  res.status(200).send("asd");
-});
+// app.use("/:id", sampleMiddleware, (req, res) => {
+//   console.log(JSON.stringify(req.params));
+//   res.status(200).send("asd");
+// });
 
-app.get("/page/back", (req, res) => {
-  res.redirect("back");
-})
+app.get("/image", async (req, res) => {
+  await res.download("./sample/localTest/public/test.asd");
+});
 
 app.use(sampleMiddleware, (req, res) => {
   res.status(404).send(`
@@ -43,6 +43,6 @@ app.use(sampleMiddleware, (req, res) => {
   `);
 });
 
-app.listen({ port: 3500, secure: true, keyFile: "./sample/localTest/cert/secret.key", certFile: "./sample/localTest/cert/secret.crt", debug: true });
+app.listen({ port: 3500, debug: true });
 
 console.log("http://localhost:3500");

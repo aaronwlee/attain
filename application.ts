@@ -48,22 +48,27 @@ export class App extends Router {
   };
 
   public listen = async (
-    { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }: ListenProps,
+    { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
+      ListenProps,
   ) => {
     debug && console.log(JSON.stringify(this.middlewares, null, 2));
 
     if (secure) {
       if (!keyFile || !certFile) {
-        throw "TLS mode require keyFile and certFile options."
+        throw "TLS mode require keyFile and certFile options.";
       }
     }
 
-    const s = secure && keyFile && certFile ? serveTLS({ hostname, port, keyFile, certFile }) : serve({ hostname, port });
+    const s = secure && keyFile && certFile
+      ? serveTLS({ hostname, port, keyFile, certFile })
+      : serve({ hostname, port });
     for await (const req of s) {
       const response = new Response(req);
       const request = response.request;
 
-      this.handleRequest(request, response, this.middlewares).catch((error: any) => console.error("Unhandled Attain error: ", error));
+      this.handleRequest(request, response, this.middlewares).catch((
+        error: any,
+      ) => console.error("Unhandled Attain error: ", error));
     }
   };
 }

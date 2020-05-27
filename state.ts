@@ -37,6 +37,9 @@ export const cache = (
   });
 };
 
-export const getCached = (url: string, method: string): StateProps | undefined => {
+export const getCached = (
+  url: string,
+  method: string,
+): StateProps | undefined => {
   return state.find((s) => s.url === url && s.method === method);
 };

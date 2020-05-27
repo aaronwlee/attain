@@ -1,11 +1,18 @@
-import { App, Router, Request, Response, logger, parser } from "https://deno.land/x/attain/mod.ts";
+import {
+  App,
+  Router,
+  Request,
+  Response,
+  logger,
+  parser,
+} from "https://deno.land/x/attain/mod.ts";
 import api from "./router.ts";
 
 const app = new App();
 
 const sampleMiddleware = (req: Request, res: Response) => {
-  console.log("before send")
-}
+  console.log("before send");
+};
 
 app.use(logger);
 app.use(parser);
@@ -13,7 +20,7 @@ app.use(parser);
 app.use("/:id", sampleMiddleware, (req, res) => {
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
-})
+});
 
 app.use("/api", api);
 

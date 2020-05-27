@@ -7,7 +7,7 @@ import {
 import { Request } from "./request.ts";
 import { AttainResponse, CallBackType } from "./types.ts";
 import version from "./version.ts";
-import { etag, normalizeType } from "./utils.ts";
+import { etag, normalizeType, fileStream, last } from "./utils.ts";
 
 type ContentsType = Uint8Array | Deno.Reader | string | object | boolean;
 function instanceOfReader(object: any): object is Deno.Reader {
@@ -110,7 +110,7 @@ export class Response {
 
   public setContentType(type: string) {
     if (this.headers.has("Content-Type")) {
-      const contentType = this.headers.get("Content-Type")
+      const contentType = this.headers.get("Content-Type");
       if (contentType && contentType.includes(type)) {
         return this;
       }
@@ -138,13 +138,67 @@ export class Response {
     }
   }
 
-  public async send(contents: ContentsType): Promise<void | this> {
+  public async send(contents: ContentsType): Promise<void> {
     try {
       this.body(contents);
       this.end();
     } catch (error) {
       console.error(error);
       this.done.reject(Error(error));
+    }
+  }
+
+  /**
+   * Required await
+   */
+  public async sendFile(filePath: string): Promise<void> {
+    try {
+      console.log("here i am");
+
+      let fileInfo = await Deno.stat(filePath);
+      console.log("here i am2");
+
+      if (fileInfo.isFile) {
+        this.status(200).send(await fileStream(this, filePath));
+      } else {
+        throw Error(`${filePath} can't find.`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
+   * Required await
+   */
+  public async download(filePath: string, name?: string): Promise<void> {
+    try {
+      let fileName = filePath;
+      if (!name) {
+        const splited = filePath.split("/");
+        fileName = last(splited);
+      } else {
+        const hasFileType = name.split(".").length > 1 ? true : false;
+        if (hasFileType) {
+          fileName = name;
+        } else {
+          throw `${name} dosen't have filetype`;
+        }
+      }
+
+      const hasFileType = fileName.split(".").length > 1 ? true : false;
+      if (hasFileType) {
+        this.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${fileName}"`,
+        );
+      } else {
+        throw `${fileName} dosen't have filetype`;
+      }
+
+      await this.sendFile(filePath);
+    } catch (error) {
+      console.error(error);
     }
   }
 
