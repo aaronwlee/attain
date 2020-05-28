@@ -62,6 +62,10 @@ console.log("http://localhost:3500");
 ### Procedure explain
 The middleware process the function step by step based on registered order.  
 
+<p align="center">
+  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/procedure.png" alt="procedure" />
+</p>
+
 ```ts
 import { App } from "https://deno.land/x/attain/mod.ts";
 
