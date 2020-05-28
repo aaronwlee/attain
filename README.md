@@ -8,7 +8,7 @@
 <p align="center"> for <a href="https://deno.land/">deno</a> </p> <br />
 
 <p align="center"> 
-A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. This middleware framework is inspired by [express](https://github.com/expressjs/express)
+A middleware web framework for Deno's using <a href="https://github.com/denoland/deno_std/tree/master/http#http">http</a> server. This middleware framework is inspired by <a href="https://github.com/expressjs/express">express</a>
 </p>
 <br />
 
