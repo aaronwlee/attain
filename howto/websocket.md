@@ -1,4 +1,5 @@
 # WEB Socket
+This example is combined the WebSocket with Attain
 
 ## Attain Server
 
