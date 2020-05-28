@@ -67,9 +67,14 @@ import { App } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
+const sleep = (time: number) => {
+  return new Promise(resolve => setTimeout(() => resolve(), time)
+};
+
 app.use((req, res) => {
   console.log("First step");
-}, (req, res) => {
+}, async (req, res) => {
+  await sleep(2000); // the current request procedure will stop here for two seconds.
   console.log("Second step");
 });
 
