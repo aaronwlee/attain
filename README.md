@@ -7,8 +7,11 @@
 <h1 align="center">Attain - v0.6</h1>
 <p align="center"> for <a href="https://deno.land/">deno</a> </p> <br />
 
-A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. <br />
+<p align="center"> 
+A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. 
+<br />
 This middleware framework is inspired by [express](https://github.com/expressjs/express)
+</p>
 
 Download and use
 ```js
