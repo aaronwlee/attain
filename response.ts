@@ -50,8 +50,8 @@ export class Response {
     return this.response.status;
   }
 
-  get getBody(): Uint8Array {
-    return this.response.body as Uint8Array;
+  get getBody() {
+    return this.response.body;
   }
 
   get readyToSend(): Deferred<Error | undefined> {
@@ -228,27 +228,35 @@ export class Response {
 
   public async end(): Promise<void> {
     try {
-      this.setHeader("Date", new Date().toUTCString());
-      const currentETag = this.getHeader("etag");
-      const len = this.getHeader("content-length") ||
-        this.getBody.length.toString();
-      const newETag = etag(
-        this.getBody,
-        parseInt(len, 10),
-      );
-      if (currentETag && currentETag === newETag) {
-        this.status(304);
+      if(this.getBody) {
+        this.setHeader("Date", new Date().toUTCString());
+        const currentETag = this.getHeader("etag");
+        const len = this.getHeader("content-length") ||
+          (this.getBody as Uint8Array).length.toString();
+        const newETag = etag(
+          (this.getBody as Uint8Array),
+          parseInt(len, 10),
+        );
+        if (currentETag && currentETag === newETag) {
+          this.status(304);
+        } else {
+          this.setHeader("etag", newETag);
+        }
+  
+        this.done.resolve();
+        const request = await this.executePending;
+        await this.executePendingJobs(request);
+        await this.serverRequest.respond(this.response);
       } else {
-        this.setHeader("etag", newETag);
+        this.serverRequest.conn.close();
       }
-
-      this.done.resolve();
-      const request = await this.executePending;
-      await this.executePendingJobs(request);
-      await this.serverRequest.respond(this.response);
     } catch (error) {
-      console.error(error);
-      this.done.reject(Error(error));
+      if (error instanceof Deno.errors.BadResource) {
+        console.log("Connection Lost")
+      } else {
+        console.error(error);
+      }
+      // this.done.reject(Error(error));
     }
   }
 }

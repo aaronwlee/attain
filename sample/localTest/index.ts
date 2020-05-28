@@ -9,30 +9,25 @@ import {
 
 const app = new App();
 
-const sampleMiddleware = (req: Request, res: Response) => {
-  console.log("before send");
-};
 
 app.use(logger);
 app.use(parser);
 
 app.use(staticServe("./sample/localTest"));
 
-// app.use("/hello", (req, res) => {
-//   console.log("req.query", JSON.stringify(req.query));
-//   res.status(200).send("/hello");
-// });
+app.use((req, res) => {
+  console.log("first");
+})
 
-// app.use("/:id", sampleMiddleware, (req, res) => {
-//   console.log(JSON.stringify(req.params));
-//   res.status(200).send("asd");
-// });
+app.use((req, res) => {
+  console.log("second")
+})
 
-app.get("/image", async (req, res) => {
-  await res.download("./sample/localTest/public/test.asd");
-});
+app.get("/", (req, res) => {
+  res.send("hello")
+})
 
-app.use(sampleMiddleware, (req, res) => {
+app.use((req, res) => {
   res.status(404).send(`
   <!doctype html>
   <html lang="en">
