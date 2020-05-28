@@ -1,10 +1,11 @@
 
 
 <p align="center">
-  <img width="460" height="230" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
+  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
 </p>
 
-<h1 align="center">Attain - v0.6 for <a href="https://deno.land/">deno</a></h1>
+<h1 align="center">Attain - v0.6</h1>
+<h2 align="center"> for <a href="https://deno.land/">deno</a> </h2>
 
 A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. <br />
 This middleware framework is inspired by [express](https://github.com/expressjs/express)
