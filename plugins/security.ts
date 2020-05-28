@@ -13,7 +13,8 @@ interface SecurityProps {
   frameguard?: FrameguardOptions | boolean;
 }
 
-export const security = ({ xss = true, removePoweredBy = true, DNSPrefetchControl = true, noSniff = true, frameguard = true }: SecurityProps) => {
+export const security = (options?: SecurityProps) => {
+  const { xss = true, removePoweredBy = true, DNSPrefetchControl = true, noSniff = true, frameguard = true } = options || {};
   return (req: Request, res: Response) => {
     if (xss) {
       typeof xss === "boolean" ? xXssProtection()(req, res) : xXssProtection(xss)(req, res);
