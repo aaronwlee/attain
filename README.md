@@ -1,9 +1,15 @@
-<img src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
 
-# Attain - [Deno](https://deno.land/) V0.6
 
-A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. <br />
-This middleware framework is inspired by [express](https://github.com/expressjs/express)
+<p align="center">
+  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
+</p>
+
+<h1 align="center">Attain - v0.6</h1>
+<p align="center"> 
+  A middleware web framework for Deno which is using <a href="https://github.com/denoland/deno_std/tree/master/http#http">http</a> standard library inspired by <a href="https://github.com/expressjs/express">express</a> and <a href="https://github.com/oakserver/oak">Oak</a>
+</p>
+<p align="center"> Only for <a href="https://deno.land/">Deno</a> </p>
+<br />
 
 Download and use
 ```js
@@ -61,9 +67,14 @@ import { App } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
+const sleep = (time: number) => {
+  return new Promise(resolve => setTimeout(() => resolve(), time)
+};
+
 app.use((req, res) => {
   console.log("First step");
-}, (req, res) => {
+}, async (req, res) => {
+  await sleep(2000); // the current request procedure will stop here for two seconds.
   console.log("Second step");
 });
 
