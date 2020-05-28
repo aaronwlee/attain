@@ -18,3 +18,16 @@ export {
 export {
   Sha1,
 } from "https://deno.land/std/hash/sha1.ts";
+
+export {
+  pathToRegexp
+} from "https://raw.githubusercontent.com/pillarjs/path-to-regexp/master/src/index.ts";
+
+export {
+  red,
+  yellow,
+  green,
+  cyan,
+  bold,
+  blue
+} from "https://deno.land/std@0.50.0/fmt/colors.ts";

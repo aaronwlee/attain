@@ -1,8 +1,9 @@
-import { MiddlewareProps, CallBackType, SupportMethodType } from "./types.ts";
+import { MiddlewareProps, CallBackType, SupportMethodType, ErrorCallBackType, ErrorMiddlewareProps } from "./types.ts";
 import { App } from "./application.ts";
 
 export class Router {
   public middlewares: MiddlewareProps[] = [];
+  public errorMiddlewares: ErrorMiddlewareProps[] = [];
 
   private isString(arg: any): boolean {
     return typeof arg === "string";
@@ -18,14 +19,15 @@ export class Router {
 
   private appendNextPaths(
     parentsPath: string,
-    middlewares: MiddlewareProps[],
-  ): MiddlewareProps[] {
+    middlewares: MiddlewareProps[] | ErrorMiddlewareProps[],
+  ): MiddlewareProps[] | ErrorMiddlewareProps[] {
     const newMiddlewares: MiddlewareProps[] = [];
-    middlewares.forEach((middleware) => {
+    middlewares.forEach((middleware: any) => {
       if (middleware.url && parentsPath !== "/") {
+        const combinedUrl = `${parentsPath}${middleware.url === "/" ? "" : middleware.url}`
         newMiddlewares.push({
           ...middleware,
-          url: `${parentsPath}${middleware.url === "/" ? "" : middleware.url}`,
+          url: combinedUrl.includes("(.*)") ? combinedUrl : combinedUrl.replace("*", "(.*)"),
           next: middleware.next
             ? this.appendNextPaths(parentsPath, middleware.next)
             : middleware.next,
@@ -56,7 +58,10 @@ export class Router {
       } else {
         if (this.isInstance(arg)) {
           if (temp.url) {
-            temp.next = this.appendNextPaths(temp.url, arg.middlewares);
+            if(temp.url.includes("*")) {
+              throw "If middleware has a next, the parent's middleware can't have a wildcard. : " + temp.url 
+            }
+            temp.next = (this.appendNextPaths(temp.url, arg.middlewares) as MiddlewareProps[]);
             temp.url = this.appendParentsPaths(temp.url);
           } else {
             temp.next = arg.middlewares;
@@ -69,6 +74,36 @@ export class Router {
       if (temp.callBack || temp.next) {
         this.middlewares.push(temp);
         temp = temp.url ? { method: type, url: temp.url } : { method: type };
+      }
+    });
+  }
+
+  private saveErrorMiddlewares(
+    args: any[],
+  ) {
+    let temp: ErrorMiddlewareProps = { };
+    args.forEach((arg) => {
+      if (this.isString(arg)) {
+        temp.url = arg;
+      } else {
+        if (this.isInstance(arg)) {
+          if (temp.url) {
+            if(temp.url.includes("*")) {
+              throw new Error(`If middleware has a next, the parent's middleware can't have a wildcard. ${temp.url}`)
+            }
+            temp.next = (this.appendNextPaths(temp.url, arg.middlewares) as ErrorMiddlewareProps[]);
+            temp.url = this.appendParentsPaths(temp.url);
+          } else {
+            temp.next = arg.middlewares;
+          }
+        } else {
+          temp.callBack = arg as ErrorCallBackType;
+        }
+      }
+
+      if (temp.callBack || temp.next) {
+        this.errorMiddlewares.push(temp);
+        temp = temp.url ? { url: temp.url } : { };
       }
     });
   }
@@ -143,5 +178,17 @@ export class Router {
     ...args: any
   ) {
     this.saveMiddlewares("DELETE", args);
+  }
+
+  public error(app: App | Router): void;
+  public error(callBack: ErrorCallBackType): void;
+  public error(...callBack: ErrorCallBackType[]): void;
+  public error(url: string, callBack: ErrorCallBackType): void;
+  public error(url: string, ...callBack: ErrorCallBackType[]): void;
+  public error(url: string, app: App | Router): void;
+  public error(
+    ...args: any
+  ) {
+    this.saveErrorMiddlewares(args);
   }
 }

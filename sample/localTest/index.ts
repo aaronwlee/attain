@@ -6,6 +6,7 @@ import {
   parser,
   staticServe,
 } from "../../mod.ts";
+import router from "./router.ts";
 
 const app = new App();
 
@@ -19,6 +20,8 @@ app.use((req, res) => {
   console.log("first");
 })
 
+app.use("/say", router);
+
 app.use((req, res) => {
   console.log("second")
 })
@@ -27,16 +30,10 @@ app.get("/", (req, res) => {
   res.send("hello")
 })
 
-app.use((req, res) => {
-  res.status(404).send(`
-  <!doctype html>
-  <html lang="en">
-    <body>
-      <h1>Page not found</h1>
-    </body>
-  </html>
-  `);
-});
+
+app.error((err, req, res) => {
+  console.log("in error handler", err);
+})
 
 app.listen({ port: 3500, debug: true });
 

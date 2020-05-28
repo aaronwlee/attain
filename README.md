@@ -176,8 +176,28 @@ This method use the Oak request, check this out.
 - `put...`
 - `patch...`
 - `delete...`
+- `error(app: App | Router): void;`
+- `error(callBack: ErrorCallBackType): void;`
+- `error(...callBack: ErrorCallBackType[]): void;`
+- `error(url: string, callBack: ErrorCallBackType): void;`
+- `error(url: string, ...callBack: ErrorCallBackType[]): void;`
+- `error(url: string, app: App | Router): void;`
+  <br /> It'll handle the error If thrown from one of the above procedures.
 
-These are middleware methods.
+Example
+```ts
+app.use((req, res) => {
+  throw new Error("Something wrong!")
+})
+
+app.error((error, req, res) => {
+  console.error("I handle the Error!" , error);
+  res.status(500).send("It's critical!");
+})
+
+```
+
+These are middleware methods and it's like express.js.
 
 ### App
  #### Properties
@@ -334,10 +354,6 @@ app.post("/submit", (req, res) => {
   console.log(req.params);
   console.log(req.query);
   res.status(200).send({ data: "has received" });
-});
-
-app.use((req, res) => {
-  res.status(404).send("page not found");
 });
 
 app.listen({ port: 4000 });

@@ -1,7 +1,6 @@
-import { pathToRegExp } from "./path-to-regexp.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { Sha1, lookup } from "./deps.ts";
+import { Sha1, lookup, pathToRegexp } from "./deps.ts";
 import { extname } from "https://deno.land/std/path/mod.ts";
 
 /** Returns the content-type based on the extension of a path. */
@@ -15,7 +14,7 @@ export const checkPathAndParseURLParams = (
   middlewareURL: string,
   currentURL: string,
 ) => {
-  const matchResult = pathToRegExp(middlewareURL).exec(currentURL);
+  const matchResult = pathToRegexp(middlewareURL).exec(currentURL);
   if (matchResult && matchResult.length > 1) {
     const params = middlewareURL.split("/").filter((splited) =>
       splited.includes(":")

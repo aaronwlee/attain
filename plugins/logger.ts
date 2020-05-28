@@ -3,7 +3,7 @@ import {
   green,
   cyan,
   bold,
-} from "https://deno.land/std@0.50.0/fmt/colors.ts";
+} from "../deps.ts";
 
 export const logger = (_: Request, res: Response) => {
   res.pend(

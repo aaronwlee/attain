@@ -29,12 +29,19 @@ export type CallBackType = (
   response: Response,
 ) => Promise<any> | void;
 
+export type ErrorCallBackType = (error: any, request: Request, response: Response) => Promise<any> | void;
+
 export interface MiddlewareProps {
   url?: string;
   callBack?: CallBackType;
   method?: SupportMethodType;
   next?: MiddlewareProps[];
-  require?: boolean;
+}
+
+export interface ErrorMiddlewareProps {
+  url?: string;
+  callBack?: ErrorCallBackType;
+  next?: ErrorMiddlewareProps[];
 }
 
 export interface CurrentCursorProps {
