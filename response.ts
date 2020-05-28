@@ -106,7 +106,7 @@ export class Response {
     return this;
   }
 
-  public removeHeader(name:string) {
+  public removeHeader(name: string) {
     this.response.headers.delete(name);
     return this;
   }
@@ -156,15 +156,11 @@ export class Response {
    * Required await
    */
   public async sendFile(filePath: string): Promise<void> {
-    try {
-      let fileInfo = await Deno.stat(filePath);
-      if (fileInfo.isFile) {
-        this.status(200).send(await fileStream(this, filePath));
-      } else {
-        throw Error(`${filePath} can't find.`);
-      }
-    } catch (error) {
-      console.log(error);
+    let fileInfo = await Deno.stat(filePath);
+    if (fileInfo.isFile) {
+      this.status(200).send(await fileStream(this, filePath));
+    } else {
+      throw new Error(`${filePath} can't find.`);
     }
   }
 
@@ -228,7 +224,7 @@ export class Response {
 
   public async end(): Promise<void> {
     try {
-      if(this.getBody) {
+      if (this.getBody) {
         this.setHeader("Date", new Date().toUTCString());
         const currentETag = this.getHeader("etag");
         const len = this.getHeader("content-length") ||
@@ -242,7 +238,7 @@ export class Response {
         } else {
           this.setHeader("etag", newETag);
         }
-  
+
         this.done.resolve();
         const request = await this.executePending;
         await this.executePendingJobs(request);

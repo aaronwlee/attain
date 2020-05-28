@@ -27,7 +27,7 @@ export class Router {
         const combinedUrl = `${parentsPath}${middleware.url === "/" ? "" : middleware.url}`
         newMiddlewares.push({
           ...middleware,
-          url: combinedUrl.includes("(.*)") ? combinedUrl : combinedUrl.replace("*", "(.*)"),
+          url: combinedUrl.includes("(.*)") ? combinedUrl : combinedUrl.replace(/\*/g, "(.*)"),
           next: middleware.next
             ? this.appendNextPaths(parentsPath, middleware.next)
             : middleware.next,
@@ -58,8 +58,8 @@ export class Router {
       } else {
         if (this.isInstance(arg)) {
           if (temp.url) {
-            if(temp.url.includes("*")) {
-              throw "If middleware has a next, the parent's middleware can't have a wildcard. : " + temp.url 
+            if (temp.url.includes("*")) {
+              throw "If middleware has a next, the parent's middleware can't have a wildcard. : " + temp.url
             }
             temp.next = (this.appendNextPaths(temp.url, arg.middlewares) as MiddlewareProps[]);
             temp.url = this.appendParentsPaths(temp.url);
@@ -67,6 +67,9 @@ export class Router {
             temp.next = arg.middlewares;
           }
         } else {
+          if (temp.url) {
+            temp.url = temp.url.includes("(.*)") ? temp.url : temp.url.replace(/\*/g, "(.*)");
+          }
           temp.callBack = arg as CallBackType;
         }
       }
@@ -81,14 +84,14 @@ export class Router {
   private saveErrorMiddlewares(
     args: any[],
   ) {
-    let temp: ErrorMiddlewareProps = { };
+    let temp: ErrorMiddlewareProps = {};
     args.forEach((arg) => {
       if (this.isString(arg)) {
         temp.url = arg;
       } else {
         if (this.isInstance(arg)) {
           if (temp.url) {
-            if(temp.url.includes("*")) {
+            if (temp.url.includes("*")) {
               throw new Error(`If middleware has a next, the parent's middleware can't have a wildcard. ${temp.url}`)
             }
             temp.next = (this.appendNextPaths(temp.url, arg.middlewares) as ErrorMiddlewareProps[]);
@@ -97,13 +100,16 @@ export class Router {
             temp.next = arg.middlewares;
           }
         } else {
+          if (temp.url) {
+            temp.url = temp.url.includes("(.*)") ? temp.url : temp.url.replace(/\*/g, "(.*)");
+          }
           temp.callBack = arg as ErrorCallBackType;
         }
       }
 
       if (temp.callBack || temp.next) {
         this.errorMiddlewares.push(temp);
-        temp = temp.url ? { url: temp.url } : { };
+        temp = temp.url ? { url: temp.url } : {};
       }
     });
   }
