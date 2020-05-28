@@ -1,4 +1,4 @@
-![alt text](https://github.com/aaronwlee/Attain/blob/master/Attain.png "Oak-GraphQL")
+<img src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
 
 # Attain - [Deno](https://deno.land/) V0.6
 
