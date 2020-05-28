@@ -69,6 +69,7 @@ app.use("/socket", async (req, res) => {
       }
     }
 
+    // make it sure it's end;
     res.end();
   } catch (err) {
     console.error(`failed to accept websocket: ${err}`);

@@ -300,7 +300,7 @@ import { App, logger, parser, security, staticServe } from "https://deno.land/x/
 const app = new App();
 
 // Set Extra Security setting
-app.use(security);
+app.use(security());
 
 // Logging response method status path time
 app.use(logger);
