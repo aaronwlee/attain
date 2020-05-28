@@ -25,8 +25,7 @@ export class Response {
   private serverRequest: ServerRequest;
   private response: AttainResponse;
   private done: Deferred<Error | undefined> = deferred();
-  public request: Request;
-  public executePending: Deferred<Error | undefined> = deferred();
+  public executePending: Deferred<Request> = deferred();
   public pending: Function[];
 
   constructor(_serverRequest: ServerRequest) {
@@ -34,7 +33,6 @@ export class Response {
     this.response = {
       headers: new Headers(),
     };
-    this.request = new Request(this.serverRequest);
     this.pending = [];
 
     this.setHeader("X-Powered-By", `Deno.js, Attain v${version}`);
@@ -60,9 +58,9 @@ export class Response {
     return this.done;
   }
 
-  private async executePendingJobs(): Promise<void> {
+  private async executePendingJobs(request: Request): Promise<void> {
     for await (const p of this.pending) {
-      await p(this.request, this);
+      await p(request, this);
     }
   }
 
@@ -108,6 +106,11 @@ export class Response {
     return this;
   }
 
+  public removeHeader(name:string) {
+    this.response.headers.delete(name);
+    return this;
+  }
+
   public setContentType(type: string) {
     if (this.headers.has("Content-Type")) {
       const contentType = this.headers.get("Content-Type");
@@ -126,7 +129,8 @@ export class Response {
     if (defaultFn) delete obj.default;
     const keys: any = Object.keys(obj);
 
-    const key: any = keys.length > 0 ? this.request.accepts(keys) : false;
+    const tempRequest = new Request(this.serverRequest);
+    const key: any = keys.length > 0 ? tempRequest.accepts(keys) : false;
 
     if (key) {
       this.setHeader("Content-type", normalizeType(key).value);
@@ -153,11 +157,7 @@ export class Response {
    */
   public async sendFile(filePath: string): Promise<void> {
     try {
-      console.log("here i am");
-
       let fileInfo = await Deno.stat(filePath);
-      console.log("here i am2");
-
       if (fileInfo.isFile) {
         this.status(200).send(await fileStream(this, filePath));
       } else {
@@ -243,8 +243,8 @@ export class Response {
       }
 
       this.done.resolve();
-      await this.executePending;
-      await this.executePendingJobs();
+      const request = await this.executePending;
+      await this.executePendingJobs(request);
       await this.serverRequest.respond(this.response);
     } catch (error) {
       console.error(error);

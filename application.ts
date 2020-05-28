@@ -6,6 +6,8 @@ import { Response } from "./response.ts";
 import { checkPathAndParseURLParams, fresh } from "./utils.ts";
 
 export class App extends Router {
+  #isSecure: boolean | undefined;
+
   private handleRequest: any = async (
     request: Request,
     response: Response,
@@ -35,7 +37,7 @@ export class App extends Router {
           }
           if (!continueToken) {
             // cache(request, response, middleware);
-            response.executePending.resolve();
+            response.executePending.resolve(request);
             break;
           }
         }
@@ -57,6 +59,7 @@ export class App extends Router {
       if (!keyFile || !certFile) {
         throw "TLS mode require keyFile and certFile options.";
       }
+      this.#isSecure = true;
     }
 
     const s = secure && keyFile && certFile
@@ -64,7 +67,7 @@ export class App extends Router {
       : serve({ hostname, port });
     for await (const req of s) {
       const response = new Response(req);
-      const request = response.request;
+      const request = new Request(req);
 
       this.handleRequest(request, response, this.middlewares).catch((
         error: any,

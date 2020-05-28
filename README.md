@@ -1,13 +1,15 @@
-# Attain - [Deno](https://deno.land/) V0.5
+# Attain - [Deno](https://deno.land/) V0.6
 
 A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. <br />
 This middleware framework is inspired by [express](https://github.com/expressjs/express)
 
 Download and use
 ```js
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
-// or
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@0.6/mod.ts";
+// or
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+
 ```
 ```
 # deno run --allow-net main.ts
@@ -274,6 +276,17 @@ console.log("http://localhost:3500");
 ## Extra plugins
  - __logger__ : `Logging response "response - method - status - path - time"`
  - __parser__ : `Parsing the request body and save it to request.params`
+ - __security__: `Helping you make secure application by setting various HTTP headers` [Helmet](https://helmetjs.github.io/)
+
+### Security options
+| Options                                               | Default? |
+|-------------------------------------------------------|----------|
+| `xss` (adds some small XSS protections)                 | yes      |
+| `removePoweredBy` (remove the X-Powered-By header)      | yes      |
+| `DNSPrefetchControl` (controls browser DNS prefetching) | yes      |
+| `noSniff` (to keep clients from sniffing the MIME type) | yes      |
+| `frameguard` (prevent clickjacking)                     | yes      |
+
  - __staticServe__ : `It'll serve the static files from a provided path by joining the request path.`
 
  > Out of box
@@ -281,9 +294,12 @@ console.log("http://localhost:3500");
  - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
 
 ```ts
-import { App, logger, parser, staticServe } from "https://deno.land/x/attain/mod.ts";
+import { App, logger, parser, security, staticServe } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
+
+// Set Extra Security setting
+app.use(security);
 
 // Logging response method status path time
 app.use(logger);
