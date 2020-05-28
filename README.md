@@ -4,7 +4,7 @@
   <img width="400" height="250" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
 </p>
 
-#Attain - [Deno](https://deno.land/) V0.6
+<h1 align="center">Attain - [Deno](https://deno.land/) V0.6</h1>
 
 A middleware web framework for Deno's using [http](https://github.com/denoland/deno_std/tree/master/http#http) server. <br />
 This middleware framework is inspired by [express](https://github.com/expressjs/express)
