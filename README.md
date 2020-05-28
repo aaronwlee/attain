@@ -4,7 +4,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
 </p>
 
-<h1 align="center">Attain - v0.6</h1>
+<h1 align="center">Attain - v0.7</h1>
 <p align="center"> 
   A middleware web framework for Deno which is using <a href="https://github.com/denoland/deno_std/tree/master/http#http">http</a> standard library inspired by <a href="https://github.com/expressjs/express">express</a> and <a href="https://github.com/oakserver/oak">Oak</a>
 </p>
@@ -14,7 +14,7 @@
 Download and use
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
-import { App, Router, Request, Response } from "https://deno.land/x/attain@0.6/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@0.7/mod.ts";
 // or
 import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
 
