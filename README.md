@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">Attain - v0.6</h1>
-<p align="center"> for <a href="https://deno.land/">deno</a> </p> <br />
+<p align="center"> for <a href="https://deno.land/">Deno</a> </p>
 
 <p align="center"> 
   A middleware web framework for Deno which is using <a href="https://github.com/denoland/deno_std/tree/master/http#http">http</a> standard library inspired by <a href="https://github.com/expressjs/express">express</a> and <a href="https://github.com/oakserver/oak">Oak</a>
