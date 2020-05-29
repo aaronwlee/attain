@@ -81,15 +81,37 @@ app.use((req, res) => {
   console.log("Second step");
 });
 
-// last step
 app.use((req, res) => {
-  console.log("Last step");
+  // pend a job
+  res.pend((afterReq, afterRes) => {
+    console.log("Fourth step");
+    console.log("Fifth step with error");
+    console.log("You can finalize your procedure right before respond.")
+    console.log("For instance, add a header or caching.")
+  })
+})
+
+// last step
+app.use("/", (req, res) => {
+  console.log("Third step with GET '/'");
+  // this is the end point
   res.status(200).send({status: "Good"});
 });
 
-app.use((req, res) => {
+app.use("/", (req, res) => {
   console.log("Will not executed");
 });
+
+app.get("/error", (req, res) => {
+  console.log("Third step with GET '/error'");
+  throw new Error("I have error!")
+})
+
+app.error((err, req, res) => {
+  console.log("Fourth step with error");
+  console.log("A sequence of error handling.", err)
+  res.status(500).send("Critical error.");
+})
 
 app.listen({ port: 3500 });
 
