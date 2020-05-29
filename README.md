@@ -1,7 +1,7 @@
 
 
 <p align="center">
-  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
+  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
 # Attain - v0.7 - [Website](https://aaronwlee.github.io/Attain/)
@@ -62,7 +62,7 @@ console.log("http://localhost:3500");
 ### Procedure explain
 The middleware process the function step by step based on registered order.  
 
-<img src="https://github.com/aaronwlee/Attain/blob/master/procedure.png" alt="procedure" />
+<img src="https://github.com/aaronwlee/Attain/blob/master/procedure.png?raw=true" alt="procedure" />
 
 
 ```ts
