@@ -120,7 +120,8 @@ console.log("http://localhost:3500");
 
 ## Methods and Properies
 ### Response
- #### Properties
+
+  Properties
 - `executePending: Deferred<Error | undefined>`
  <br /> An event trigger the pended jobs. Automatically triggered by the end()
  <br /> EX) `response.executePending.resolve();`
@@ -128,7 +129,7 @@ console.log("http://localhost:3500");
 - `pending: Function[]`
  <br /> List of pended jobs. To push the job, use the pend() method.
 
- #### Methods
+  Methods
  Getter
 - `getResponse(): AttainResponse`
  <br /> Get current response object, It will contain the body, status and headers.
@@ -199,7 +200,7 @@ console.log("http://localhost:3500");
 This method use the Oak request, check this out.
 
 ### Router
- #### Methods
+  Methods
 
 - `use(app: App | Router): void`
 - `use(callBack: CallBackType): void`
@@ -236,7 +237,7 @@ app.error((error, req, res) => {
 These are middleware methods and it's like express.js.
 
 ### App
- #### Properties
+  Properties
 - `listen(options)`
 
  ```ts
@@ -251,8 +252,8 @@ These are middleware methods and it's like express.js.
 ```
  <br/> Start the Attain server.
 
- #### *App extends Router*
- #### Methods
+  *App extends Router*
+  Methods
 - `This has all router's methods`
 
 
@@ -337,13 +338,14 @@ console.log("http://localhost:3500");
  - __security__: `Helping you make secure application by setting various HTTP headers` [Helmet](https://helmetjs.github.io/)
 
 ### Security options
-| Options                                               | Default? |
-|-------------------------------------------------------|----------|
-| `xss` (adds some small XSS protections)                 | yes      |
-| `removePoweredBy` (remove the X-Powered-By header)      | yes      |
-| `DNSPrefetchControl` (controls browser DNS prefetching) | yes      |
-| `noSniff` (to keep clients from sniffing the MIME type) | yes      |
-| `frameguard` (prevent clickjacking)                     | yes      |
+
+|     Options                                             |   Default?   |
+|---------------------------------------------------------|--------------|
+| `xss` (adds some small XSS protections)                 | yes          |
+| `removePoweredBy` (remove the X-Powered-By header)      | yes          |
+| `DNSPrefetchControl` (controls browser DNS prefetching) | yes          |
+| `noSniff` (to keep clients from sniffing the MIME type) | yes          |
+| `frameguard` (prevent clickjacking)                     | yes          |
 
  - __staticServe__ : `It'll serve the static files from a provided path by joining the request path.`
 
