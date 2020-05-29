@@ -1,7 +1,10 @@
 
-![Image](https://github.com/aaronwlee/Attain/blob/master/Attain.png){ width="390" height="200" style="display: block; margin: 0 auto" }
 
-<h1 align="center">Attain - v0.7</h1>
+<p align="center">
+  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
+</p>
+
+-> # Attain - v0.7 <-
 <p align="center"> 
   A middleware web framework for Deno which is using <a href="https://github.com/denoland/deno_std/tree/master/http#http">http</a> standard library inspired by <a href="https://github.com/expressjs/express">express</a> and <a href="https://github.com/oakserver/oak">Oak</a>
 </p>
