@@ -1,8 +1,5 @@
 
-
-<p align="center">
-  <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png" alt="Attain" />
-</p>
+![Image](https://github.com/aaronwlee/Attain/blob/master/Attain.png){ width="390" height="200" style="display: block; margin: 0 auto" }
 
 <h1 align="center">Attain - v0.7</h1>
 <p align="center"> 
