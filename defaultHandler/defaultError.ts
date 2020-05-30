@@ -1,6 +1,6 @@
 import { ErrorCallBackType } from "../types.ts";
 
-export const defaultError: ErrorCallBackType = (error, req, res) => {
+export const defaultError: ErrorCallBackType = (error: Error, req, res) => {
   res.status(500).send(`<!doctype html>
   <head>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
@@ -21,7 +21,8 @@ export const defaultError: ErrorCallBackType = (error, req, res) => {
   <html lang="en">
     <body>
       <div class="danger">
-        <p><strong>Danger!</strong> ${error}</p>
+        <p><strong>${error.name ? error.name : "Danger"}:</strong> ${error.message ? error.message : error}</p>
+        <p>${error.stack ? error.stack : ""}</p>
       </div>
     </body>
   </html>`);
