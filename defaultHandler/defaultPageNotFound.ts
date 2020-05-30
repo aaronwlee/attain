@@ -8,11 +8,21 @@ export const defaultPageNotFound: CallBackType = (req, res) => {
     * {
       font-family: 'Roboto', sans-serif;
     }
+    .warning {
+      background-color: #ffffcc;
+      border-left: 6px solid #ffeb3b;
+    }
+    div {
+      margin-bottom: 15px;
+      padding: 4px 12px;
+    }
     </style>
   </head>
   <html lang="en">
     <body>
-      <p>Page '${req.url.pathname}' not found</p>
+      <div class="warning">
+        <p><strong>Warning!</strong> Page '${req.url.pathname}' not found</p>
+      </div>
     </body>
   </html>`);
 }

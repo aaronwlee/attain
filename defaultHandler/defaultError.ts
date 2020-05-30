@@ -8,12 +8,21 @@ export const defaultError: ErrorCallBackType = (error, req, res) => {
     * {
       font-family: 'Roboto', sans-serif;
     }
+    .danger {
+      background-color: #ffdddd;
+      border-left: 6px solid #f44336;
+    }
+    div {
+      margin-bottom: 15px;
+      padding: 4px 12px;
+    }
     </style>
   </head>
   <html lang="en">
     <body>
-      <h3 style="color: red">Unhandled Critical Error!</h3>
-      <p>${error}</p>
+      <div class="danger">
+        <p><strong>Danger!</strong> ${error}</p>
+      </div>
     </body>
   </html>`);
 }
