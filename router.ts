@@ -2,8 +2,16 @@ import { MiddlewareProps, CallBackType, SupportMethodType, ErrorCallBackType, Er
 import { App } from "./application.ts";
 
 export class Router {
-  public middlewares: MiddlewareProps[] = [];
-  public errorMiddlewares: ErrorMiddlewareProps[] = [];
+  #middlewares: MiddlewareProps[] = [];
+  #errorMiddlewares: ErrorMiddlewareProps[] = [];
+
+  get middlewares() {
+    return this.#middlewares;
+  }
+
+  get errorMiddlewares() {
+    return this.#errorMiddlewares
+  }
 
   private isString(arg: any): boolean {
     return typeof arg === "string";
