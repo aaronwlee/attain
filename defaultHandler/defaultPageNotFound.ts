@@ -8,9 +8,9 @@ export const defaultPageNotFound: CallBackType = (req, res) => {
     * {
       font-family: 'Roboto', sans-serif;
     }
-    .warning {
-      background-color: #ffffcc;
-      border-left: 6px solid #ffeb3b;
+    .info {
+      background-color: #e7f3fe;
+      border-left: 6px solid #2196F3;
     }
     div {
       margin-bottom: 15px;
@@ -20,8 +20,8 @@ export const defaultPageNotFound: CallBackType = (req, res) => {
   </head>
   <html lang="en">
     <body>
-      <div class="warning">
-        <p><strong>Sorry!</strong>: '${req.url.pathname}' page not found</p>
+      <div class="info">
+        <p><strong>Sorry</strong>: '${req.url.pathname}' page not found</p>
       </div>
     </body>
   </html>`);

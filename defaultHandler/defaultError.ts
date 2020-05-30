@@ -21,7 +21,7 @@ export const defaultError: ErrorCallBackType = (error: Error, req, res) => {
   <html lang="en">
     <body>
       <div class="danger">
-        <p><strong>${error.name ? error.name : "Danger"}!</strong> ${error.message ? error.message : error}</p>
+        <p><strong>${error.name ? error.name : "Danger"}:</strong> ${error.message ? error.message : error}</p>
         <p>${error.stack ? error.stack : ""}</p>
       </div>
     </body>
