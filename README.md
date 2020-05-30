@@ -405,7 +405,7 @@ console.log("Start listening on http://localhost:4000");
 
 
 ## Boilerplate
-[A Deno web boilerplate](https://github.com/burhanahmeed/Denamo)
+[A Deno web boilerplate](https://github.com/burhanahmeed/Denamo) by [burhanahmeed](https://github.com/burhanahmeed)
 
 ---
 
