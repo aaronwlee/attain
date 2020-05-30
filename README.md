@@ -26,6 +26,8 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
 ## Contents
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
+- [How To](#how-to)
+- [Boilerplate](#boilerplate)
 - [Methods and Properies](#methods-and-properies)
   - [Response](#response)
   - [Request](#request)
@@ -33,8 +35,6 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
   - [App](#app)
 - [Nested Routing](#nested-routing)
 - [Extra plugins](#extra-plugins)
-- [How To](#how-to)
-- [Boilerplate](#boilerplate)
 
 ## Getting Start
 
@@ -118,6 +118,14 @@ app.listen({ port: 3500 });
 
 console.log("http://localhost:3500");
 ```
+
+## How To
+[Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
+
+
+## Boilerplate
+[A Deno web boilerplate](https://github.com/burhanahmeed/Denamo) by [burhanahmeed](https://github.com/burhanahmeed)
+
 
 ## Methods and Properies
 ### Response
@@ -399,13 +407,6 @@ app.listen({ port: 4000 });
 console.log("Start listening on http://localhost:4000");
 
 ```
-
-## How To
-[Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
-
-
-## Boilerplate
-[A Deno web boilerplate](https://github.com/burhanahmeed/Denamo) by [burhanahmeed](https://github.com/burhanahmeed)
 
 ---
 
