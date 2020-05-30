@@ -22,92 +22,95 @@ const isHtml = (value: string): boolean => {
 };
 
 export class Response {
-  private serverRequest: ServerRequest;
-  private response: AttainResponse;
-  private done: Deferred<Error | undefined> = deferred();
-  public executePending: Deferred<Request> = deferred();
-  public pending: Function[];
+  #serverRequest: ServerRequest;
+  #response: AttainResponse;
+  #done: Deferred<Error | undefined> = deferred();
+  #pending: Function[];
 
   constructor(_serverRequest: ServerRequest) {
-    this.serverRequest = _serverRequest;
-    this.response = {
+    this.#serverRequest = _serverRequest;
+    this.#response = {
       headers: new Headers(),
     };
-    this.pending = [];
+    this.#pending = [];
 
     this.setHeader("X-Powered-By", `Deno.js, Attain v${version}`);
   }
 
+  get serverRequest(): ServerRequest {
+    return this.#serverRequest;
+  }
+
   get getResponse(): AttainResponse {
-    return this.response;
+    return this.#response;
   }
 
   get headers(): Headers {
-    return this.response.headers;
+    return this.#response.headers;
   }
 
   get getStatus(): number | undefined {
-    return this.response.status;
+    return this.#response.status;
   }
 
   get getBody() {
-    return this.response.body;
+    return this.#response.body;
   }
 
   get readyToSend(): Deferred<Error | undefined> {
-    return this.done;
+    return this.#done;
   }
 
-  private async executePendingJobs(request: Request): Promise<void> {
-    for await (const p of this.pending) {
+  public async executePendingJobs(request: Request): Promise<void> {
+    for await (const p of this.#pending) {
       await p(request, this);
     }
   }
 
   public pend(...fn: CallBackType[]): void {
-    this.pending.push(...fn);
+    this.#pending.push(...fn);
   }
 
   public status(status: number) {
-    this.response.status = status;
+    this.#response.status = status;
     return this;
   }
 
   public body(body: ContentsType) {
     if (generalBody.includes(typeof body)) {
-      this.response.body = encoder.encode(String(body));
+      this.#response.body = encoder.encode(String(body));
       this.setContentType(
         isHtml(String(body))
           ? "text/html; charset=utf-8"
           : "text/plain; charset=utf-8",
       );
     } else if (body instanceof Uint8Array) {
-      this.response.body = body;
+      this.#response.body = body;
     } else if (body && instanceOfReader(body)) {
-      this.response.body = body;
+      this.#response.body = body;
     } else if (body && typeof body === "object") {
-      this.response.body = encoder.encode(JSON.stringify(body));
+      this.#response.body = encoder.encode(JSON.stringify(body));
       this.setContentType("application/json; charset=utf-8");
     }
     return this;
   }
 
   public setHeaders(headers: Headers) {
-    this.response.headers = headers;
+    this.#response.headers = headers;
     return this;
   }
 
   public getHeader(name: string) {
-    return this.response.headers.get(name);
+    return this.#response.headers.get(name);
   }
 
   public setHeader(name: string, value: string) {
-    this.response.headers.set(name, value);
+    this.#response.headers.set(name, value);
     return this;
   }
 
   public removeHeader(name: string) {
-    this.response.headers.delete(name);
+    this.#response.headers.delete(name);
     return this;
   }
 
@@ -129,7 +132,7 @@ export class Response {
     if (defaultFn) delete obj.default;
     const keys: any = Object.keys(obj);
 
-    const tempRequest = new Request(this.serverRequest);
+    const tempRequest = new Request(this.#serverRequest);
     const key: any = keys.length > 0 ? tempRequest.accepts(keys) : false;
 
     if (key) {
@@ -148,7 +151,7 @@ export class Response {
       this.end();
     } catch (error) {
       console.error(error);
-      this.done.reject(Error(error));
+      this.#done.reject(Error(error));
     }
   }
 
@@ -158,7 +161,9 @@ export class Response {
   public async sendFile(filePath: string): Promise<void> {
     let fileInfo = await Deno.stat(filePath);
     if (fileInfo.isFile) {
-      this.status(200).send(await fileStream(this, filePath));
+      const stream = await fileStream(this, filePath);
+      this.status(200).send(stream);
+      Deno.close(stream.rid);
     } else {
       throw new Error(`${filePath} can't find.`);
     }
@@ -201,7 +206,7 @@ export class Response {
   public redirect(url: string | "back") {
     let loc = url;
     if (url === "back") {
-      loc = this.serverRequest.headers.get("Referrer") || "/";
+      loc = this.#serverRequest.headers.get("Referrer") || "/";
     }
     this.setHeader("Location", encodeURI(loc));
 
@@ -224,7 +229,6 @@ export class Response {
 
   public async end(): Promise<void> {
     try {
-      if (this.getBody) {
         this.setHeader("Date", new Date().toUTCString());
         const currentETag = this.getHeader("etag");
         const len = this.getHeader("content-length") ||
@@ -239,20 +243,13 @@ export class Response {
           this.setHeader("etag", newETag);
         }
 
-        this.done.resolve();
-        const request = await this.executePending;
-        await this.executePendingJobs(request);
-        await this.serverRequest.respond(this.response);
-      } else {
-        this.serverRequest.conn.close();
-      }
+        this.#done.resolve();
     } catch (error) {
       if (error instanceof Deno.errors.BadResource) {
         console.log("Connection Lost")
       } else {
         console.error(error);
       }
-      // this.done.reject(Error(error));
     }
   }
 }

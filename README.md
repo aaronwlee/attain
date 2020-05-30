@@ -4,8 +4,8 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v0.7 - [Website](https://aaronwlee.github.io/Attain/)
-A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak)
+# Attain - v0.8 - [Website](https://aaronwlee.github.io/Attain/)
+A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak). Fast and stable with proper memory usage.
 
 Only for [Deno](https://deno.land/)
 
@@ -14,7 +14,7 @@ Only for [Deno](https://deno.land/)
 Download and use
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
-import { App, Router, Request, Response } from "https://deno.land/x/attain@0.7/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@0.8/mod.ts";
 // or
 import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
 
@@ -120,16 +120,7 @@ console.log("http://localhost:3500");
 
 ## Methods and Properies
 ### Response
-
-  Properties
-- `executePending: Deferred<Error | undefined>`
- <br /> An event trigger the pended jobs. Automatically triggered by the end()
- <br /> EX) `response.executePending.resolve();`
-
-- `pending: Function[]`
- <br /> List of pended jobs. To push the job, use the pend() method.
-
-  Methods
+Methods
  Getter
 - `getResponse(): AttainResponse`
  <br /> Get current response object, It will contain the body, status and headers.

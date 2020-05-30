@@ -2,9 +2,6 @@ import { Request, Response } from "../mod.ts";
 
 import {
   posix,
-  extname,
-  dirname,
-  resolve,
 } from "https://deno.land/std/path/mod.ts";
 
 export const staticServe = (

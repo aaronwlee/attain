@@ -14,22 +14,13 @@ const app = new App();
 app.use(logger);
 app.use(parser);
 
-app.use(staticServe("./sample/localTest"));
-
-app.use((req, res) => {
-  console.log("first");
+app.use("/", (req, res) => {
+  res.status(200).send({ text: "hello" });
 })
 
-app.use("/say", router);
-
-app.use((req, res) => {
-  console.log("second")
+app.get("/error", (req, res) => {
+  throw new Error("here");
 })
-
-app.get("/", (req, res) => {
-  res.send("hello")
-})
-
 
 app.error((err, req, res) => {
   console.log("in error handler", err);
