@@ -21,7 +21,7 @@ export const defaultPageNotFound: CallBackType = (req, res) => {
   <html lang="en">
     <body>
       <div class="warning">
-        <p><strong>Warning!</strong> Page '${req.url.pathname}' not found</p>
+        <p><strong>Sorry!</strong>: '${req.url.pathname}' page not found</p>
       </div>
     </body>
   </html>`);
