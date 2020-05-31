@@ -31,6 +31,7 @@ export class Response {
     this.#serverRequest = _serverRequest;
     this.#response = {
       headers: new Headers(),
+      status: 200,
     };
     this.#pending = [];
 
