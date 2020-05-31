@@ -122,6 +122,8 @@ console.log("http://localhost:3500");
 ## How To
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
 
+[Auto Recovery](https://github.com/aaronwlee/Attain/tree/master/howto/autorecovery.md)
+
 
 ## Boilerplate
 [A Deno web boilerplate](https://github.com/burhanahmeed/Denamo) by [burhanahmeed](https://github.com/burhanahmeed)
@@ -398,11 +400,6 @@ app.listen({ port: 4000 });
 console.log("Start listening on http://localhost:4000");
 
 ```
-
-## How To
-[Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
-
-[Auto Recovery](https://github.com/aaronwlee/Attain/tree/master/howto/autorecovery.md)
 
 ---
 
