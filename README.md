@@ -26,6 +26,8 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
 ## Contents
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
+- [How To](#how-to)
+- [Boilerplate](#boilerplate)
 - [Methods and Properies](#methods-and-properies)
   - [Response](#response)
   - [Request](#request)
@@ -33,7 +35,6 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
   - [App](#app)
 - [Nested Routing](#nested-routing)
 - [Extra plugins](#extra-plugins)
-- [How To](#how-to)
 
 ## Getting Start
 
@@ -118,6 +119,14 @@ app.listen({ port: 3500 });
 console.log("http://localhost:3500");
 ```
 
+## How To
+[Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
+
+
+## Boilerplate
+[A Deno web boilerplate](https://github.com/burhanahmeed/Denamo) by [burhanahmeed](https://github.com/burhanahmeed)
+
+
 ## Methods and Properies
 ### Response
 Methods
@@ -163,7 +172,7 @@ Methods
 - `send(contents: ContentsType): Promise<void | this>`
  <br /> Setting the body then executing the end() method.
 
-- `sendFile(filePath: string): Promise<void>`
+- `await sendFile(filePath: string): Promise<void>`
  <br /> Transfers the file at the given path. Sets the Content-Type response HTTP header field based on the filename's extension.
  <br /> <span style="color: red;"> *Required to be await* </span>
  <br /> These response headers might be needed to set for fully functioning
@@ -175,7 +184,7 @@ Methods
 | cacheControl     | Enable or disable setting Cache-Control response header. |
 
 
-- `download(filePath: string, name?: string): Promise<void>`
+- `await download(filePath: string, name?: string): Promise<void>`
  <br /> Transfers the file at the path as an "attachment". Typically, browsers will prompt the user to download and save it as a name if provided.
  <br /> <span style="color: red;"> *Required to be await* </span>
 
@@ -392,6 +401,7 @@ console.log("Start listening on http://localhost:4000");
 
 ## How To
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
+
 [Auto Recovery](https://github.com/aaronwlee/Attain/tree/master/howto/autorecovery.md)
 
 ---
