@@ -102,10 +102,10 @@ export class Router {
             if (temp.url.includes("*")) {
               throw new Error(`If middleware has a next, the parent's middleware can't have a wildcard. ${temp.url}`)
             }
-            temp.next = (this.appendNextPaths(temp.url, arg.middlewares) as ErrorMiddlewareProps[]);
+            temp.next = (this.appendNextPaths(temp.url, arg.errorMiddlewares) as ErrorMiddlewareProps[]);
             temp.url = this.appendParentsPaths(temp.url);
           } else {
-            temp.next = arg.middlewares;
+            temp.next = arg.errorMiddlewares;
           }
         } else {
           if (temp.url) {

@@ -8,24 +8,28 @@ import {
 } from "../../mod.ts";
 import router from "./router.ts";
 
-const app = new App();
+try {
+  const app = new App();
 
 
-app.use(logger);
-app.use(parser);
+  app.use(logger);
+  app.use(parser);
 
-app.use("/", (req, res) => {
-  res.status(200).send({ text: "hello" });
-})
+  app.use("/", (req, res) => {
+    res.status(200).send({ text: "hello" });
+  })
 
-app.get("/error", (req, res) => {
-  throw new Error("here");
-})
+  app.get("/error", (req, res) => {
+    throw new Error("here");
+  })
 
-app.error((err, req, res) => {
-  console.log("in error handler", err);
-})
+  app.error((err, req, res) => {
+    console.log("in error handler", err);
+  })
+  console.log("http://localhost:3500");
 
-app.listen({ port: 3500, debug: true });
-
-console.log("http://localhost:3500");
+  await app.listen({ port: 3500, debug: true, secure: true, keyFile: "sample/localTest/cert/secret.key", certFile: "sample/localTest/cert/secret.crt" });
+  console.log("stoped");
+} catch (error) {
+  console.log("here i error, ", error);
+}

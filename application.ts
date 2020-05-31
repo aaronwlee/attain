@@ -1,15 +1,12 @@
 import { Router } from "./router.ts";
-import { serve, serveTLS, yellow, cyan, green, red, blue, ServerRequest } from "./deps.ts";
+import { serve, serveTLS, yellow, cyan, green, red, blue, ServerRequest, Server } from "./deps.ts";
 import { MiddlewareProps, ListenProps, ErrorMiddlewareProps } from "./types.ts";
 import version from "./version.ts";
 import { defaultError, defaultPageNotFound } from "./defaultHandler/index.ts";
 import Process from "./process.ts";
 
 export class App extends Router {
-  #isSecure: boolean | undefined;
-
   private handleRequest = async (srq: ServerRequest) => {
-
     const process = new Process(srq);
 
     try {
@@ -81,17 +78,24 @@ export class App extends Router {
       if (!keyFile || !certFile) {
         throw "TLS mode require keyFile and certFile options.";
       }
-      this.#isSecure = true;
     }
 
     console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
 
+    if (secure && keyFile && certFile) {
+      const server = serveTLS({ hostname, port, keyFile, certFile })
+      console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
 
-    const s = secure && keyFile && certFile
-      ? serveTLS({ hostname, port, keyFile, certFile })
-      : serve({ hostname, port });
-    for await (const req of s) {
-      this.handleRequest(req);
+      for await (const srq of server) {
+        this.handleRequest(srq);
+      }
+    } else {
+      const server = serve({ hostname, port });
+      console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
+
+      for await (const srq of server) {
+        this.handleRequest(srq);
+      }
     }
   };
 }

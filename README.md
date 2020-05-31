@@ -392,6 +392,7 @@ console.log("Start listening on http://localhost:4000");
 
 ## How To
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
+[Auto Recovery](https://github.com/aaronwlee/Attain/tree/master/howto/autorecovery.md)
 
 ---
 

@@ -3,6 +3,7 @@ export {
   serveTLS,
   ServerRequest,
   Response,
+  Server
 } from "https://deno.land/std/http/server.ts";
 export { STATUS_TEXT } from "https://deno.land/std/http/http_status.ts";
 
