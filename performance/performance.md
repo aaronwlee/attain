@@ -1,5 +1,13 @@
 # Performance
 
+Tested in Windows 10 system with 
+<br />deno 1.0.3 
+<br />v8 8.4.300
+<br />typescript 3.9.2
+
+Powered by Apache JMeter (v5.3)
+Each test performed with 10 threads during the 10 seconds
+
 ## Attain
 
 ### minimal test
