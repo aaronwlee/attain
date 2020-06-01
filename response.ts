@@ -22,10 +22,11 @@ const isHtml = (value: string): boolean => {
 };
 
 export class Response {
-  #serverRequest: ServerRequest;
+  #serverRequest?: ServerRequest;
   #response: AttainResponse;
-  #done: Deferred<Error | undefined> = deferred();
   #pending: Function[];
+  #resources: number[] = [];
+  stop: boolean;
 
   constructor(_serverRequest: ServerRequest) {
     this.#serverRequest = _serverRequest;
@@ -34,11 +35,21 @@ export class Response {
       status: 200,
     };
     this.#pending = [];
-
+    this.stop = false;
     this.setHeader("X-Powered-By", `Deno.js, Attain v${version}`);
   }
 
+  destroy(): void {
+    this.#serverRequest = undefined;
+    for (const rid of this.#resources) {
+      Deno.close(rid);
+    }
+  }
+
   get serverRequest(): ServerRequest {
+    if (!this.#serverRequest) {
+      throw new Error("already responded")
+    }
     return this.#serverRequest;
   }
 
@@ -58,12 +69,11 @@ export class Response {
     return this.#response.body;
   }
 
-  get readyToSend(): Deferred<Error | undefined> {
-    return this.#done;
-  }
-
   public async executePendingJobs(request: Request): Promise<void> {
-    for await (const p of this.#pending) {
+    if (this.#pending.length === 0) {
+      return;
+    }
+    for (const p of this.#pending) {
       await p(request, this);
     }
   }
@@ -133,7 +143,7 @@ export class Response {
     if (defaultFn) delete obj.default;
     const keys: any = Object.keys(obj);
 
-    const tempRequest = new Request(this.#serverRequest);
+    const tempRequest = new Request(this.serverRequest);
     const key: any = keys.length > 0 ? tempRequest.accepts(keys) : false;
 
     if (key) {
@@ -151,8 +161,7 @@ export class Response {
       this.body(contents);
       this.end();
     } catch (error) {
-      console.error(error);
-      this.#done.reject(Error(error));
+      throw error;
     }
   }
 
@@ -163,8 +172,8 @@ export class Response {
     let fileInfo = await Deno.stat(filePath);
     if (fileInfo.isFile) {
       const stream = await fileStream(this, filePath);
-      this.status(200).send(stream);
-      Deno.close(stream.rid);
+      this.#resources.push(stream.rid)
+      this.status(200).body(stream).end();
     } else {
       throw new Error(`${filePath} can't find.`);
     }
@@ -207,7 +216,7 @@ export class Response {
   public redirect(url: string | "back") {
     let loc = url;
     if (url === "back") {
-      loc = this.#serverRequest.headers.get("Referrer") || "/";
+      loc = this.serverRequest.headers.get("Referrer") || "/";
     }
     this.setHeader("Location", encodeURI(loc));
 
@@ -230,21 +239,20 @@ export class Response {
 
   public async end(): Promise<void> {
     try {
-        this.setHeader("Date", new Date().toUTCString());
-        const currentETag = this.getHeader("etag");
-        const len = this.getHeader("content-length") ||
-          (this.getBody as Uint8Array).length.toString();
-        const newETag = etag(
-          (this.getBody as Uint8Array),
-          parseInt(len, 10),
-        );
-        if (currentETag && currentETag === newETag) {
-          this.status(304);
-        } else {
-          this.setHeader("etag", newETag);
-        }
-
-        this.#done.resolve();
+      this.setHeader("Date", new Date().toUTCString());
+      // const currentETag = this.getHeader("etag");
+      // const len = this.getHeader("content-length") ||
+      //   (this.getBody as Uint8Array).length.toString();
+      // const newETag = etag(
+      //   (this.getBody as Uint8Array),
+      //   parseInt(len, 10),
+      // );
+      // if (currentETag && currentETag === newETag) {
+      //   this.status(304);
+      // } else {
+      //   this.setHeader("etag", newETag);
+      // }
+      this.stop = true;
     } catch (error) {
       if (error instanceof Deno.errors.BadResource) {
         console.log("Connection Lost")
@@ -252,5 +260,6 @@ export class Response {
         console.error(error);
       }
     }
+
   }
 }

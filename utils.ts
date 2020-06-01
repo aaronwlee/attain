@@ -1,6 +1,6 @@
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { Sha1, lookup, pathToRegexp } from "./deps.ts";
+import { Sha1, lookup, match } from "./deps.ts";
 import { extname } from "https://deno.land/std/path/mod.ts";
 
 /** Returns the content-type based on the extension of a path. */
@@ -14,21 +14,12 @@ export const checkPathAndParseURLParams = (
   middlewareURL: string,
   currentURL: string,
 ) => {
-  const matchResult = pathToRegexp(middlewareURL).exec(currentURL);
-  if (matchResult && matchResult.length > 1) {
-    const params = middlewareURL.split("/").filter((splited) =>
-      splited.includes(":")
-    );
-    if (params) {
-      params.forEach((param, i) => {
-        if (!req.params) {
-          req.params = {};
-        }
-        req.params[param.substring(1)] = matchResult[i + 1];
-      });
-    }
+  const matcher = match(middlewareURL, { decode: decodeURIComponent });
+  const isMatch: any = matcher(currentURL);
+  if (isMatch.params) {
+    req.params = isMatch.params
   }
-  return matchResult ? true : false;
+  return isMatch;
 };
 
 export const etag = (entity: Uint8Array, len: number) => {

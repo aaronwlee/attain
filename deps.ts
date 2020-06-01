@@ -21,7 +21,8 @@ export {
 } from "https://deno.land/std/hash/sha1.ts";
 
 export {
-  pathToRegexp
+  pathToRegexp,
+  match
 } from "https://raw.githubusercontent.com/pillarjs/path-to-regexp/master/src/index.ts";
 
 export {

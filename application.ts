@@ -6,17 +6,6 @@ import { defaultError, defaultPageNotFound } from "./defaultHandler/index.ts";
 import Process from "./process.ts";
 
 export class App extends Router {
-  private handleRequest = async (srq: ServerRequest) => {
-    const process = new Process(srq);
-
-    try {
-      await process.attainProcedure(this.middlewares);
-    } catch (error) {
-      await process.attainErrorProcedure(error, this.errorMiddlewares);
-    }
-
-    await process.finalize();
-  }
 
   private circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
     for (const current of currentMiddlewares) {
@@ -81,21 +70,11 @@ export class App extends Router {
     }
 
     console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
+    const server = secure && keyFile && certFile ? serveTLS({ hostname, port, keyFile, certFile }) : serve({ hostname, port });
+    console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
 
-    if (secure && keyFile && certFile) {
-      const server = serveTLS({ hostname, port, keyFile, certFile })
-      console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
-
-      for await (const srq of server) {
-        this.handleRequest(srq);
-      }
-    } else {
-      const server = serve({ hostname, port });
-      console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
-
-      for await (const srq of server) {
-        this.handleRequest(srq);
-      }
+    for await (const srq of server) {
+      Process(srq, this.middlewares, this.errorMiddlewares);
     }
   };
 }
