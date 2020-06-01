@@ -59,7 +59,7 @@ app.listen({ port: 3500 });
 
 ### Send file
 
-![alt text](https://github.com/aaronwlee/Attain/blob/master/performance/attain-sendfile.png?raw=true "Attain performance")
+![alt text](https://github.com/aaronwlee/Attain/blob/master/performance/attain-filesend.png?raw=true "Attain performance")
 
 
 ## Express
@@ -208,4 +208,4 @@ await app.listen({ port: 8000 });
 
 ### Send file
 
-![alt text](https://github.com/aaronwlee/Attain/blob/master/performance/oak-sendfile.png?raw=true "Oak performance")
+![alt text](https://github.com/aaronwlee/Attain/blob/master/performance/oak-filesend.png?raw=true "Oak performance")
