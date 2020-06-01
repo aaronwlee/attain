@@ -40,13 +40,13 @@ const attainProcedure: any = async (
         if (!middleware.url) {
           middleware.callBack
             ? await middleware.callBack(req, res)
-            : await attainProcedure(middleware.next);
+            : await attainProcedure(req, res, middleware.next);
         } else if (
           checkPathAndParseURLParams(req, middleware.url, currentUrl)
         ) {
           middleware.callBack
             ? await middleware.callBack(req, res)
-            : await attainProcedure(middleware.next);
+            : await attainProcedure(req, res, middleware.next);
         }
       }
       if (res.stop) {
@@ -74,13 +74,13 @@ const attainErrorProcedure: any = async (
       if (!middleware.url) {
         middleware.callBack
           ? await middleware.callBack(error, req, res)
-          : await attainErrorProcedure(error, middleware.next);
+          : await attainErrorProcedure(error, req, res, middleware.next);
       } else if (
         checkPathAndParseURLParams(req, middleware.url, currentUrl)
       ) {
         middleware.callBack
           ? await middleware.callBack(error, req, res)
-          : await attainErrorProcedure(error, middleware.next);
+          : await attainErrorProcedure(error, req, res, middleware.next);
       }
       if (res.stop) {
         break;
