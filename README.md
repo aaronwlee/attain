@@ -35,6 +35,7 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
   - [App](#app)
 - [Nested Routing](#nested-routing)
 - [Extra plugins](#extra-plugins)
+- [Performance](https://github.com/aaronwlee/Attain/blob/master/performance/performance.md)
 
 ## Getting Start
 
