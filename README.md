@@ -5,6 +5,8 @@
 </p>
 
 # Attain - v0.9 - [Website](https://aaronwlee.github.io/Attain/)
+![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
+![license](https://img.shields.io/github/license/aaronwlee/attain)
 A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak). Fast and stable with proper memory usage.
 
 Only for [Deno](https://deno.land/)
