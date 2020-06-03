@@ -169,5 +169,3 @@ try {
   console.log("error occured", error)
 }
 console.log("done")
-
-Deno.exit(0);
