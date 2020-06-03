@@ -9,9 +9,6 @@ export class App extends Router {
   #serve?: Server
   #serveTLS?: Server
 
-  #process?: any;
-  #processTLS?: any;
-
   #circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
     for (const current of currentMiddlewares) {
       if (current.next) {
@@ -57,27 +54,13 @@ export class App extends Router {
     console.log(red("------- End Debug Error Middlewares -------\n"))
   }
 
-  #start = async () => {
-    for await (const srq of this.#serve!) {
-      Process(srq, this.middlewares, this.errorMiddlewares);
-    }
-  }
-
-  #startTLS = async () => {
-    for await (const srq of this.#serveTLS!) {
-      Process(srq, this.middlewares, this.errorMiddlewares);
-    }
-  }
-
   close = async () => {
     if (this.#serve) {
       this.#serve.close();
-      await this.#process;
     }
 
     if (this.#serveTLS) {
       this.#serveTLS.close();
-      await this.#processTLS
     }
   }
 
@@ -99,13 +82,17 @@ export class App extends Router {
     }
 
     console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
+    let server = null
     if (secure && keyFile && certFile) {
       this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile })
-      this.#processTLS = this.#startTLS();
+      server = this.#serveTLS;
     } else {
       this.#serve = serve({ hostname, port })
-      this.#process = this.#start();
+      server = this.#serve;
     }
     console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}.`);
+    for await (const srq of server) {
+      Process(srq, this.middlewares, this.errorMiddlewares);
+    }
   };
 }
