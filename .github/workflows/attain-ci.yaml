@@ -1,5 +1,5 @@
   
-name: attain-ci
+name: attain ci
 
 on: [push, pull_request]
 
@@ -15,7 +15,7 @@ jobs:
           deno-version: 1.0.3
 
       - name: Test
-      - run: deno test
+        run: deno test
 
       - name: Benchmarks
         run: deno run --allow-net --allow-read .\test\benchmark\main.ts
