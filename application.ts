@@ -8,6 +8,8 @@ import Process from "./process.ts";
 export class App extends Router {
   #serve?: Server
   #serveTLS?: Server
+  #process?: Promise<void>
+  #processTLS?: Promise<void>
 
   #circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
     for (const current of currentMiddlewares) {
@@ -57,10 +59,12 @@ export class App extends Router {
   close = async () => {
     if (this.#serve) {
       this.#serve.close();
+      await this.#process
     }
 
     if (this.#serveTLS) {
       this.#serveTLS.close();
+      await this.#processTLS
     }
   }
 
@@ -85,14 +89,17 @@ export class App extends Router {
     let server = null
     if (secure && keyFile && certFile) {
       this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile })
-      server = this.#serveTLS;
+      this.#processTLS = this.#start(this.#serveTLS);
     } else {
       this.#serve = serve({ hostname, port })
-      server = this.#serve;
+      this.#process = this.#start(this.#serve);
     }
     console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}.`);
+  };
+
+  #start = async (server: Server) => {
     for await (const srq of server) {
       Process(srq, this.middlewares, this.errorMiddlewares);
     }
-  };
+  }
 }

@@ -63,21 +63,21 @@ function createMockServerRequest(
   } as any;
 }
 
-test({
-  name: "request.searchParams",
-  fn() {
-    const request = new Request(
-      createMockServerRequest({ url: "/foo?bar=baz&qat=qux" }),
-    );
-    assertEquals(request.url.pathname, "/foo");
-    assertEquals(request.url.search, "?bar=baz&qat=qux");
-    assertEquals(request.method, "GET");
-    assertEquals(Array.from(request.url.searchParams.entries()), [
-      ["bar", "baz"],
-      ["qat", "qux"],
-    ]);
-  },
-});
+// test({
+//   name: "request.searchParams",
+//   fn() {
+//     const request = new Request(
+//       createMockServerRequest({ url: "/foo?bar=baz&qat=qux" }),
+//     );
+//     assertEquals(request.url.pathname, "/foo");
+//     assertEquals(request.url.search, "?bar=baz&qat=qux");
+//     assertEquals(request.method, "GET");
+//     assertEquals(Array.from(request.url.searchParams.entries()), [
+//       ["bar", "baz"],
+//       ["qat", "qux"],
+//     ]);
+//   },
+// });
 
 test({
   name: "request.url",
