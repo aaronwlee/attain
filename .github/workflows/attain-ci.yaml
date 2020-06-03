@@ -5,18 +5,18 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: attain test
+    name: Attain test
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      - uses: denolib/setup-deno@master
-        with:
-          deno-version: 1.0.3
+      - name: clone repository
+        uses: actions/checkout@v2
+      
+      - name: run benchmark
+        run: |
+          curl -L https://deno.land/x/install/install.sh | sh -s "v1.0.3"
+          export PATH="$HOME/.deno/bin:$PATH"
+          deno test --allow-read
 
-      - name: Benchmarks
+      - name: run tests
         run: deno run --allow-net --allow-read .\test\benchmark\main.ts
-
-      - name: Test
-        run: deno test
 
