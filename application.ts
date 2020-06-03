@@ -6,6 +6,8 @@ import { defaultError, defaultPageNotFound } from "./defaultHandler/index.ts";
 import Process from "./process.ts";
 
 export class App extends Router {
+  #serve?: Server
+  #serveHTTPS?: Server
 
   private circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
     for (const current of currentMiddlewares) {
@@ -52,6 +54,16 @@ export class App extends Router {
     console.log(red("------- End Debug Error Middlewares -------\n"))
   }
 
+  public close = async () => {
+    if(this.#serve) {
+      this.#serve.close();
+    }
+
+    if(this.#serveHTTPS) {
+      this.#serveHTTPS.close();
+    }
+  }
+
   public listen = async (
     { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
       ListenProps,
@@ -70,7 +82,14 @@ export class App extends Router {
     }
 
     console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
-    const server = secure && keyFile && certFile ? serveTLS({ hostname, port, keyFile, certFile }) : serve({ hostname, port });
+    let server: any = null;
+    if (secure && keyFile && certFile) {
+      this.#serveHTTPS = serveTLS({ hostname, port, keyFile, certFile })
+      server = this.#serveHTTPS
+    } else {
+      this.#serve = serve({ hostname, port })
+      server = this.#serve
+    }
     console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
 
     for await (const srq of server) {
