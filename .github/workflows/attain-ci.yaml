@@ -14,11 +14,7 @@ jobs:
           deno-version: 1.0.3
 
       - run: deno --version
-      - run: deno fmt --check
-              
-      - name: run tests
-        run: deno run -A .\test\benchmark\main.ts
-      
+                    
       - name: run test
         run: deno test -A
           
