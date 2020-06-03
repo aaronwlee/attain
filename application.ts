@@ -64,7 +64,7 @@ export class App extends Router {
     }
   }
 
-  listen = (
+  listen = async (
     { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
       ListenProps,
   ) => {
