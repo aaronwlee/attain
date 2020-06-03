@@ -16,3 +16,12 @@ jobs:
           curl -L https://deno.land/x/install/install.sh | sh -s "v1.0.3"
           export PATH="$HOME/.deno/bin:$PATH"
           deno test --allow-read
+
+      - name: release
+        if: startsWith(github.ref, 'refs/tags/v') && github.repository == 'aaronwlee/attain'
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
