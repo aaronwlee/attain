@@ -161,6 +161,7 @@ bench({
   },
 });
 
-runBenchmarks().finally(async () => {
-  app.close();
-});
+await runBenchmarks()
+
+await app.close()
+Deno.exit(0);
