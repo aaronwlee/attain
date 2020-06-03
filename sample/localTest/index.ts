@@ -28,8 +28,7 @@ try {
   })
   console.log("http://localhost:3500");
 
-  await app.listen({ port: 3500, debug: true, secure: true, keyFile: "sample/localTest/cert/secret.key", certFile: "sample/localTest/cert/secret.crt" });
-  console.log("stoped");
+  await app.listen({ port: 3500, debug: true });
 } catch (error) {
   console.log("here i error, ", error);
 }

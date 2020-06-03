@@ -9,10 +9,10 @@ export class App extends Router {
   #serve?: Server
   #serveTLS?: Server
 
-  #mainServe?: any;
-  #mainServeTLS?: any;
+  #process?: any;
+  #processTLS?: any;
 
-  private circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
+  #circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
     for (const current of currentMiddlewares) {
       if (current.next) {
         const currentIndent = step + 1;
@@ -21,7 +21,7 @@ export class App extends Router {
         current.method && console.log("   ".repeat(currentIndent) + `method: ${cyan(current.method)},`)
         current.url && console.log("   ".repeat(currentIndent) + `url: ${green(current.url)},`)
         console.log("   ".repeat(currentIndent) + `next: [`)
-        this.circulateMiddlewares(current.next, nextIndent);
+        this.#circulateMiddlewares(current.next, nextIndent);
         console.log("   ".repeat(currentIndent) + `]`)
         console.log("   ".repeat(step) + "}")
       } else {
@@ -30,7 +30,7 @@ export class App extends Router {
     }
   }
 
-  private circulateErrorMiddlewares = async (currentErrorMiddlewares: ErrorMiddlewareProps[], step: number = 0) => {
+  #circulateErrorMiddlewares = async (currentErrorMiddlewares: ErrorMiddlewareProps[], step: number = 0) => {
     for (const current of currentErrorMiddlewares) {
       if (current.next) {
         const currentIndent = step + 1;
@@ -38,7 +38,7 @@ export class App extends Router {
         console.log("   ".repeat(step) + "{")
         current.url && console.log("   ".repeat(currentIndent) + `url: ${green(current.url)},`)
         console.log("   ".repeat(currentIndent) + `next: [`)
-        this.circulateErrorMiddlewares(current.next, nextIndent);
+        this.#circulateErrorMiddlewares(current.next, nextIndent);
         console.log("   ".repeat(currentIndent) + `]`)
         console.log("   ".repeat(step) + "}")
       } else {
@@ -47,41 +47,41 @@ export class App extends Router {
     }
   }
 
-  private debug = async () => {
+  #debug = async () => {
     console.log(red("------- Debug Middlewares -----------------"))
-    this.circulateMiddlewares(this.middlewares);
+    this.#circulateMiddlewares(this.middlewares);
     console.log(red("------- End Debug Middlewares -------------\n"))
 
     console.log(red("------- Debug Error Middlewares -----------"))
-    this.circulateErrorMiddlewares(this.errorMiddlewares);
+    this.#circulateErrorMiddlewares(this.errorMiddlewares);
     console.log(red("------- End Debug Error Middlewares -------\n"))
   }
 
-  private start = async () => {
-    for await (const srq of this.#mainServe) {
+  #start = async () => {
+    for await (const srq of this.#serve!) {
       Process(srq, this.middlewares, this.errorMiddlewares);
     }
   }
 
-  private startTLS = async () => {
-    for await (const srq of this.#mainServeTLS) {
+  #startTLS = async () => {
+    for await (const srq of this.#serveTLS!) {
       Process(srq, this.middlewares, this.errorMiddlewares);
     }
   }
 
-  public close = async () => {
+  close = async () => {
     if (this.#serve) {
       this.#serve.close();
+      await this.#process;
     }
 
     if (this.#serveTLS) {
       this.#serveTLS.close();
+      await this.#processTLS
     }
-
-    await Promise.all([this.#mainServe, this.#mainServeTLS]);
   }
 
-  public listen = async (
+  listen = (
     { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
       ListenProps,
   ) => {
@@ -89,7 +89,7 @@ export class App extends Router {
     this.error(defaultError);
 
     if (debug) {
-      this.debug();
+      this.#debug();
     }
 
     if (secure) {
@@ -99,16 +99,13 @@ export class App extends Router {
     }
 
     console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
-    let server: any = null;
     if (secure && keyFile && certFile) {
       this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile })
-      this.#mainServeTLS = this.startTLS();
+      this.#processTLS = this.#startTLS();
     } else {
       this.#serve = serve({ hostname, port })
-      this.#mainServe = this.start();
+      this.#process = this.#start();
     }
     console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}.`);
-
-
   };
 }
