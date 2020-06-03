@@ -14,8 +14,9 @@ jobs:
         with:
           deno-version: 1.0.3
 
+      - name: Benchmarks
+        run: deno run --allow-net --allow-read .\test\benchmark\main.ts
+
       - name: Test
         run: deno test
 
-      - name: Benchmarks
-        run: deno run --allow-net --allow-read .\test\benchmark\main.ts

@@ -7,7 +7,10 @@ import Process from "./process.ts";
 
 export class App extends Router {
   #serve?: Server
-  #serveHTTPS?: Server
+  #serveTLS?: Server
+
+  #mainServe?: any;
+  #mainServeTLS?: any;
 
   private circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
     for (const current of currentMiddlewares) {
@@ -54,14 +57,28 @@ export class App extends Router {
     console.log(red("------- End Debug Error Middlewares -------\n"))
   }
 
+  private start = async () => {
+    for await (const srq of this.#mainServe) {
+      Process(srq, this.middlewares, this.errorMiddlewares);
+    }
+  }
+
+  private startTLS = async () => {
+    for await (const srq of this.#mainServeTLS) {
+      Process(srq, this.middlewares, this.errorMiddlewares);
+    }
+  }
+
   public close = async () => {
-    if(this.#serve) {
+    if (this.#serve) {
       this.#serve.close();
     }
 
-    if(this.#serveHTTPS) {
-      this.#serveHTTPS.close();
+    if (this.#serveTLS) {
+      this.#serveTLS.close();
     }
+
+    await Promise.all([this.#mainServe, this.#mainServeTLS]);
   }
 
   public listen = async (
@@ -84,16 +101,14 @@ export class App extends Router {
     console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
     let server: any = null;
     if (secure && keyFile && certFile) {
-      this.#serveHTTPS = serveTLS({ hostname, port, keyFile, certFile })
-      server = this.#serveHTTPS
+      this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile })
+      this.#mainServeTLS = this.startTLS();
     } else {
       this.#serve = serve({ hostname, port })
-      server = this.#serve
+      this.#mainServe = this.start();
     }
-    console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port} and transport: ${server.listener.addr.transport}.`);
+    console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}.`);
 
-    for await (const srq of server) {
-      Process(srq, this.middlewares, this.errorMiddlewares);
-    }
+
   };
 }
