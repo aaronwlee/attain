@@ -16,7 +16,7 @@ jobs:
       - run: deno --version
 
       - name: run benchmark
-        run: deno run -A .\test\benchmark\main.ts
+        run: deno run -A test\benchmark\main.ts
                     
       - name: run test
         run: deno test -A
