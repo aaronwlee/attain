@@ -26,7 +26,7 @@ export class Response {
   #response: AttainResponse;
   #pending: Function[];
   #resources: number[] = [];
-  stop: boolean;
+  #processDone: boolean;
 
   constructor(_serverRequest: ServerRequest) {
     this.#serverRequest = _serverRequest;
@@ -35,8 +35,8 @@ export class Response {
       status: 200,
     };
     this.#pending = [];
-    this.stop = false;
-    this.setHeader("X-Powered-By", `Deno.js, Attain v${version}`);
+    this.#processDone = false;
+    this.setHeader("X-Powered-By", `Deno, Attain v${version}`);
   }
 
   destroy(): void {
@@ -46,6 +46,13 @@ export class Response {
     }
   }
 
+  get processDone(): boolean {
+    return this.#processDone;
+  }
+
+  /**
+   * Return the original ServerRequest class object.
+   */
   get serverRequest(): ServerRequest {
     if (!this.#serverRequest) {
       throw new Error("already responded")
@@ -53,40 +60,70 @@ export class Response {
     return this.#serverRequest;
   }
 
+  /**
+   * Return the current response object which will be used for responding
+   */
   get getResponse(): AttainResponse {
     return this.#response;
   }
 
+  /**
+   * Return the current header class object.
+   */
   get headers(): Headers {
     return this.#response.headers;
   }
 
+  /**
+   * Return the current status number
+   */
   get getStatus(): number | undefined {
     return this.#response.status;
   }
 
+  /**
+   * Return the current body data
+   */
   get getBody() {
     return this.#response.body;
   }
 
+  /**
+   * Execute pend jobs, It's automatically executed after calling the `end()` or `send()`.
+   * @param request - latest Request class object
+   */
   public async executePendingJobs(request: Request): Promise<void> {
     if (this.#pending.length === 0) {
       return;
     }
-    for (const p of this.#pending) {
-      await p(request, this);
-    }
+    const jobs = this.#pending.map(async job => await job(request, this));
+
+    await Promise.all(jobs);
   }
 
+  /**
+   * Pend the jobs which will execute right before responding.
+   * @param fn - An array of callback types
+   * 
+   * pend((afterReq, afterRes) => {...jobs})
+   */
   public pend(...fn: CallBackType[]): void {
     this.#pending.push(...fn);
   }
 
+  /**
+   * Set the status
+   * @param status - number of the http code.
+   */
   public status(status: number) {
     this.#response.status = status;
     return this;
   }
 
+  /**
+   * Set the body without response
+   * @param body - contents
+   */
   public body(body: ContentsType) {
     if (generalBody.includes(typeof body)) {
       this.#response.body = encoder.encode(String(body));
@@ -106,25 +143,50 @@ export class Response {
     return this;
   }
 
+  /**
+   * Replace the current entire header object with new Headers
+   * @param headers - Headers(deno) class object
+   */
   public setHeaders(headers: Headers) {
     this.#response.headers = headers;
     return this;
   }
 
+  /**
+   * Get the header data by a key
+   * @param name - key
+   * 
+   */
   public getHeader(name: string) {
     return this.#response.headers.get(name);
   }
 
+  /**
+   * Set the header data
+   * @param name - key
+   * @param value - header data
+   * 
+   * setHeader("Content-Type", "application/json");
+   */
   public setHeader(name: string, value: string) {
     this.#response.headers.set(name, value);
     return this;
   }
 
+  /**
+   * Remove data from the header by a key.
+   * @param name - header key
+   */
   public removeHeader(name: string) {
     this.#response.headers.delete(name);
     return this;
   }
 
+  /**
+   * Set the Content-Type header
+   * It'll append the data
+   * @param type - content type like "application/json"
+   */
   public setContentType(type: string) {
     if (this.headers.has("Content-Type")) {
       const contentType = this.headers.get("Content-Type");
@@ -156,6 +218,11 @@ export class Response {
     }
   }
 
+  /**
+   * Set the body and respond with response object.
+   * @param contents - the body contents
+   * 
+   */
   public async send(contents: ContentsType): Promise<void> {
     try {
       this.body(contents);
@@ -166,7 +233,10 @@ export class Response {
   }
 
   /**
-   * Required await
+   * Serve the static files
+   * @param filePath - path of the static file
+   * 
+   * Required `await`
    */
   public async sendFile(filePath: string): Promise<void> {
     let fileInfo = await Deno.stat(filePath);
@@ -180,7 +250,11 @@ export class Response {
   }
 
   /**
-   * Required await
+   * Serve the static file and force the browser to download it.
+   * @param filePath - path of the static file
+   * @param name - save as the `name`
+   * 
+   * Required `await`
    */
   public async download(filePath: string, name?: string): Promise<void> {
     try {
@@ -213,6 +287,10 @@ export class Response {
     }
   }
 
+  /**
+   * Redirection
+   * @param url 
+   */
   public redirect(url: string | "back") {
     let loc = url;
     if (url === "back") {
@@ -237,6 +315,9 @@ export class Response {
     this.status(302).end();
   }
 
+  /**
+   * End the current process and respond
+   */
   public async end(): Promise<void> {
     try {
       this.setHeader("Date", new Date().toUTCString());
@@ -252,7 +333,7 @@ export class Response {
       // } else {
       //   this.setHeader("etag", newETag);
       // }
-      this.stop = true;
+      this.#processDone = true;
     } catch (error) {
       if (error instanceof Deno.errors.BadResource) {
         console.log("Connection Lost")

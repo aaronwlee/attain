@@ -149,10 +149,6 @@ Methods
 - `getBody(): Uint8Array`
  <br /> Get current body contents
 
-- `readyToSend(): Deferred<Error | undefined>`
- <br /> An event right before responding. Automatically triggered by the end()
- <br /> EX) `response.readyToSend.then(() => console.log("pended job executed"));`
-
  Functions
 - `pend(...fn: CallBackType[]): void`
  <br /> Pend the jobs. It'll start right before responding.
@@ -256,10 +252,11 @@ These are middleware methods and it's like express.js.
     keyFile?: string;         // if secure is true, it's required
   }
 ```
- <br/> Start the Attain server.
 
-  *App extends Router*
-  Methods
+<br/> Start the Attain server.
+
+*App extends Router*
+Methods
 - `This has all router's methods`
 
 

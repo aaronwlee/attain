@@ -3,7 +3,7 @@ export const test = Deno.test;
 export {
   assert,
   assertEquals,
-  assertStrictEq,
+  assertStrictEquals,
   assertThrows,
   assertThrowsAsync,
 } from "https://deno.land/std/testing/asserts.ts";

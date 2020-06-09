@@ -49,7 +49,7 @@ const attainProcedure: any = async (
             : await attainProcedure(req, res, middleware.next);
         }
       }
-      if (res.stop) {
+      if (res.processDone) {
         break;
       }
     }
@@ -82,7 +82,7 @@ const attainErrorProcedure: any = async (
           ? await middleware.callBack(error, req, res)
           : await attainErrorProcedure(error, req, res, middleware.next);
       }
-      if (res.stop) {
+      if (res.processDone) {
         break;
       }
     }

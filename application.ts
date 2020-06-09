@@ -68,6 +68,9 @@ export class App extends Router {
     }
   }
 
+  /**
+   * Start to listen
+   */
   listen = async (
     { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
       ListenProps,
@@ -94,7 +97,7 @@ export class App extends Router {
       this.#serve = serve({ hostname, port })
       this.#process = this.#start(this.#serve);
     }
-    console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}.`);
+    console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}`);
   };
 
   #start = async (server: Server) => {
