@@ -224,6 +224,18 @@ bench({
   },
 });
 
+bench({
+  name: "OPTIONS: /param/:username/options",
+  runs: 1,
+  async func(b: any): Promise<void> {
+    b.start();
+    const test = await fetch("http://localhost:8080/param/aaron/options", { method: "OPTIONS" });
+    const data = await test.text();
+    assertEquals(data, "aaron")
+    b.stop();
+  },
+});
+
 
 
 await runBenchmarks()

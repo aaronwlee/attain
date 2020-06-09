@@ -34,4 +34,8 @@ paramTest.delete("/:username/delete", async (req, res) => {
   res.send(req.username);
 })
 
+paramTest.options("/:username/options", async (req, res) => {
+  res.send(req.username);
+})
+
 export default paramTest;
