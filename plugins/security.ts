@@ -15,7 +15,7 @@ interface SecurityProps {
 
 export const security = (options?: SecurityProps) => {
   const { xss = true, removePoweredBy = true, DNSPrefetchControl = true, noSniff = true, frameguard = true } = options || {};
-  return (req: Request, res: Response) => {
+  return function security(req: Request, res: Response) {
     if (xss) {
       typeof xss === "boolean" ? xXssProtection()(req, res) : xXssProtection(xss)(req, res);
     }

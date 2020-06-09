@@ -17,7 +17,8 @@ export const checkPathAndParseURLParams = (
   const matcher = match(middlewareURL, { decode: decodeURIComponent });
   const isMatch: any = matcher(currentURL);
   if (isMatch.params) {
-    req.params = { ...req.params, ...isMatch.params }
+    const { 0: extra, ...result } = isMatch.params;
+    req.params = { ...req.params, ...result }
   }
   return isMatch;
 };

@@ -4,7 +4,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v0.9 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v0.9.1 - [Website](https://aaronwlee.github.io/Attain/)
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
 
@@ -17,7 +17,7 @@ Only for [Deno](https://deno.land/)
 Download and use
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
-import { App, Router, Request, Response } from "https://deno.land/x/attain@0.9/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@0.9.1/mod.ts";
 // or
 import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
 
@@ -234,14 +234,50 @@ app.error((error, req, res) => {
 })
 
 ```
+- `param(paramName: string, ...callback: ParamCallBackType[]): void;`
+  <br> Parameter handler [router.param](https://expressjs.com/en/api.html#router.param)
+
+Example
+```ts
+const userController = new Router();
+
+userController.param("username", (req, res, username) => {
+  const user = await User.findOne({ username: username });
+  if (!user) { 
+    throw new Error("user not found"); 
+  }
+  req.profile = user;
+})
+
+userController.get("/:username", (req, res) => {
+  res.status(200).send({profile: req.profile})
+})
+
+userController.post("/:username/follow", (req, res) => {
+  const user = await User.findById(req.payload.id);
+     if(user.following.indexOf(req.profile._id) === -1){
+    user.following.push(req.profile._id);
+  }
+  const profile = await user.save()
+  return res.status(200).send({profile: profile});
+})
+
+export default userController;
+```
 
 These are middleware methods and it's like express.js.
 
 ### App
-  Properties
-- `listen(options)`
 
- ```ts
+*App extends Router*
+Methods
+- `This has all router's methods`
+
+Properties
+- `listen(options)`
+  <br/> Start the Attain server.
+
+```ts
   options: {
     port: number;             // required
     debug?: boolean;          // debug mode
@@ -252,11 +288,6 @@ These are middleware methods and it's like express.js.
   }
 ```
 
-<br/> Start the Attain server.
-
-*App extends Router*
-Methods
-- `This has all router's methods`
 
 
 

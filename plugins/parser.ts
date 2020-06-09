@@ -17,11 +17,13 @@ const setQueryVariable = (req: Request) => {
 };
 
 export const parser = async (req: Request, res: Response) => {
-  const params = await req.body();
-  if (params.type === "json") {
-    req.params = params.value;
-  } else {
-    req.params = { value: params.value };
+  if(req.hasBody) {
+    const params = await req.body();
+    if (params.type === "json") {
+      req.params = params.value;
+    } else {
+      req.params = { value: params.value };
+    }
   }
   setQueryVariable(req);
 };

@@ -1,5 +1,7 @@
-import { MiddlewareProps, CallBackType, SupportMethodType, ErrorCallBackType, ErrorMiddlewareProps } from "./types.ts";
+import { MiddlewareProps, CallBackType, SupportMethodType, ErrorCallBackType, ErrorMiddlewareProps, ParamCallBackType } from "./types.ts";
 import { App } from "./application.ts";
+import { Request } from "./request.ts";
+import { Response } from "./response.ts";
 
 export class Router {
   #middlewares: MiddlewareProps[] = [];
@@ -204,5 +206,34 @@ export class Router {
     ...args: any
   ) {
     this.saveErrorMiddlewares(args);
+  }
+
+  /**
+   * Param handler
+   * @param {string} paramName param name ex) `username`
+   * @param {ParamCallBackType} callBack param callback type
+   */
+  public param(paramName: string, ...callBack: ParamCallBackType[]) {
+    const wrapped = callBack.map(cb => {
+      return function param(req: Request, res: Response) {
+        cb(req, res, req.params[paramName])
+      }
+    })
+
+    wrapped.forEach(cb => {
+      this.middlewares.push({
+        url: `/:${paramName}`,
+        method: "ALL",
+        callBack: cb
+      })
+    })
+
+    wrapped.forEach(cb => {
+      this.middlewares.push({
+        url: `/:${paramName}/(.*)`,
+        method: "ALL",
+        callBack: cb
+      })
+    })
   }
 }
