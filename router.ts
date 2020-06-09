@@ -196,6 +196,18 @@ export class Router {
     this.saveMiddlewares("DELETE", args);
   }
 
+  public options(app: App | Router): void;
+  public options(callBack: CallBackType): void;
+  public options(...callBack: CallBackType[]): void;
+  public options(url: string, callBack: CallBackType): void;
+  public options(url: string, ...callBack: CallBackType[]): void;
+  public options(url: string, app: App | Router): void;
+  public options(
+    ...args: any
+  ) {
+    this.saveMiddlewares("OPTIONS", args);
+  }
+
   public error(app: App | Router): void;
   public error(callBack: ErrorCallBackType): void;
   public error(...callBack: ErrorCallBackType[]): void;

@@ -13,6 +13,7 @@ export interface ListenProps {
 
 export type SupportMethodType =
   | "HEAD"
+  | "OPTIONS"
   | "ALL"
   | "GET"
   | "POST"
