@@ -1,5 +1,7 @@
 import { Router } from "../../mod.ts";
 
+const sleep = (time: number = 1000) => new Promise((resolve) => { setTimeout(() => resolve(), time) })
+
 /**
  * Test purpose
  * 
@@ -7,7 +9,8 @@ import { Router } from "../../mod.ts";
  */
 const paramTest = new Router();
 
-paramTest.param("username", (req, res, username) => {
+paramTest.param("username", async (req, res, username) => {
+  await sleep();
   req.username = username;
 })
 

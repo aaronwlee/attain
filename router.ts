@@ -215,8 +215,8 @@ export class Router {
    */
   public param(paramName: string, ...callBack: ParamCallBackType[]) {
     const wrapped = callBack.map(cb => {
-      return function param(req: Request, res: Response) {
-        cb(req, res, req.params[paramName])
+      return async function param(req: Request, res: Response) {
+        await cb(req, res, req.params[paramName])
       }
     })
 
