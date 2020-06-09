@@ -1,72 +1,125 @@
 import { Router } from "./router.ts";
-import { serve, serveTLS, yellow, cyan, green, red, blue, ServerRequest, Server } from "./deps.ts";
+import {
+  serve,
+  serveTLS,
+  yellow,
+  cyan,
+  green,
+  red,
+  blue,
+  ServerRequest,
+  Server,
+} from "./deps.ts";
 import { MiddlewareProps, ListenProps, ErrorMiddlewareProps } from "./types.ts";
 import version from "./version.ts";
 import { defaultError, defaultPageNotFound } from "./defaultHandler/index.ts";
 import Process from "./process.ts";
 
 export class App extends Router {
-  #serve?: Server
-  #serveTLS?: Server
-  #process?: Promise<void>
-  #processTLS?: Promise<void>
+  #serve?: Server;
+  #serveTLS?: Server;
+  #process?: Promise<void>;
+  #processTLS?: Promise<void>;
 
-  #circulateMiddlewares = async (currentMiddlewares: MiddlewareProps[], step: number = 0) => {
+  #circulateMiddlewares = async (
+    currentMiddlewares: MiddlewareProps[],
+    step: number = 0,
+  ) => {
     for (const current of currentMiddlewares) {
       if (current.next) {
         const currentIndent = step + 1;
         const nextIndent = step + 2;
-        console.log("   ".repeat(step) + "{")
-        current.method && console.log("   ".repeat(currentIndent) + `method: ${cyan(current.method)},`)
-        current.url && console.log("   ".repeat(currentIndent) + `url: ${green(current.url)},`)
-        console.log("   ".repeat(currentIndent) + `next: [`)
+        console.log("   ".repeat(step) + "{");
+        current.method &&
+          console.log(
+            "   ".repeat(currentIndent) + `method: ${cyan(current.method)},`,
+          );
+        current.url &&
+          console.log(
+            "   ".repeat(currentIndent) + `url: ${green(current.url)},`,
+          );
+        console.log("   ".repeat(currentIndent) + `next: [`);
         this.#circulateMiddlewares(current.next, nextIndent);
-        console.log("   ".repeat(currentIndent) + `]`)
-        console.log("   ".repeat(step) + "}")
+        console.log("   ".repeat(currentIndent) + `]`);
+        console.log("   ".repeat(step) + "}");
       } else {
-        console.log(`${"   ".repeat(step)}{ ${current.method && `method: ${cyan(current.method)}`}${current.url ? `, url: ${green(current.url)}` : ""}${current.callBack ? `, callBack: ${yellow(current.callBack.name || "Anonymous")}` : ""} }`);
+        console.log(`${"   ".repeat(step)}{`);
+        current.method &&
+          console.log(
+            `${"   ".repeat(step + 1)}method: ${cyan(current.method)}`,
+          );
+        current.url &&
+          console.log(`${"   ".repeat(step + 1)}url: ${green(current.url)}`);
+        current.paramHandlers &&
+          console.log(
+            `${"   ".repeat(step + 1)}paramHandlers: [${
+              red((current.paramHandlers.map((e) => e.paramName)).join(", "))
+            }]`,
+          );
+        current.callBack &&
+          console.log(
+            `${"   ".repeat(step + 1)}callBack: ${
+              yellow(current.callBack.name || "Anonymous")
+            }`,
+          );
+        console.log(`${"   ".repeat(step)}},`);
       }
     }
-  }
+  };
 
-  #circulateErrorMiddlewares = async (currentErrorMiddlewares: ErrorMiddlewareProps[], step: number = 0) => {
+  #circulateErrorMiddlewares = async (
+    currentErrorMiddlewares: ErrorMiddlewareProps[],
+    step: number = 0,
+  ) => {
     for (const current of currentErrorMiddlewares) {
       if (current.next) {
         const currentIndent = step + 1;
         const nextIndent = step + 2;
-        console.log("   ".repeat(step) + "{")
-        current.url && console.log("   ".repeat(currentIndent) + `url: ${green(current.url)},`)
-        console.log("   ".repeat(currentIndent) + `next: [`)
+        console.log("   ".repeat(step) + "{");
+        current.url &&
+          console.log(
+            "   ".repeat(currentIndent) + `url: ${green(current.url)},`,
+          );
+        console.log("   ".repeat(currentIndent) + `next: [`);
         this.#circulateErrorMiddlewares(current.next, nextIndent);
-        console.log("   ".repeat(currentIndent) + `]`)
-        console.log("   ".repeat(step) + "}")
+        console.log("   ".repeat(currentIndent) + `]`);
+        console.log("   ".repeat(step) + "}");
       } else {
-        console.log(`${"   ".repeat(step)}{ ${current.url ? `url: ${green(current.url)}` : ""}${current.callBack ? `, callBack: ${yellow(current.callBack.name || "Anonymous")}` : ""} }`);
+        console.log(`${"   ".repeat(step)}{`);
+        current.url &&
+          console.log(`${"   ".repeat(step + 1)}url: ${green(current.url)}`);
+        current.callBack &&
+          console.log(
+            `${"   ".repeat(step + 1)}callBack: ${
+              yellow(current.callBack.name || "Anonymous")
+            }`,
+          );
+        console.log(`${"   ".repeat(step)}},`);
       }
     }
-  }
+  };
 
   #debug = async () => {
-    console.log(red("------- Debug Middlewares -----------------"))
+    console.log(red("------- Debug Middlewares -----------------"));
     this.#circulateMiddlewares(this.middlewares);
-    console.log(red("------- End Debug Middlewares -------------\n"))
+    console.log(red("------- End Debug Middlewares -------------\n"));
 
-    console.log(red("------- Debug Error Middlewares -----------"))
+    console.log(red("------- Debug Error Middlewares -----------"));
     this.#circulateErrorMiddlewares(this.errorMiddlewares);
-    console.log(red("------- End Debug Error Middlewares -------\n"))
-  }
+    console.log(red("------- End Debug Error Middlewares -------\n"));
+  };
 
   close = async () => {
     if (this.#serve) {
       this.#serve.close();
-      await this.#process
+      await this.#process;
     }
 
     if (this.#serveTLS) {
       this.#serveTLS.close();
-      await this.#processTLS
+      await this.#processTLS;
     }
-  }
+  };
 
   /**
    * Start to listen
@@ -88,21 +141,27 @@ export class App extends Router {
       }
     }
 
-    console.log(`${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${green("Ready!")}`)
-    let server = null
+    console.log(
+      `${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${
+        green("Ready!")
+      }`,
+    );
+    let server = null;
     if (secure && keyFile && certFile) {
-      this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile })
+      this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile });
       this.#processTLS = this.#start(this.#serveTLS);
     } else {
-      this.#serve = serve({ hostname, port })
+      this.#serve = serve({ hostname, port });
       this.#process = this.#start(this.#serve);
     }
-    console.log(`Server running at ${secure ? "https:" : "http:"}//localhost:${port}`);
+    console.log(
+      `Server running at ${secure ? "https:" : "http:"}//localhost:${port}`,
+    );
   };
 
   #start = async (server: Server) => {
     for await (const srq of server) {
       Process(srq, this.middlewares, this.errorMiddlewares);
     }
-  }
+  };
 }

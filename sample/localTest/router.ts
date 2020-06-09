@@ -33,7 +33,7 @@ api.get("/second", async (req, res) => {
 });
 
 api.get("/test(.*)", async (req, res) => {
-  console.log(req.query, "here test")
+  console.log(req.query, "here test");
   res.status(200).send(`
   <!doctype html>
   <html lang="en">
@@ -42,7 +42,7 @@ api.get("/test(.*)", async (req, res) => {
     </body>
   </html>
   `);
-})
+});
 
 api.use("/second", secondRouter);
 

@@ -11,45 +11,38 @@ const createLinearGraph = (current: number, max: number) => {
   const newRouter = new Router();
   newRouter.get(`/${current}`, (req, res) => {
     res.send(current.toString());
-  })
+  });
   if (current !== max) {
-    newRouter.use(createLinearGraph(current + 1, max))
+    newRouter.use(createLinearGraph(current + 1, max));
   }
   return newRouter;
-}
+};
 
 const createNestedGraph = (current: number, max: number) => {
   const newRouter = new Router();
   newRouter.get(`/${current}`, (req, res) => {
     res.send(current.toString());
-  })
+  });
   if (current !== max) {
-    newRouter.use(`/${current}`, createNestedGraph(current + 1, max))
+    newRouter.use(`/${current}`, createNestedGraph(current + 1, max));
   }
   return newRouter;
-}
+};
 
 app.use(createLinearGraph(0, 100));
 
 app.use("/nested", createNestedGraph(0, 100));
 
-app.listen({ port: 8080 })
-
-
-
+app.listen({ port: 8080 });
 
 /**
  * prepare section
  */
 const temp = [];
-for(let i = 0; i < 101; i++) {
+for (let i = 0; i < 101; i++) {
   temp.push(i);
 }
 const urlForNested = temp.join("/");
-
-
-
-
 
 bench({
   name: "warming up",
@@ -80,13 +73,15 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/nested/${urlForNested}`);
+    const response = await fetch(
+      `http://localhost:8080/nested/${urlForNested}`,
+    );
     const data = await response.text();
     assertEquals(data, "100");
     b.stop();
   },
 });
 
-await runBenchmarks()
+await runBenchmarks();
 
-await app.close()
+await app.close();

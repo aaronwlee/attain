@@ -6,28 +6,30 @@ export interface FrameguardOptions {
 }
 
 function parseActionOption(actionOption: unknown): string {
-  const invalidActionErr = new Error('action must be undefined, "DENY", "ALLOW-FROM", or "SAMEORIGIN".');
+  const invalidActionErr = new Error(
+    'action must be undefined, "DENY", "ALLOW-FROM", or "SAMEORIGIN".',
+  );
 
   if (actionOption === undefined) {
-    actionOption = 'SAMEORIGIN';
+    actionOption = "SAMEORIGIN";
   } else if (actionOption instanceof String) {
     actionOption = actionOption.valueOf();
   }
 
   let result: string;
-  if (typeof actionOption === 'string') {
+  if (typeof actionOption === "string") {
     result = actionOption.toUpperCase();
   } else {
     throw invalidActionErr;
   }
 
-  if (result === 'ALLOWFROM') {
-    result = 'ALLOW-FROM';
-  } else if (result === 'SAME-ORIGIN') {
-    result = 'SAMEORIGIN';
+  if (result === "ALLOWFROM") {
+    result = "ALLOW-FROM";
+  } else if (result === "SAME-ORIGIN") {
+    result = "SAMEORIGIN";
   }
 
-  if (['DENY', 'ALLOW-FROM', 'SAMEORIGIN'].indexOf(result) === -1) {
+  if (["DENY", "ALLOW-FROM", "SAMEORIGIN"].indexOf(result) === -1) {
     throw invalidActionErr;
   }
 
@@ -39,10 +41,10 @@ function parseDomainOption(domainOption: unknown): string {
     domainOption = domainOption.valueOf();
   }
 
-  if (typeof domainOption !== 'string'){
-    throw new Error('ALLOW-FROM action requires a string domain parameter.');
+  if (typeof domainOption !== "string") {
+    throw new Error("ALLOW-FROM action requires a string domain parameter.");
   } else if (!domainOption.length) {
-    throw new Error('domain parameter must not be empty.');
+    throw new Error("domain parameter must not be empty.");
   }
 
   return domainOption;
@@ -53,7 +55,7 @@ function getHeaderValueFromOptions(options?: FrameguardOptions): string {
 
   const action = parseActionOption(options.action);
 
-  if (action === 'ALLOW-FROM') {
+  if (action === "ALLOW-FROM") {
     const domain = parseDomainOption(options.domain);
     return `${action} ${domain}`;
   } else {
@@ -65,6 +67,6 @@ export const frameGuard = (options?: FrameguardOptions) => {
   const headerValue = getHeaderValueFromOptions(options);
 
   return (_req: Request, res: Response) => {
-    res.setHeader('X-Frame-Options', headerValue);
+    res.setHeader("X-Frame-Options", headerValue);
   };
-}
+};

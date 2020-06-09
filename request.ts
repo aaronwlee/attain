@@ -150,7 +150,7 @@ export class Request {
     this.#serverRequest = serverRequest;
     this.#startDate = Date.now();
   }
-  
+
   /** Returns an array of media types, accepted by the requestor, in order of
    * preference.  If there are no encodings supplied by the requestor,
    * `undefined` is returned.

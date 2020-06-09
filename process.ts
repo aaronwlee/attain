@@ -2,9 +2,17 @@ import { ServerRequest } from "./deps.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { checkPathAndParseURLParams } from "./utils.ts";
-import { MiddlewareProps, ErrorMiddlewareProps } from "./types.ts";
+import {
+  MiddlewareProps,
+  ErrorMiddlewareProps,
+  ParamStackProps,
+} from "./types.ts";
 
-const Process = async (srq: ServerRequest, middlewares: MiddlewareProps[], errorMiddlewares: ErrorMiddlewareProps[]) => {
+const Process = async (
+  srq: ServerRequest,
+  middlewares: MiddlewareProps[],
+  errorMiddlewares: ErrorMiddlewareProps[],
+) => {
   const res = new Response(srq);
   const req = new Request(srq);
 
@@ -23,7 +31,7 @@ const Process = async (srq: ServerRequest, middlewares: MiddlewareProps[], error
   }
   res.destroy();
   srq.finalize();
-}
+};
 
 const attainProcedure: any = async (
   req: Request,
@@ -44,6 +52,8 @@ const attainProcedure: any = async (
         } else if (
           checkPathAndParseURLParams(req, middleware.url, currentUrl)
         ) {
+          req.params && middleware.paramHandlers &&
+            await paramHandlersProcedure(middleware.paramHandlers, req, res);
           middleware.callBack
             ? await middleware.callBack(req, res)
             : await attainProcedure(req, res, middleware.next);
@@ -60,6 +70,18 @@ const attainProcedure: any = async (
       throw new Error(error);
     }
   }
+};
+
+const paramHandlersProcedure = async (
+  paramHandlers: ParamStackProps[],
+  req: Request,
+  res: Response,
+) => {
+  const jobs = paramHandlers.filter(({ paramName }) => req.params[paramName])
+    .map(async ({ paramName, callBack }) =>
+      await callBack(req, res, req.params[paramName])
+    );
+  await Promise.all(jobs);
 };
 
 const attainErrorProcedure: any = async (
@@ -87,7 +109,9 @@ const attainErrorProcedure: any = async (
       }
     }
   } catch (error) {
-    console.error("Attain Error: Can't handle it due to Error middlewares can't afford it.")
+    console.error(
+      "Attain Error: Can't handle it due to Error middlewares can't afford it.",
+    );
     console.error(error);
   }
 };

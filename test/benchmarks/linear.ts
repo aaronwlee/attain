@@ -10,10 +10,10 @@ const app = new App();
 for (let i = 0; i < 10001; i++) {
   app.use(`/${i}`, (req, res) => {
     res.send(i.toString());
-  })
+  });
 }
 
-app.listen({ port: 8080 })
+app.listen({ port: 8080 });
 
 bench({
   name: "warming up",
@@ -26,7 +26,6 @@ bench({
     b.stop();
   },
 });
-
 
 bench({
   name: "GET: /0",
@@ -100,6 +99,6 @@ bench({
   },
 });
 
-await runBenchmarks()
+await runBenchmarks();
 
-await app.close()
+await app.close();

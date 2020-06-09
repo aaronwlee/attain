@@ -1,7 +1,7 @@
 const fileName = Deno.args;
 
 // const decoder = new TextDecoder("utf-8");
-console.log("Auto Recovery mode with Attain")
+console.log("Auto Recovery mode with Attain");
 // let memoryInspect = null;
 const exec = async () => {
   const p = Deno.run({
@@ -11,7 +11,7 @@ const exec = async () => {
       "-A",
       "--unstable",
       fileName[0],
-    ]
+    ],
   });
 
   // memoryInspect = setInterval(() => checkMem(p), 2000);
@@ -21,7 +21,7 @@ const exec = async () => {
   p.close();
   // clearInterval(memoryInspect);
   await exec();
-}
+};
 
 // const checkMem = async (p: any) => {
 //   const p2 = Deno.run({
@@ -54,4 +54,3 @@ const exec = async () => {
 // }
 
 // await exec();
-

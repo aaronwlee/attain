@@ -12,27 +12,27 @@ import paramTest from "./param.ts";
  */
 const app = new App();
 
-app.use(staticServe("test/static"))
+app.use(staticServe("test/static"));
 app.use("/router", router);
 app.use("/param", paramTest);
 
 app.get("/", (req, res) => {
   res.send("/");
-})
+});
 
 app.get("/sendFile", async (req, res) => {
-  await res.sendFile("test/static/test.html")
-})
+  await res.sendFile("test/static/test.html");
+});
 
 app.get("/error", (req, res) => {
   throw new Error("test error");
-})
+});
 
 app.error("/error", (error, req, res) => {
   res.send(error.message);
-})
+});
 
-app.listen({ port: 8080 })
+app.listen({ port: 8080 });
 
 /**
  * basic route test
@@ -63,7 +63,7 @@ bench({
     b.start();
     const errorTest = await fetch("http://localhost:8080/error");
     const data = await errorTest.text();
-    assertEquals(data, "test error")
+    assertEquals(data, "test error");
     b.stop();
   },
 });
@@ -78,7 +78,10 @@ bench({
     b.start();
     const staticTest = await fetch("http://localhost:8080/test.html");
     const staticData = await staticTest.text();
-    assertEquals(staticData, `<!doctype html><html lang="en"><body><div class="info"><p><strong>Test</strong> this page is a simple html</p></div></body></html>`)
+    assertEquals(
+      staticData,
+      `<!doctype html><html lang="en"><body><div class="info"><p><strong>Test</strong> this page is a simple html</p></div></body></html>`,
+    );
     b.stop();
   },
 });
@@ -89,7 +92,10 @@ bench({
     b.start();
     const sendFileTest = await fetch("http://localhost:8080/sendFile");
     const sendFileData = await sendFileTest.text();
-    assertEquals(sendFileData, `<!doctype html><html lang="en"><body><div class="info"><p><strong>Test</strong> this page is a simple html</p></div></body></html>`)
+    assertEquals(
+      sendFileData,
+      `<!doctype html><html lang="en"><body><div class="info"><p><strong>Test</strong> this page is a simple html</p></div></body></html>`,
+    );
     b.stop();
   },
 });
@@ -104,11 +110,11 @@ bench({
     b.start();
     const routerPath = await fetch("http://localhost:8080/router");
     const routerData = await routerPath.text();
-    assertEquals(routerData, "/router")
+    assertEquals(routerData, "/router");
 
     const secondPath = await fetch("http://localhost:8080/router/second");
     const secondData = await secondPath.text();
-    assertEquals(secondData, "/router/second")
+    assertEquals(secondData, "/router/second");
     b.stop();
   },
 });
@@ -120,7 +126,11 @@ bench({
     b.start();
     const conns = [];
     for (let i = 0; i < 5; ++i) {
-      conns.push(fetch(`http://localhost:8080/router/second/${i}`).then((resp) => resp.text()));
+      conns.push(
+        fetch(`http://localhost:8080/router/second/${i}`).then((resp) =>
+          resp.text()
+        ),
+      );
     }
     await Promise.all(conns);
     for (const key in conns) {
@@ -138,7 +148,7 @@ bench({
     b.start();
     const test = await fetch("http://localhost:8080/router/search?name=aaron");
     const data = await test.json();
-    assertEquals(data, { name: "aaron" })
+    assertEquals(data, { name: "aaron" });
     b.stop();
   },
 });
@@ -151,12 +161,12 @@ bench({
     const test = await fetch("http://localhost:8080/router/post", {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: "aaron" })
+      body: JSON.stringify({ name: "aaron" }),
     });
     const data = await test.json();
-    assertEquals(data, { name: "aaron" })
+    assertEquals(data, { name: "aaron" });
     b.stop();
   },
 });
@@ -171,7 +181,7 @@ bench({
     b.start();
     const test = await fetch("http://localhost:8080/param/aaron");
     const data = await test.text();
-    assertEquals(data, "aaron")
+    assertEquals(data, "aaron");
     b.stop();
   },
 });
@@ -181,9 +191,12 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const test = await fetch("http://localhost:8080/param/aaron/post", { method: "POST" });
+    const test = await fetch(
+      "http://localhost:8080/param/aaron/post",
+      { method: "POST" },
+    );
     const data = await test.text();
-    assertEquals(data, "aaron")
+    assertEquals(data, "aaron");
     b.stop();
   },
 });
@@ -193,9 +206,12 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const test = await fetch("http://localhost:8080/param/aaron/patch", { method: "PATCH" });
+    const test = await fetch(
+      "http://localhost:8080/param/aaron/patch",
+      { method: "PATCH" },
+    );
     const data = await test.text();
-    assertEquals(data, "aaron")
+    assertEquals(data, "aaron");
     b.stop();
   },
 });
@@ -205,9 +221,12 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const test = await fetch("http://localhost:8080/param/aaron/put", { method: "PUT" });
+    const test = await fetch(
+      "http://localhost:8080/param/aaron/put",
+      { method: "PUT" },
+    );
     const data = await test.text();
-    assertEquals(data, "aaron")
+    assertEquals(data, "aaron");
     b.stop();
   },
 });
@@ -217,9 +236,12 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const test = await fetch("http://localhost:8080/param/aaron/delete", { method: "DELETE" });
+    const test = await fetch(
+      "http://localhost:8080/param/aaron/delete",
+      { method: "DELETE" },
+    );
     const data = await test.text();
-    assertEquals(data, "aaron")
+    assertEquals(data, "aaron");
     b.stop();
   },
 });
@@ -229,15 +251,16 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const test = await fetch("http://localhost:8080/param/aaron/options", { method: "OPTIONS" });
+    const test = await fetch(
+      "http://localhost:8080/param/aaron/options",
+      { method: "OPTIONS" },
+    );
     const data = await test.text();
-    assertEquals(data, "aaron")
+    assertEquals(data, "aaron");
     b.stop();
   },
 });
 
+await runBenchmarks();
 
-
-await runBenchmarks()
-
-await app.close()
+await app.close();

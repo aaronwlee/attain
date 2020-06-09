@@ -55,7 +55,7 @@ export class Response {
    */
   get serverRequest(): ServerRequest {
     if (!this.#serverRequest) {
-      throw new Error("already responded")
+      throw new Error("already responded");
     }
     return this.#serverRequest;
   }
@@ -96,7 +96,7 @@ export class Response {
     if (this.#pending.length === 0) {
       return;
     }
-    const jobs = this.#pending.map(async job => await job(request, this));
+    const jobs = this.#pending.map(async (job) => await job(request, this));
 
     await Promise.all(jobs);
   }
@@ -242,7 +242,7 @@ export class Response {
     let fileInfo = await Deno.stat(filePath);
     if (fileInfo.isFile) {
       const stream = await fileStream(this, filePath);
-      this.#resources.push(stream.rid)
+      this.#resources.push(stream.rid);
       this.status(200).body(stream).end();
     } else {
       throw new Error(`${filePath} can't find.`);
@@ -336,11 +336,10 @@ export class Response {
       this.#processDone = true;
     } catch (error) {
       if (error instanceof Deno.errors.BadResource) {
-        console.log("Connection Lost")
+        console.log("Connection Lost");
       } else {
         console.error(error);
       }
     }
-
   }
 }

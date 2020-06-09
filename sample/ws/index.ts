@@ -1,7 +1,7 @@
 import {
   App,
   logger,
-  security
+  security,
 } from "../../mod.ts";
 import {
   acceptWebSocket,
@@ -16,14 +16,14 @@ app.use(security());
 
 app.use((req, res) => {
   console.log("first start");
-})
+});
 
 app.get("/hello", async (req, res) => {
   await res.status(200).send("hello");
 });
 
 app.use("/socket", async (req, res) => {
-  console.log(req.method)
+  console.log(req.method);
   const { conn, r: bufReader, w: bufWriter, headers } = req.serverRequest;
 
   try {
@@ -69,8 +69,7 @@ app.use("/socket", async (req, res) => {
     console.error(`failed to accept websocket: ${err}`);
     await res.status(400).send("error");
   }
-})
-
+});
 
 console.log("Server at http://localhost:8080");
 await app.listen({ port: 8080 });

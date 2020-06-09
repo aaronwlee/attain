@@ -25,4 +25,4 @@ export const defaultPageNotFound: CallBackType = (req, res) => {
       </div>
     </body>
   </html>`);
-}
+};

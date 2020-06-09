@@ -3,7 +3,7 @@ export {
   serveTLS,
   ServerRequest,
   Response,
-  Server
+  Server,
 } from "https://deno.land/std/http/server.ts";
 export { STATUS_TEXT } from "https://deno.land/std/http/http_status.ts";
 
@@ -22,7 +22,7 @@ export {
 
 export {
   pathToRegexp,
-  match
+  match,
 } from "https://raw.githubusercontent.com/pillarjs/path-to-regexp/master/src/index.ts";
 
 export {
@@ -31,5 +31,5 @@ export {
   green,
   cyan,
   bold,
-  blue
+  blue,
 } from "https://deno.land/std@0.50.0/fmt/colors.ts";

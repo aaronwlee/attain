@@ -21,11 +21,11 @@ api.get("/test1", async (req, res) => {
 // this will not work
 api.get("/error", async (req, res) => {
   console.log("here '/error'");
-  throw new Error("Here i made a error")
+  throw new Error("Here i made a error");
 });
 
 api.get("/test3*", async (req, res) => {
-  console.log(req.query, "here test3")
+  console.log(req.query, "here test3");
   res.status(200).send(`
   <!doctype html>
   <html lang="en">
@@ -34,6 +34,6 @@ api.get("/test3*", async (req, res) => {
     </body>
   </html>
   `);
-})
+});
 
 export default api;

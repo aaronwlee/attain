@@ -36,13 +36,23 @@ export type ParamCallBackType = (
   param: any,
 ) => Promise<any> | void;
 
-export type ErrorCallBackType = (error: any, request: Request, response: Response) => Promise<any> | void;
+export type ErrorCallBackType = (
+  error: any,
+  request: Request,
+  response: Response,
+) => Promise<any> | void;
 
 export interface MiddlewareProps {
   url?: string;
+  paramHandlers?: ParamStackProps[];
   callBack?: CallBackType;
   method?: SupportMethodType;
   next?: MiddlewareProps[];
+}
+
+export interface ParamStackProps {
+  paramName: string;
+  callBack: ParamCallBackType;
 }
 
 export interface ErrorMiddlewareProps {

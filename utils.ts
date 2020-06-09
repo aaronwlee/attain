@@ -18,7 +18,7 @@ export const checkPathAndParseURLParams = (
   const isMatch: any = matcher(currentURL);
   if (isMatch.params) {
     const { 0: extra, ...result } = isMatch.params;
-    req.params = { ...req.params, ...result }
+    req.params = { ...req.params, ...result };
   }
   return isMatch;
 };

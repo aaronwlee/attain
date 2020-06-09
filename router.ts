@@ -1,4 +1,12 @@
-import { MiddlewareProps, CallBackType, SupportMethodType, ErrorCallBackType, ErrorMiddlewareProps, ParamCallBackType } from "./types.ts";
+import {
+  MiddlewareProps,
+  CallBackType,
+  SupportMethodType,
+  ErrorCallBackType,
+  ErrorMiddlewareProps,
+  ParamCallBackType,
+  ParamStackProps,
+} from "./types.ts";
 import { App } from "./application.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
@@ -6,13 +14,14 @@ import { Response } from "./response.ts";
 export class Router {
   #middlewares: MiddlewareProps[] = [];
   #errorMiddlewares: ErrorMiddlewareProps[] = [];
+  #paramHandlerStacks: ParamStackProps[] = [];
 
   get middlewares() {
     return this.#middlewares;
   }
 
   get errorMiddlewares() {
-    return this.#errorMiddlewares
+    return this.#errorMiddlewares;
   }
 
   private isString(arg: any): boolean {
@@ -34,10 +43,14 @@ export class Router {
     const newMiddlewares: MiddlewareProps[] = [];
     middlewares.forEach((middleware: any) => {
       if (middleware.url && parentsPath !== "/") {
-        const combinedUrl = `${parentsPath}${middleware.url === "/" ? "" : middleware.url}`
+        const combinedUrl = `${parentsPath}${
+          middleware.url === "/" ? "" : middleware.url
+        }`;
         newMiddlewares.push({
           ...middleware,
-          url: combinedUrl.includes("(.*)") ? combinedUrl : combinedUrl.replace(/\*/g, "(.*)"),
+          url: combinedUrl.includes("(.*)")
+            ? combinedUrl
+            : combinedUrl.replace(/\*/g, "(.*)"),
           next: middleware.next
             ? this.appendNextPaths(parentsPath, middleware.next)
             : middleware.next,
@@ -69,16 +82,26 @@ export class Router {
         if (this.isInstance(arg)) {
           if (temp.url) {
             if (temp.url.includes("*")) {
-              throw "If middleware has a next, the parent's middleware can't have a wildcard. : " + temp.url
+              throw "If middleware has a next, the parent's middleware can't have a wildcard. : " +
+                temp.url;
             }
-            temp.next = (this.appendNextPaths(temp.url, arg.middlewares) as MiddlewareProps[]);
+            temp.next =
+              (this.appendNextPaths(
+                temp.url,
+                arg.middlewares,
+              ) as MiddlewareProps[]);
             temp.url = this.appendParentsPaths(temp.url);
           } else {
             temp.next = arg.middlewares;
           }
         } else {
           if (temp.url) {
-            temp.url = temp.url.includes("(.*)") ? temp.url : temp.url.replace(/\*/g, "(.*)");
+            temp.url = temp.url.includes("(.*)")
+              ? temp.url
+              : temp.url.replace(/\*/g, "(.*)");
+          }
+          if (this.#paramHandlerStacks.length !== 0) {
+            temp.paramHandlers = this.#paramHandlerStacks;
           }
           temp.callBack = arg as CallBackType;
         }
@@ -88,6 +111,15 @@ export class Router {
         this.middlewares.push(temp);
         temp = temp.url ? { method: type, url: temp.url } : { method: type };
       }
+    });
+  }
+
+  private saveParamStacks(
+    paramName: string,
+    args: ParamCallBackType[],
+  ) {
+    args.forEach((arg) => {
+      this.#paramHandlerStacks.push({ paramName, callBack: arg });
     });
   }
 
@@ -102,16 +134,24 @@ export class Router {
         if (this.isInstance(arg)) {
           if (temp.url) {
             if (temp.url.includes("*")) {
-              throw new Error(`If middleware has a next, the parent's middleware can't have a wildcard. ${temp.url}`)
+              throw new Error(
+                `If middleware has a next, the parent's middleware can't have a wildcard. ${temp.url}`,
+              );
             }
-            temp.next = (this.appendNextPaths(temp.url, arg.errorMiddlewares) as ErrorMiddlewareProps[]);
+            temp.next =
+              (this.appendNextPaths(
+                temp.url,
+                arg.errorMiddlewares,
+              ) as ErrorMiddlewareProps[]);
             temp.url = this.appendParentsPaths(temp.url);
           } else {
             temp.next = arg.errorMiddlewares;
           }
         } else {
           if (temp.url) {
-            temp.url = temp.url.includes("(.*)") ? temp.url : temp.url.replace(/\*/g, "(.*)");
+            temp.url = temp.url.includes("(.*)")
+              ? temp.url
+              : temp.url.replace(/\*/g, "(.*)");
           }
           temp.callBack = arg as ErrorCallBackType;
         }
@@ -226,26 +266,6 @@ export class Router {
    * @param {ParamCallBackType} callBack param callback type
    */
   public param(paramName: string, ...callBack: ParamCallBackType[]) {
-    const wrapped = callBack.map(cb => {
-      return async function param(req: Request, res: Response) {
-        await cb(req, res, req.params[paramName])
-      }
-    })
-
-    wrapped.forEach(cb => {
-      this.middlewares.push({
-        url: `/:${paramName}`,
-        method: "ALL",
-        callBack: cb
-      })
-    })
-
-    wrapped.forEach(cb => {
-      this.middlewares.push({
-        url: `/:${paramName}/(.*)`,
-        method: "ALL",
-        callBack: cb
-      })
-    })
+    this.saveParamStacks(paramName, callBack);
   }
 }

@@ -17,7 +17,7 @@ const setQueryVariable = (req: Request) => {
 };
 
 export const parser = async (req: Request, res: Response) => {
-  if(req.hasBody) {
+  if (req.hasBody) {
     const params = await req.body();
     if (params.type === "json") {
       req.params = params.value;
