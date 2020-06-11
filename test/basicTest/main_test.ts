@@ -291,6 +291,19 @@ bench({
   },
 });
 
+bench({
+  name: "GET: /param/:username/:password error",
+  runs: 1,
+  async func(b: any): Promise<void> {
+    b.start()
+    const test = await fetch("http://localhost:8080/param/aaron/555")
+    const data = await test.text();
+    assertEquals(test.status, 404);
+    assertEquals(data, "password is not matched");
+    b.stop()
+  },
+});
+
 await runBenchmarks();
 
 await app.close();

@@ -19,6 +19,9 @@ paramTest.param("username", async (req, res, username) => {
 
 paramTest.param("password", async (req, res, password) => {
   await sleep(500);
+  if(password !== "123") {
+    return res.status(404).send("password is not matched");
+  }
   req.password = password;
 });
 

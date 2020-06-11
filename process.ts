@@ -81,10 +81,12 @@ const paramHandlersProcedure = async (
   req: Request,
   res: Response,
 ) => {
-  const jobs = paramHandlers.map(async ({ paramName, callBack }) =>
-    await callBack(req, res, req.params[paramName])
-  );
-  await Promise.all(jobs);
+  for await (const paramHandler of paramHandlers) {
+    await paramHandler.callBack(req, res, req.params[paramHandler.paramName])
+    if(res.processDone) {
+      break;
+    }
+  }
 };
 
 const attainErrorProcedure: any = async (
