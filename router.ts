@@ -8,8 +8,7 @@ import {
   ParamStackProps,
 } from "./types.ts";
 import { App } from "./application.ts";
-import { Request } from "./request.ts";
-import { Response } from "./response.ts";
+import { isEmpty } from "./deps.ts";
 
 export class Router {
   #middlewares: MiddlewareProps[] = [];
@@ -45,7 +44,7 @@ export class Router {
       if (middleware.url && parentsPath !== "/") {
         const combinedUrl = `${parentsPath}${
           middleware.url === "/" ? "" : middleware.url
-        }`;
+          }`;
         newMiddlewares.push({
           ...middleware,
           url: combinedUrl.includes("(.*)")
@@ -83,7 +82,7 @@ export class Router {
           if (temp.url) {
             if (temp.url.includes("*")) {
               throw "If middleware has a next, the parent's middleware can't have a wildcard. : " +
-                temp.url;
+              temp.url;
             }
             temp.next =
               (this.appendNextPaths(
@@ -99,9 +98,12 @@ export class Router {
             temp.url = temp.url.includes("(.*)")
               ? temp.url
               : temp.url.replace(/\*/g, "(.*)");
-          }
-          if (this.#paramHandlerStacks.length !== 0) {
-            temp.paramHandlers = this.#paramHandlerStacks;
+
+            const matchedParamHandler = this.#paramHandlerStacks.filter(paramHandler => temp.url?.includes(`:${paramHandler.paramName}`));
+
+            if (!isEmpty(matchedParamHandler)) {
+              temp.paramHandlers = matchedParamHandler;
+            }
           }
           temp.callBack = arg as CallBackType;
         }

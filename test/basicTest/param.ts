@@ -1,6 +1,6 @@
-import { Router } from "../../mod.ts";
+import { Router, parser } from "../../mod.ts";
 
-const sleep = (time: number = 1000) =>
+const sleep = (time: number = 100) =>
   new Promise((resolve) => {
     setTimeout(() => resolve(), time);
   });
@@ -17,8 +17,21 @@ paramTest.param("username", async (req, res, username) => {
   req.username = username;
 });
 
+paramTest.param("password", async (req, res, password) => {
+  await sleep(500);
+  req.password = password;
+});
+
 paramTest.get("/:username", (req, res) => {
   res.send(req.username);
+});
+
+paramTest.get("/:username/:password", (req, res) => {
+  res.send({ name: req.username, password: req.password });
+});
+
+paramTest.post("/:username/password", parser, (req, res) => {
+  res.send({ name: req.username, password: req.params.password });
 });
 
 paramTest.post("/:username/post", async (req, res) => {
@@ -40,5 +53,7 @@ paramTest.delete("/:username/delete", async (req, res) => {
 paramTest.options("/:username/options", async (req, res) => {
   res.send(req.username);
 });
+
+
 
 export default paramTest;

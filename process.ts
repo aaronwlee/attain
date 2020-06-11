@@ -52,8 +52,12 @@ const attainProcedure: any = async (
         } else if (
           checkPathAndParseURLParams(req, middleware.url, currentUrl)
         ) {
-          req.params && middleware.paramHandlers &&
+          if (middleware.paramHandlers && req.params) {
             await paramHandlersProcedure(middleware.paramHandlers, req, res);
+            if (res.processDone) {
+              break;
+            }
+          }
           middleware.callBack
             ? await middleware.callBack(req, res)
             : await attainProcedure(req, res, middleware.next);
@@ -77,10 +81,9 @@ const paramHandlersProcedure = async (
   req: Request,
   res: Response,
 ) => {
-  const jobs = paramHandlers.filter(({ paramName }) => req.params[paramName])
-    .map(async ({ paramName, callBack }) =>
-      await callBack(req, res, req.params[paramName])
-    );
+  const jobs = paramHandlers.map(async ({ paramName, callBack }) =>
+    await callBack(req, res, req.params[paramName])
+  );
   await Promise.all(jobs);
 };
 

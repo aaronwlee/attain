@@ -386,6 +386,7 @@ console.log("http://localhost:3500");
  - [__Attain-GraphQL__](https://deno.land/x/attain_graphql#attain-graphql) : `GraphQL middleware`
  - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
  - [__session__](https://deno.land/x/session): `cookie session`
+ - [__cors__](https://deno.land/x/cors/#examples): `CORS`
 
 ```ts
 import { App, logger, parser, security, staticServe } from "https://deno.land/x/attain/mod.ts";

@@ -261,6 +261,36 @@ bench({
   },
 });
 
+bench({
+  name: "POST: /param/:username/password",
+  runs: 1,
+  async func(b: any): Promise<void> {
+    b.start()
+    const test = await fetch("http://localhost:8080/param/aaron/password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password: "123" }),
+    });
+    const data = await test.json();
+    assertEquals(data, { name: "aaron", password: "123" });
+    b.stop()
+  },
+});
+
+bench({
+  name: "GET: /param/:username/:password",
+  runs: 1,
+  async func(b: any): Promise<void> {
+    b.start()
+    const test = await fetch("http://localhost:8080/param/aaron/123")
+    const data = await test.json();
+    assertEquals(data, { name: "aaron", password: "123" });
+    b.stop()
+  },
+});
+
 await runBenchmarks();
 
 await app.close();
