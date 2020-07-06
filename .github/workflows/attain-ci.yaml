@@ -16,7 +16,7 @@ jobs:
       - run: deno --version
                     
       - name: run test
-        run: deno test -A
+        run: deno test -A --unstable
           
 
 
