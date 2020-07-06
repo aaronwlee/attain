@@ -48,7 +48,7 @@ export function flagsParser(args: string[]) {
     Deno.exit(0);
   }
 
-  if (jobOption === "init" && !pathOption) {
+  if (jobOption === "init" && pathOption === undefined) {
     console.error("project name is required")
   }
 
