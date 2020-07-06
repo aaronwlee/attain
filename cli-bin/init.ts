@@ -22,10 +22,10 @@ export async function Initializer(projectPath: string) {
   console.log("Successfully initialized!")
 }
 
-async function projectInit(projectPath:string, list: any, prev?: string) {
+async function projectInit(projectPath: string, list: any, prev?: string) {
   const downloadUrl = "https://raw.githubusercontent.com/aaronwlee/Attain-React-Example/master";
   const currentPath = Deno.cwd() + "/" + projectPath;
-  
+
   for (const key in list) {
     if (Array.isArray(list[key])) {
       for (const path of list[key]) {
@@ -36,10 +36,15 @@ async function projectInit(projectPath:string, list: any, prev?: string) {
         ensureDir(currentPath + "/" + dir);
 
         console.log(url);
-        await download(url, {
-          file,
-          dir: currentPath + "/" + dir
-        })
+        try {
+          await download(url, {
+            file,
+            dir: currentPath + "/" + dir
+          })
+        } catch (e) {
+          console.error("download error", e)
+        }
+
       }
     } else {
       projectInit(projectPath, list[key], `/${key}`)
