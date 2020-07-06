@@ -2,18 +2,20 @@ import { Router } from "./router.ts";
 import {
   serve,
   serveTLS,
-  yellow,
   cyan,
   green,
   red,
   blue,
-  ServerRequest,
   Server,
 } from "./deps.ts";
-import { MiddlewareProps, ListenProps, ErrorMiddlewareProps } from "./types.ts";
+import { ListenProps } from "./types.ts";
 import version from "./version.ts";
 import { defaultError, defaultPageNotFound } from "./defaultHandler/index.ts";
 import Process from "./process.ts";
+import { circulateMiddlewares, circulateErrorMiddlewares } from "./debug.ts";
+import { staticServe } from "./plugins/staticServe.ts";
+import { getEnvFlags } from "./utils.ts";
+
 
 export class App extends Router {
   #serve?: Server;
@@ -21,93 +23,44 @@ export class App extends Router {
   #process?: Promise<void>;
   #processTLS?: Promise<void>;
 
-  #circulateMiddlewares = async (
-    currentMiddlewares: MiddlewareProps[],
-    step: number = 0,
-  ) => {
-    for (const current of currentMiddlewares) {
-      if (current.next) {
-        const currentIndent = step + 1;
-        const nextIndent = step + 2;
-        console.log("   ".repeat(step) + "{");
-        current.method &&
-          console.log(
-            "   ".repeat(currentIndent) + `method: ${cyan(current.method)},`,
-          );
-        current.url &&
-          console.log(
-            "   ".repeat(currentIndent) + `url: ${green(current.url)},`,
-          );
-        console.log("   ".repeat(currentIndent) + `next: [`);
-        this.#circulateMiddlewares(current.next, nextIndent);
-        console.log("   ".repeat(currentIndent) + `]`);
-        console.log("   ".repeat(step) + "}");
-      } else {
-        console.log(`${"   ".repeat(step)}{`);
-        current.method &&
-          console.log(
-            `${"   ".repeat(step + 1)}method: ${cyan(current.method)}`,
-          );
-        current.url &&
-          console.log(`${"   ".repeat(step + 1)}url: ${green(current.url)}`);
-        current.paramHandlers &&
-          console.log(
-            `${"   ".repeat(step + 1)}paramHandlers: [${
-              red((current.paramHandlers.map((e) => e.paramName)).join(", "))
-            }]`,
-          );
-        current.callBack &&
-          console.log(
-            `${"   ".repeat(step + 1)}callBack: ${
-              yellow(current.callBack.name || "Anonymous")
-            }`,
-          );
-        console.log(`${"   ".repeat(step)}},`);
-      }
-    }
-  };
-
-  #circulateErrorMiddlewares = async (
-    currentErrorMiddlewares: ErrorMiddlewareProps[],
-    step: number = 0,
-  ) => {
-    for (const current of currentErrorMiddlewares) {
-      if (current.next) {
-        const currentIndent = step + 1;
-        const nextIndent = step + 2;
-        console.log("   ".repeat(step) + "{");
-        current.url &&
-          console.log(
-            "   ".repeat(currentIndent) + `url: ${green(current.url)},`,
-          );
-        console.log("   ".repeat(currentIndent) + `next: [`);
-        this.#circulateErrorMiddlewares(current.next, nextIndent);
-        console.log("   ".repeat(currentIndent) + `]`);
-        console.log("   ".repeat(step) + "}");
-      } else {
-        console.log(`${"   ".repeat(step)}{`);
-        current.url &&
-          console.log(`${"   ".repeat(step + 1)}url: ${green(current.url)}`);
-        current.callBack &&
-          console.log(
-            `${"   ".repeat(step + 1)}callBack: ${
-              yellow(current.callBack.name || "Anonymous")
-            }`,
-          );
-        console.log(`${"   ".repeat(step)}},`);
-      }
-    }
-  };
-
   #debug = async () => {
     console.log(red("------- Debug Middlewares -----------------"));
-    this.#circulateMiddlewares(this.middlewares);
+    circulateMiddlewares(this.middlewares);
     console.log(red("------- End Debug Middlewares -------------\n"));
 
     console.log(red("------- Debug Error Middlewares -----------"));
-    this.#circulateErrorMiddlewares(this.errorMiddlewares);
+    circulateErrorMiddlewares(this.errorMiddlewares);
     console.log(red("------- End Debug Error Middlewares -------\n"));
   };
+
+  #modeInit = async () => {
+    const options = getEnvFlags()
+
+    if (options.mode === "fullstack") {
+      console.log(cyan(JSON.stringify(options, undefined, 2)))
+
+      if (options.env === "development") {
+        this.get("/*", async (req, res) => {
+          const { pathname } = req.url;
+          const isReactPath = pathname.split(".").length === 1;
+
+          if (isReactPath) {
+            await res.sendFile("./.attain/index.html");
+          }
+        }, staticServe("./.attain", { maxAge: 1000 }));
+
+      } else if (options.env === "production") {
+        this.get("/*", async (req, res) => {
+          const { pathname } = req.url;
+          const isReactPath = pathname.split(".").length === 1;
+
+          if (isReactPath) {
+            await res.sendFile("./dist/index.html");
+          }
+        }, staticServe("./dist", { maxAge: 1000 }));
+      }
+    }
+  }
 
   close = async () => {
     if (this.#serve) {
@@ -124,10 +77,12 @@ export class App extends Router {
   /**
    * Start to listen
    */
-  listen = async (
+  listen = (
     { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
       ListenProps,
   ) => {
+    this.#modeInit();
+
     this.use(defaultPageNotFound);
     this.error(defaultError);
 
@@ -143,10 +98,10 @@ export class App extends Router {
 
     console.log(
       `${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${
-        green("Ready!")
+      green("Ready!")
       }`,
     );
-    let server = null;
+
     if (secure && keyFile && certFile) {
       this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile });
       this.#processTLS = this.#start(this.#serveTLS);

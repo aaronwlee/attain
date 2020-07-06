@@ -1,6 +1,6 @@
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { Sha1, lookup, match } from "./deps.ts";
+import { Sha1, lookup, match, parse } from "./deps.ts";
 import { extname } from "https://deno.land/std/path/mod.ts";
 
 /** Returns the content-type based on the extension of a path. */
@@ -174,3 +174,18 @@ export const last = (array: any[]) => {
   var length = array == null ? 0 : array.length;
   return length ? array[length - 1] : undefined;
 };
+
+export const getEnvFlags = () => {
+  const options = parse(Deno.args);
+  const container: any = {}
+
+  if(options["mode"]) {
+    container.mode = options["mode"]
+  }
+
+  if(options["env"]) {
+    container.env = options["env"]
+  }
+
+  return container;
+}
