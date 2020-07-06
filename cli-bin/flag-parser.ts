@@ -50,6 +50,7 @@ export function flagsParser(args: string[]) {
 
   if (jobOption === "init" && pathOption === undefined) {
     console.error("project name is required")
+    Deno.exit(1);
   }
 
   return { ...availableFlags[jobOption], name: jobOption, pathOption };
