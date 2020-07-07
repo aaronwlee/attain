@@ -20,7 +20,13 @@ export async function startDev() {
   startServer("dev");
   startWS();
 
-  for await (const event of Deno.watchFs(`${currentPath}/view`)) {
+  const watchingLists = ["view", "packages.yaml"].map(async e => await watchFile(`${currentPath}/${e}`))
+
+  await Promise.all(watchingLists);
+}
+
+async function watchFile(path: string) {
+  for await (const event of Deno.watchFs(path)) {
     const key = event.paths[0]
     if (!Object.keys(processingList).find((p: any) => p === key)) {
       processingList[key] = true

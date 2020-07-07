@@ -18,5 +18,6 @@ async function start() {
 
 
 if (import.meta.main) {
+  console.clear();
   await start();
 }
