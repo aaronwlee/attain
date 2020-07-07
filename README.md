@@ -19,6 +19,8 @@ Download and use
 import { App, Router, Request, Response } from "https://deno.land/x/attain@cli-beta-0.1/mod.ts";
 // or
 import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/cli-beta-0.1/mod.ts";
+// download cli
+deno install -A -f --unstable https://deno.land/x/attain@cli-beta-0.1/attain-cli.ts
 
 ```
 ```
