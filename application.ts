@@ -33,35 +33,6 @@ export class App extends Router {
     console.log(red("------- End Debug Error Middlewares -------\n"));
   };
 
-  #modeInit = async () => {
-    const options = getEnvFlags()
-
-    if (options.mode === "fullstack") {
-      console.log(cyan(JSON.stringify(options, undefined, 2)))
-
-      if (options.env === "development") {
-        this.get("/*", async (req, res) => {
-          const { pathname } = req.url;
-          const isReactPath = pathname.split(".").length === 1;
-
-          if (isReactPath) {
-            await res.sendFile("./.attain/index.html");
-          }
-        }, staticServe("./.attain", { maxAge: 1000 }));
-
-      } else if (options.env === "production") {
-        this.get("/*", async (req, res) => {
-          const { pathname } = req.url;
-          const isReactPath = pathname.split(".").length === 1;
-
-          if (isReactPath) {
-            await res.sendFile("./dist/index.html");
-          }
-        }, staticServe("./dist", { maxAge: 1000 }));
-      }
-    }
-  }
-
   close = async () => {
     if (this.#serve) {
       this.#serve.close();
@@ -81,8 +52,7 @@ export class App extends Router {
     { port, secure, keyFile, certFile, hostname = "0.0.0.0", debug = false }:
       ListenProps,
   ) => {
-    this.#modeInit();
-
+    const mode = Deno.env.get("PRODUCTION") ? "PRODUCTION" : (Deno.env.get("DEVELOPMENT") ? "DEVELOPMENT" : "GENERAL")
     this.use(defaultPageNotFound);
     this.error(defaultError);
 
@@ -97,7 +67,7 @@ export class App extends Router {
     }
 
     console.log(
-      `${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${
+      `[${blue(mode)}] ${cyan("Attain FrameWork")} ${blue("v" + version.toString())} - ${
       green("Ready!")
       }`,
     );

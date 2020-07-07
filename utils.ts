@@ -179,11 +179,11 @@ export const getEnvFlags = () => {
   const options = parse(Deno.args);
   const container: any = {}
 
-  if(options["mode"]) {
+  if (options["mode"]) {
     container.mode = options["mode"]
   }
 
-  if(options["env"]) {
+  if (options["env"]) {
     container.env = options["env"]
   }
 

@@ -1,11 +1,21 @@
-import { parse } from "../deps.ts";
+import { parse, red } from "../deps.ts";
 import { startDev } from "./dev.ts";
 import { Initializer } from "./init.ts";
+import { startBuild } from "./build.ts";
+import { start } from "./start.ts";
 
 const availableFlags: any = {
   dev: {
     exec: startDev,
     desc: "Development mode"
+  },
+  start: {
+    exec: start,
+    desc: "Start production server"
+  },
+  build: {
+    exec: startBuild,
+    desc: "Build the project"
   },
   init: {
     exec: Initializer,
@@ -18,6 +28,9 @@ const availableFlags: any = {
 }
 
 function validateOptions(generalOptions: any[]) {
+  if (!generalOptions[0]) {
+    throw `flags are required!`
+  }
   if (!availableFlags[generalOptions[0]]) {
     throw `'${generalOptions[0]}' is invalid option!`
   }
@@ -36,7 +49,7 @@ export function flagsParser(args: string[]) {
   try {
     validateOptions(generalOptions)
   } catch (invalidOptions) {
-    console.error(invalidOptions);
+    console.error(red("[error]"), invalidOptions);
     Deno.exit(1);
   }
 
@@ -49,7 +62,7 @@ export function flagsParser(args: string[]) {
   }
 
   if (jobOption === "init" && pathOption === undefined) {
-    console.error("project name is required")
+    console.error(red("[error]"), "project name is required")
     Deno.exit(1);
   }
 

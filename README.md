@@ -4,7 +4,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v0.9.5 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - vcli-beta-0.1 - [Website](https://aaronwlee.github.io/Attain/)
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
 
@@ -16,10 +16,9 @@ Only for [Deno](https://deno.land/)
 
 Download and use
 ```js
-import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
-import { App, Router, Request, Response } from "https://deno.land/x/attain@0.9.5/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@cli-beta-0.1/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/cli-beta-0.1/mod.ts";
 
 ```
 ```

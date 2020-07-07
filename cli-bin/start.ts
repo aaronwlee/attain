@@ -1,23 +1,5 @@
-export async function startServer(envState: "dev" | "start") {
-  const env = envState === "dev" ? "development" : "production"
-  try {
-    const currentPath = Deno.cwd();
-    const process = Deno.run({
-      cmd: [
-        "deno",
-        "run",
-        "-A",
-        "--unstable",
-        `${currentPath}/server.ts`,
-        `-mode fullstack`,
-        `-env ${env}`
-      ],
-    });
+import { startServer } from "./application-start.ts";
 
-    await process.status();
-  } catch (e) {
-    console.log("Server Error");
-    console.error(e);
-  }
-
+export function start() {
+  startServer("start")
 }

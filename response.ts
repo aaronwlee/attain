@@ -96,9 +96,9 @@ export class Response {
     if (this.#pending.length === 0) {
       return;
     }
-    const jobs = this.#pending.map(async (job) => await job(request, this));
-
-    await Promise.all(jobs);
+    for await (const job of this.#pending) {
+      await job(request, this)
+    }
   }
 
   /**
@@ -321,18 +321,18 @@ export class Response {
   public async end(): Promise<void> {
     try {
       this.setHeader("Date", new Date().toUTCString());
-      // const currentETag = this.getHeader("etag");
-      // const len = this.getHeader("content-length") ||
-      //   (this.getBody as Uint8Array).length.toString();
-      // const newETag = etag(
-      //   (this.getBody as Uint8Array),
-      //   parseInt(len, 10),
-      // );
-      // if (currentETag && currentETag === newETag) {
-      //   this.status(304);
-      // } else {
-      //   this.setHeader("etag", newETag);
-      // }
+      const currentETag = this.getHeader("etag");
+      const len = this.getHeader("content-length") ||
+        (this.getBody as Uint8Array).length.toString();
+      const newETag = etag(
+        (this.getBody as Uint8Array),
+        parseInt(len, 10),
+      );
+      if (currentETag && currentETag === newETag) {
+        this.status(304);
+      } else {
+        this.setHeader("etag", newETag);
+      }
       this.#processDone = true;
     } catch (error) {
       if (error instanceof Deno.errors.BadResource) {

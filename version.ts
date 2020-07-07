@@ -1,3 +1,3 @@
-const version = "0.9.5";
+const version = "cli-beta-0.1";
 
 export default version;

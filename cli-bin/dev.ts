@@ -1,5 +1,5 @@
-import { ensureDir, EventEmitter, listenAndServe, acceptable, acceptWebSocket, isWebSocketCloseEvent, parseAll } from "../deps.ts";
-import { startServer } from "./start.ts";
+import { ensureDir, EventEmitter, listenAndServe, acceptable, acceptWebSocket, isWebSocketCloseEvent, parseAll, green, yellow, red } from "../deps.ts";
+import { startServer } from "./application-start.ts";
 
 const currentPath = Deno.cwd();
 
@@ -10,13 +10,13 @@ export async function startDev() {
   try {
     await Deno.remove(`${currentPath}/.attain`, { recursive: true });
   } catch (err) {
-    console.log("don't need to remove cached files")
+    console.log(green("[dev]"), "don't need to remove cached files")
   }
   await ensureDir(`${currentPath}/.attain`);
   await startBundle();
   await injectWSClient();
   await copyStatics();
-  console.log("static files are successfully copied")
+  console.log(green("[dev]"), "static files are successfully copied")
   startServer("dev");
   startWS();
 
@@ -31,7 +31,7 @@ export async function startDev() {
 
 async function startBundle(key?: string) {
   try {
-    key && console.log(`Detected a file change ${key}`)
+    key && console.log(yellow("[dev]"), `Detected a file change ${key}`)
     const process = Deno.run({
       cmd: [
         "deno",
@@ -51,7 +51,7 @@ async function startBundle(key?: string) {
       eventEmitter.emit("bundled")
     }
   } catch (e) {
-    console.error("bundle error", e)
+    console.error(red("[bundle error]"), e)
   }
 }
 
@@ -96,7 +96,7 @@ async function rewireIndex() {
   const writeStream = encoder.encode(replacedHTML);
   await Deno.writeFile(`${currentPath}/.attain/index.html`, writeStream);
 
-  console.log("index.html has been rewired")
+  console.log(green("[dev]"), "index.html has been successfully rewired")
 }
 
 async function injectWSClient() {
@@ -113,11 +113,12 @@ async function injectWSClient() {
   const writeStream = encoder.encode(wsClient);
   await Deno.writeFile(`${currentPath}/.attain/reload.websocket.js`, writeStream);
 
-  console.log("reload.websocket.js has been created")
+  console.log(green("[dev]"), "reload.websocket.js has been successfully created")
 }
 
 function startWS() {
   try {
+    console.log(green("[dev socket]"), "start to listen dev socket server at ws://localhost:5900")
     listenAndServe({ port: 5900 }, async (req) => {
       if (req.method === "GET" && req.url === "/") {
         if (acceptable(req)) {
@@ -149,7 +150,7 @@ function startWS() {
       }
     });
   } catch (error) {
-    console.error("reload websocket server error", error)
+    console.error(red("[reload websocket server error]"), error)
     Deno.exit(1);
   }
 
