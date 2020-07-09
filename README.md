@@ -135,7 +135,7 @@ It's providing a full-stack development environment using React and Attain.
 It's a beta version and there are possibly exist some bugs.
 __important__: This beta project yet to supporting any type of CSS modules and most of "umd" scripts are also may not work.
 
-All CLI must working in the project directory
+All commands are must be executed in the project directory
 - `-h`
 <br /> Get Help.
 
