@@ -135,24 +135,30 @@ It's providing a full-stack development environment using React and Attain.
 It's a beta version and there are possibly exist some bugs.
 __important__: This beta project yet to supporting any type of CSS modules and most of "umd" scripts are also may not work.
 
+All CLI must working in the project directory
 - `-h`
 <br /> Get Help.
 
 - `init [path]`
 <br /> Initialize the project to the path.
+<br /> ex) attain init react-attain
 
-- `i | install [path] --env PRODUCTION | DEVELOPMENT | undefined`
+- `i | install [cdn] --env PRODUCTION | DEVELOPMENT | undefined`
 <br /> Install a front-end script which must be a "umd" type from the CDN.
 <br /> "env" is for the targeting specific environment. If it's not provided, the script will be installed into both env.
+<br /> ex) attain install https://unpkg.com/styled-components/dist/styled-components.min.js
 
 - `dev | development`
 <br /> Starts the dev server and watch the front-end file changes.
+<br /> ex) attain dev
 
 - `build`
 <br /> Build the bundles to the dist folder with "PRODUCTION" scripts
+<br /> ex) attain build
 
 - `start`
 <br /> Starts the production server
+<br /> ex) attain start
 
 
 
