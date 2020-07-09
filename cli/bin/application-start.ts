@@ -1,4 +1,4 @@
-import { red } from "../deps.ts";
+import { red } from "../../deps.ts";
 
 export async function startServer(envState: "dev" | "start") {
   const env = envState === "dev" ? "DEVElOPMENT" : "PRODUCTION"
@@ -11,6 +11,7 @@ export async function startServer(envState: "dev" | "start") {
       cmd: [
         "deno",
         "run",
+        `--importmap=${currentPath}/import_map.json`,
         "-A",
         "--unstable",
         `${currentPath}/server.ts`,

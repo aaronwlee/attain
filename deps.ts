@@ -41,5 +41,5 @@ export { ensureDir } from "https://deno.land/std/fs/mod.ts";
 export { EventEmitter } from "https://deno.land/std/node/events.ts";
 export { listenAndServe } from "https://deno.land/std/http/server.ts";
 export { acceptWebSocket, acceptable, isWebSocketCloseEvent } from "https://deno.land/std/ws/mod.ts";
-export { parseAll } from "https://deno.land/std/encoding/yaml.ts";
+export { parse as yamlParse, stringify as yamlStringify } from "https://deno.land/std/encoding/yaml.ts";
 export { download } from "https://deno.land/x/download/mod.ts";

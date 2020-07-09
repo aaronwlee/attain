@@ -1,5 +1,5 @@
-import { ensureDir, EventEmitter, listenAndServe, acceptable, acceptWebSocket, isWebSocketCloseEvent, parseAll, green, yellow, red } from "../deps.ts";
-import { startServer } from "./application-start.ts";
+import { ensureDir, EventEmitter, listenAndServe, acceptable, acceptWebSocket, isWebSocketCloseEvent, green, yellow, red, blue, yamlParse } from "../deps.ts";
+import { startServer } from "./bin/application-start.ts";
 
 const currentPath = Deno.cwd();
 
@@ -12,52 +12,57 @@ export async function startDev() {
   } catch (err) {
     console.log(green("[dev]"), "don't need to remove cached files")
   }
-  await ensureDir(`${currentPath}/.attain`);
-  await startBundle();
-  await injectWSClient();
-  await copyStatics();
-  console.log(green("[dev]"), "static files are successfully copied")
-  startServer("dev");
-  startWS();
 
-  const watchingLists = ["view", "packages.yaml"].map(async e => await watchFile(`${currentPath}/${e}`))
+  try {
+    await ensureDir(`${currentPath}/.attain`);
+    await startBundle();
+    await injectWSClient();
+    await copyStatics();
+    console.log(green("[dev]"), "static files are successfully copied")
+    startServer("dev");
+    startWS();
 
-  await Promise.all(watchingLists);
+    const watchingLists = ["view", "config/cdn-packages.yaml"].map(async e => await watchFile(`${currentPath}/${e}`))
+
+    await Promise.all(watchingLists);
+  } catch (initError) {
+    console.log(red("[dev init error]"), initError)
+    Deno.exit(1);
+  }
 }
 
 async function watchFile(path: string) {
+  console.log(blue("[dev]"), `start to watching ${path}`)
   for await (const event of Deno.watchFs(path)) {
     const key = event.paths[0]
     if (!Object.keys(processingList).find((p: any) => p === key)) {
       processingList[key] = true
-      startBundle(key);
+      startBundle(key).catch(e => console.log(red("[dev bundle]"), e));
     }
   }
 }
 
 async function startBundle(key?: string) {
-  try {
-    key && console.log(yellow("[dev]"), `Detected a file change ${key}`)
-    const process = Deno.run({
-      cmd: [
-        "deno",
-        "bundle",
-        "-c",
-        `${currentPath}/react.tsconfig.json`,
-        `${currentPath}/view/index.tsx`,
-        `${currentPath}/.attain/index.bundle.js`
-      ],
-    });
+  key && console.log(yellow("[dev]"), `Detected a file change ${key}`)
+  const process = Deno.run({
+    cmd: [
+      "deno",
+      "bundle",
+      "--unstable",
+      `--importmap=${currentPath}/import_map.json`,
+      "-c",
+      `${currentPath}/tsconfig.json`,
+      `${currentPath}/view/index.tsx`,
+      `${currentPath}/.attain/index.bundle.js`
+    ],
+  });
 
-    await process.status();
-    await rewireIndex();
+  await process.status();
+  await rewireIndex();
 
-    if (key) {
-      delete processingList[key];
-      eventEmitter.emit("bundled")
-    }
-  } catch (e) {
-    console.error(red("[bundle error]"), e)
+  if (key) {
+    delete processingList[key];
+    eventEmitter.emit("bundled")
   }
 }
 
@@ -75,32 +80,21 @@ async function copyStatics(path?: string) {
 }
 
 async function rewireIndex() {
-  const decoder = new TextDecoder("utf-8");
-  const readStream = Deno.readFileSync(`${currentPath}/view/public/index.html`);
-  const indexHTML = decoder.decode(readStream);
-  const devReact = `
-    <!-- react, react-dom dev bundles -->
-    <script crossorigin src="//unpkg.com/react@16/umd/react.development.js"></script>
-    <script crossorigin src="//unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-  `
-  let replacedHTML = indexHTML.replace("{{ React }}", devReact)
-
+  const indexHTML = await Deno.readTextFile(`${currentPath}/view/public/index.html`);
 
   const devTools = `
     <!-- dev tools -->
     <script type="module" src="./reload.websocket.js" defer></script>
   `
-  replacedHTML = replacedHTML.replace("{{ DevTools }}", devTools)
+  let replacedHTML = indexHTML.replace("{{ DevTools }}", devTools)
 
-  const packagesYaml: any = parseAll(Deno.readTextFileSync(`${currentPath}/packages.yaml`));
-  if (packagesYaml[0].CDN) {
-    const list = packagesYaml[0].CDN.map((p: string) => `<script crossorigin src="${p}"></script>`)
+  const packagesYaml: any = yamlParse(Deno.readTextFileSync(`${currentPath}/config/cdn-packages.yaml`));
+  if (packagesYaml["DEVELOPMENT"]) {
+    const list = packagesYaml["DEVELOPMENT"].map((p: string) => `<script crossorigin src="${p}"></script>`)
     replacedHTML = replacedHTML.replace("{{ Packages }}", list.join(""))
   }
 
-  const encoder = new TextEncoder();
-  const writeStream = encoder.encode(replacedHTML);
-  await Deno.writeFile(`${currentPath}/.attain/index.html`, writeStream);
+  await Deno.writeTextFile(`${currentPath}/.attain/index.html`, replacedHTML);
 
   console.log(green("[dev]"), "index.html has been successfully rewired")
 }
@@ -115,10 +109,7 @@ async function injectWSClient() {
   }
 `
 
-  const encoder = new TextEncoder();
-  const writeStream = encoder.encode(wsClient);
-  await Deno.writeFile(`${currentPath}/.attain/reload.websocket.js`, writeStream);
-
+  await Deno.writeTextFile(`${currentPath}/.attain/reload.websocket.js`, wsClient);
   console.log(green("[dev]"), "reload.websocket.js has been successfully created")
 }
 

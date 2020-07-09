@@ -8,6 +8,8 @@
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
 
+## This is beta version!
+
 A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak). Fast and stable with proper memory usage.
 
 Only for [Deno](https://deno.land/)
@@ -20,16 +22,17 @@ import { App, Router, Request, Response } from "https://deno.land/x/attain@cli-b
 // or
 import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/cli-beta-0.1/mod.ts";
 // download cli
-deno install -A -f --unstable https://deno.land/x/attain@cli-beta-0.1/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@cli-beta-0.1/attain-cli.ts
 
 ```
 ```
-# deno run --allow-net main.ts
+# deno run --allow-net --unstable main.ts
 ```
 
 ## Contents
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
+- [CLI](#cli)
 - [How To](#how-to)
 - [Boilerplate](#boilerplate)
 - [Methods and Properies](#methods-and-properies)
@@ -122,6 +125,36 @@ app.listen({ port: 3500 });
 
 console.log("http://localhost:3500");
 ```
+
+## CLI
+```
+deno install -A -f --unstable -n attain https://deno.land/x/attain@cli-beta-0.1/attain-cli.ts
+```
+It's providing a full-stack development environment using React and Attain. 
+
+It's a beta version and there are possibly exist some bugs.
+__important__: This beta project yet to supporting any type of CSS modules and most of "umd" scripts are also may not work.
+
+- `-h`
+<br /> Get Help.
+
+- `init [path]`
+<br /> Initialize the project to the path.
+
+- `i | install [path] --env PRODUCTION | DEVELOPMENT | undefined`
+<br /> Install a front-end script which must be a "umd" type from the CDN.
+<br /> "env" is for the targeting specific environment. If it's not provided, the script will be installed into both env.
+
+- `dev | development`
+<br /> Starts the dev server and watch the front-end file changes.
+
+- `build`
+<br /> Build the bundles to the dist folder with "PRODUCTION" scripts
+
+- `start`
+<br /> Starts the production server
+
+
 
 ## How To
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
