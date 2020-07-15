@@ -9,7 +9,7 @@ export { STATUS_TEXT } from "https://deno.land/std/http/http_status.ts";
 
 export {
   lookup,
-} from "https://deno.land/x/media_types@v2.2.0/mod.ts";
+} from "https://deno.land/x/media_types/mod.ts";
 
 export {
   deferred,
@@ -32,6 +32,8 @@ export {
   cyan,
   bold,
   blue,
-} from "https://deno.land/std@0.50.0/fmt/colors.ts";
+} from "https://deno.land/std/fmt/colors.ts";
 
 export { default as isEmpty } from "https://raw.githubusercontent.com/lodash/lodash/master/isEmpty.js";
+
+export { extname } from "https://deno.land/std/path/mod.ts";

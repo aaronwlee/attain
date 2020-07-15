@@ -1,7 +1,7 @@
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { Sha1, lookup, match } from "./deps.ts";
-import { extname } from "https://deno.land/std/path/mod.ts";
+import { Sha1, lookup, match, extname } from "./deps.ts";
+
 
 /** Returns the content-type based on the extension of a path. */
 function contentType(path: string): string | undefined {
