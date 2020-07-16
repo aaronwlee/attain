@@ -1,6 +1,6 @@
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
-import { Sha1, lookup, match, extname } from "./deps.ts";
+import { Sha1, lookup, match, extname, parse } from "./deps.ts";
 
 
 /** Returns the content-type based on the extension of a path. */

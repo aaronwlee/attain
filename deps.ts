@@ -37,3 +37,11 @@ export {
 export { default as isEmpty } from "https://raw.githubusercontent.com/lodash/lodash/master/isEmpty.js";
 
 export { extname } from "https://deno.land/std/path/mod.ts";
+
+export { parse } from "https://deno.land/std/flags/mod.ts";
+export { ensureDir } from "https://deno.land/std/fs/mod.ts";
+export { EventEmitter } from "https://deno.land/std/node/events.ts";
+export { listenAndServe } from "https://deno.land/std/http/server.ts";
+export { acceptWebSocket, acceptable, isWebSocketCloseEvent } from "https://deno.land/std/ws/mod.ts";
+export { parse as yamlParse, stringify as yamlStringify } from "https://deno.land/std/encoding/yaml.ts";
+export { download } from "https://deno.land/x/download/mod.ts";
