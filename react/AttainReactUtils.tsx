@@ -2,6 +2,7 @@ declare let document: any;
 
 export const useDocument = () => {
   try {
+    //@ts-ignore
     if(document) {
       return document;
     } else {

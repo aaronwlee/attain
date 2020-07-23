@@ -1,7 +1,8 @@
 // @deno-types="https://deno.land/x/types/react/v16.13.1/react.d.ts"
 import React from 'https://jspm.dev/react@16.13.1';
 
-const RouterContext = (React as any).createContext<any>({
+// @ts-ignore
+const RouterContext = React.createContext<any>({
   pathname: "/",
 });
 
