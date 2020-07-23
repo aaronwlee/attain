@@ -2,10 +2,16 @@ export {
   serve,
   serveTLS,
   ServerRequest,
-  Response,
   Server,
 } from "https://deno.land/std/http/server.ts";
 export { STATUS_TEXT } from "https://deno.land/std/http/http_status.ts";
+
+export interface Response {
+  status?: number;
+  headers?: Headers;
+  body?: Uint8Array | Deno.Reader | string;
+  trailers?: () => Promise<Headers> | Headers;
+}
 
 export {
   lookup,
