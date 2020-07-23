@@ -1,4 +1,6 @@
-import { download, ensureDir, cyan, green, red, blue } from "../deps.ts";
+import { ensureDir, cyan, green, red, blue } from "../deps.ts";
+export { download } from "https://deno.land/x/download/mod.ts";
+
 
 // const fileList: any = {
 //   controllers: ["routers.ts", "userController.ts"],

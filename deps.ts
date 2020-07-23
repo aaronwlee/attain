@@ -55,4 +55,3 @@ export { EventEmitter } from "https://deno.land/std@0.61.0/node/events.ts";
 export { listenAndServe } from "https://deno.land/std@0.61.0/http/server.ts";
 export { acceptWebSocket, acceptable, isWebSocketCloseEvent } from "https://deno.land/std@0.61.0/ws/mod.ts";
 export { parse as yamlParse, stringify as yamlStringify } from "https://deno.land/std@0.61.0/encoding/yaml.ts";
-export { download } from "https://deno.land/x/download/mod.ts";
