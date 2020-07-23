@@ -13,3 +13,20 @@ export const useDocument = () => {
     return undefined;
   }
 };
+
+const head = [];
+
+
+export function addToHead(data) {
+  const dom = useDocument();
+
+  if(dom) {
+    dom.head.innerHTML += data;
+  } else {
+    head.push(data)
+  }
+}
+
+export function getHead() {
+  return head.join("\n");
+}
