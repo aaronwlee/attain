@@ -19,8 +19,13 @@ export {
 
 export {
   deferred,
-  Deferred,
 } from "https://deno.land/std@0.61.0/async/mod.ts";
+
+export interface Deferred<T> extends Promise<T> {
+  resolve: (value?: T | PromiseLike<T>) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reject: (reason?: any) => void;
+}
 
 export {
   Sha1,
