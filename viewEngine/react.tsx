@@ -59,9 +59,9 @@ export default class ReactViewEngine {
     }
   }
 
-  public async watchFile(path: string) {
-    console.log(blue("[dev - server]"), `start to watching ${path}`)
-    for await (const event of Deno.watchFs(path)) {
+  public async watchFile() {
+    console.log(blue("[dev - server]"), `start to watching ${Deno.cwd()}/view`)
+    for await (const event of Deno.watchFs(`${Deno.cwd()}/view`)) {
       const key = event.paths[0]
       if (!Object.keys(this.#processingList).find((p: any) => p === key)) {
         this.#processingList[key] = true

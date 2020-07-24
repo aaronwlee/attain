@@ -26,7 +26,7 @@ export async function ViewEngine({
   const reactViewEngine = new ReactViewEngine(MainComponentPath, DocumentComponentPath, PageComponentPath);
   await reactViewEngine.load()
   if(!isProduction) {
-    reactViewEngine.watchFile(`${Deno.cwd()}/view`).catch(e => console.error(e));
+    reactViewEngine.watchFile();
   }
 
   router.get("/*", async (req, res) => {
