@@ -9,14 +9,14 @@ import ReactViewEngine from "../viewEngine/ReactViewEngine.tsx";
 
 
 export async function ViewEngine({
-  MainComponentPath,
-  DocumentComponentPath,
+  MainComponent,
+  DocumentComponent,
   PageComponentPath,
   developmentPath,
   productionPath
 }: {
-  MainComponentPath: string,
-  DocumentComponentPath: string,
+  MainComponent: any,
+  DocumentComponent: any,
   PageComponentPath: string,
   developmentPath?: string,
   productionPath?: string
@@ -24,7 +24,7 @@ export async function ViewEngine({
   const router = new Router();
   const isProduction = Deno.env.get("PRODUCTION");
 
-  const reactViewEngine = new ReactViewEngine(MainComponentPath, DocumentComponentPath, PageComponentPath);
+  const reactViewEngine = new ReactViewEngine(MainComponent, DocumentComponent, PageComponentPath);
   await reactViewEngine.load()
   //@ts-ignore
   const preloadList = Object.keys(reactViewEngine.pages).map((key, index) => <link key={index + 1} rel="preload" href={reactViewEngine.pages[key].filePath} as="script" />)

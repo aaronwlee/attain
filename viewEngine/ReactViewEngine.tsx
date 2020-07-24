@@ -11,16 +11,12 @@ export default class ReactViewEngine {
       MainComponent: undefined,
       DocumentComponent: undefined
     }
-  #componentPaths: {
-    MainComponent: string,
-    DocumentComponent: string
-  }
   #currentPath: string = Deno.realPathSync(Deno.cwd());
 
-  constructor(MainComponentPath: string, DocumentComponentPath: string, pagesPath: string) {
-    this.#componentPaths = {
-      MainComponent: Deno.realPathSync(`${this.#currentPath}${MainComponentPath}`),
-      DocumentComponent: Deno.realPathSync(`${this.#currentPath}${DocumentComponentPath}`),
+  constructor(MainComponent: any, DocumentComponent: any, pagesPath: string) {
+    this.#Components = {
+      MainComponent: Deno.realPathSync(`${this.#currentPath}${MainComponent}`),
+      DocumentComponent: Deno.realPathSync(`${this.#currentPath}${DocumentComponent}`),
     }
     this.#pagesPath = Deno.realPathSync(`${this.#currentPath}${pagesPath}`);
   }
@@ -46,8 +42,6 @@ export default class ReactViewEngine {
   public async load() {
     await this.getPageFiles(this.#currentPath, this.#pagesPath);
     console.log(green("[dev - server]"), `Successfully load PageComponents`)
-    await this.loadMainComponent();
-    await this.loadDocumentComponent();
   }
 
   public async build() {
@@ -91,22 +85,6 @@ export default class ReactViewEngine {
         }
       }
     }
-  }
-
-  private async loadMainComponent() {
-    if (this.#Components.MainComponent) {
-      delete this.#Components.MainComponent;
-    }
-    this.#Components.MainComponent = (await import(`file://${this.#componentPaths.MainComponent}`)).default
-    console.log(green("[dev]"), `Successfully load MainComponent`)
-  }
-
-  private async loadDocumentComponent() {
-    if (this.#Components.DocumentComponent) {
-      delete this.#Components.DocumentComponent;
-    }
-    this.#Components.DocumentComponent = (await import(`file://${this.#componentPaths.DocumentComponent}`)).default
-    console.log(green("[dev]"), `Successfully load DocumentComponent`)
   }
 
   private async getPageFiles(entry: string, path: string) {
