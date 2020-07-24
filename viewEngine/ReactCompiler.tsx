@@ -2,6 +2,7 @@ import babelCore from "https://dev.jspm.io/@babel/core";
 import presetReact from "https://dev.jspm.io/@babel/preset-react";
 import minify from "https://dev.jspm.io/babel-preset-minify"
 import { ensureDir } from "https://deno.land/std@0.61.0/fs/mod.ts";
+import version from "../version.ts";
 
 type ConfigProps = {
   dist: string;
@@ -77,7 +78,7 @@ export class ReactCompiler {
 
     const indexFile = `
 import { React, ReactDOM } from "/view/deps.tsx";
-import { AttainRouter } from "https://deno.land/x/attain@cli-beta-0.2/react/AttainRouter.js";
+import { AttainRouter } from "https://deno.land/x/attain@${version}/react/AttainRouter.js";
 import ${this.#config.entryName} from "/view/${this.#config.entryName}.tsx";
 ${pageImportString}
 ${pageImportObject}

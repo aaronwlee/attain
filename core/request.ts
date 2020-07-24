@@ -1,0 +1,311 @@
+/*!
+ * Adapted from oak/request at https://github.com/oakserver/oak/blob/master/request.ts
+ * which is licensed as:
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2018-2020 the oak authors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+import { ServerRequest, Response } from "../deps.ts";
+import { preferredEncodings } from "./encoding.ts";
+import httpErrors from "./http-errors.ts";
+import { isMediaType } from "./type-is.ts";
+import { preferredMediaTypes } from "./mediaType.ts";
+import { SupportMethodType } from "./types.ts";
+
+export type BodyType =
+  | "json"
+  | "form"
+  | "text"
+  | "raw"
+  | "undefined"
+  | "reader";
+
+export type BodyJson = { type: "json"; value: any };
+export type BodyForm = { type: "form"; value: URLSearchParams };
+export type BodyText = { type: "text"; value: string };
+export type BodyRaw = { type: "raw"; value: Uint8Array };
+export type BodyUndefined = { type: "undefined"; value: undefined };
+
+export type BodyReader = { type: "reader"; value: Deno.Reader };
+
+export type Body =
+  | BodyJson
+  | BodyForm
+  | BodyText
+  | BodyRaw
+  | BodyUndefined;
+
+export interface BodyOptions {
+  /** If `true`, return a body value of `Deno.Reader`. */
+  asReader?: boolean;
+
+  /** A map of extra content types to determine how to parse the body. */
+  contentTypes?: {
+    /** Content types listed here will always return a "raw" Uint8Array. */
+    raw?: string[];
+    /** Content types listed here will be parsed as a JSON string. */
+    json?: string[];
+    /** Content types listed here will be parsed as form data and return
+     * `URLSearchParameters` as the value of the body. */
+    form?: string[];
+    /** Content types listed here will be parsed as text. */
+    text?: string[];
+  };
+}
+
+export interface BodyOptionsAsReader extends BodyOptions {
+  asReader: true;
+}
+
+const decoder = new TextDecoder();
+
+export interface BodyContentTypes {
+  json?: string[];
+  form?: string[];
+  text?: string[];
+}
+
+const defaultBodyContentTypes = {
+  json: ["json", "application/*+json", "application/csp-report"],
+  form: ["urlencoded"],
+  text: ["text"],
+};
+
+export class Request {
+  #body?: Body | BodyReader;
+  #rawBodyPromise?: Promise<Uint8Array>;
+  #serverRequest: ServerRequest;
+  #url?: URL;
+  #startDate: number;
+
+  [dynamicProperty: string]: any
+
+  /** Is `true` if the request has a body, otherwise `false`. */
+  get hasBody(): boolean {
+    return (
+      this.headers.get("transfer-encoding") !== null ||
+      !!parseInt(this.headers.get("content-length") ?? "")
+    );
+  }
+
+  /** The `Headers` supplied in the request. */
+  get headers(): Headers {
+    return this.#serverRequest.headers;
+  }
+
+  get startDate(): number {
+    return this.#startDate;
+  }
+
+  /** The HTTP Method used by the request. */
+  get method(): SupportMethodType {
+    return this.#serverRequest.method as SupportMethodType;
+  }
+
+  /** Shortcut to `request.url.protocol === "https"`. */
+  get secure(): boolean {
+    return this.url.protocol === "https:";
+  }
+
+  /** Returns the _original_ Deno server request. */
+  get serverRequest(): ServerRequest {
+    return this.#serverRequest;
+  }
+
+  /** A WHATWG parsed URL. */
+  get url(): URL {
+    if (!this.#url) {
+      const serverRequest = this.#serverRequest;
+      const proto = serverRequest.proto.split("/")[0].toLowerCase();
+      this.#url = new URL(
+        `${proto}://${serverRequest.headers.get("host")}${serverRequest.url}`,
+      );
+    }
+    return this.#url;
+  }
+
+  constructor(
+    serverRequest: ServerRequest,
+  ) {
+    this.#serverRequest = serverRequest;
+    this.#startDate = Date.now();
+  }
+
+  /** Returns an array of media types, accepted by the requestor, in order of
+   * preference.  If there are no encodings supplied by the requestor,
+   * `undefined` is returned.
+   */
+  accepts(): string[];
+  /** For a given set of media types, return the best match accepted by the
+   * requestor.  If there are no encoding that match, then the method returns
+   * `undefined`.
+   */
+  accepts(...types: string[]): string | undefined;
+  accepts(...types: string[]): string | string[] | undefined {
+    const acceptValue = this.#serverRequest.headers.get("Accept");
+    if (!acceptValue) {
+      return;
+    }
+    if (types.length) {
+      return preferredMediaTypes(acceptValue, types)[0];
+    }
+    return preferredMediaTypes(acceptValue);
+  }
+
+  acceptsCharsets(): string[];
+  acceptsCharsets(...charsets: string[]): string | undefined;
+  acceptsCharsets(...charsets: string[]): string[] | string | undefined {
+    return undefined;
+  }
+
+  /** Returns an array of encodings, accepted the the requestor, in order of
+   * preference.  If there are no encodings supplied by the requestor,
+   * `undefined` is returned.
+   */
+  acceptsEncodings(): string[];
+  /** For a given set of encodings, return the best match accepted by the
+   * requestor.  If there are no encodings that match, then the method returns
+   * `undefined`.
+   *
+   * **NOTE:** You should always supply `identity` as one of the encodings
+   * to ensure that there is a match when the `Accept-Encoding` header is part
+   * of the request.
+   */
+  acceptsEncodings(...encodings: string[]): string | undefined;
+  acceptsEncodings(...encodings: string[]): string[] | string | undefined {
+    const acceptEncodingValue = this.#serverRequest.headers.get(
+      "Accept-Encoding",
+    );
+    if (!acceptEncodingValue) {
+      return;
+    }
+    if (encodings.length) {
+      return preferredEncodings(acceptEncodingValue, encodings)[0];
+    }
+    return preferredEncodings(acceptEncodingValue);
+  }
+
+  acceptsLanguages(): string[];
+  acceptsLanguages(...langs: string[]): string | undefined;
+  acceptsLanguages(...langs: string[]): string[] | string | undefined {
+    return undefined;
+  }
+
+  /** If there is a body in the request, resolves with an object which
+   * describes the body.  The `type` provides what type the body is and `body`
+   * provides the actual body.
+   * 
+   * If you need access to the "raw" interface for the body, pass `true` as the
+   * first argument and the method will resolve if the `Deno.Reader`.
+   * 
+   *       app.use(async (ctx) => {
+   *         const result = await ctx.request.body(true);
+   *         const body = await Deno.readAll(result.body);
+   *       });
+   * 
+   */
+  async body(options: BodyOptionsAsReader): Promise<BodyReader>;
+  /** If there is a body in the request, resolves with an object which
+   * describes the body.  The `type` provides what type the body is and `body`
+   * provides the actual body.
+   * 
+   * If you need access to the "raw" interface for the body, pass `true` as the
+   * first argument and the method will resolve if the `Deno.Reader`.
+   * 
+   *       app.use(async (ctx) => {
+   *         const result = await ctx.request.body(true);
+   *         const body = await Deno.readAll(result.body);
+   *       });
+   * 
+   */
+  async body(options?: BodyOptions): Promise<Body>;
+  async body(
+    { asReader, contentTypes = {} }: BodyOptions = {},
+  ): Promise<Body | BodyReader> {
+    if (this.#body) {
+      if (asReader && this.#body.type !== "reader") {
+        return Promise.reject(
+          new TypeError(`Body already consumed as type: "${this.#body.type}".`),
+        );
+      } else if (this.#body.type === "reader") {
+        return Promise.reject(
+          new TypeError(`Body already consumed as type: "reader".`),
+        );
+      }
+      return this.#body;
+    }
+    const encoding = this.headers.get("content-encoding") || "identity";
+    if (encoding !== "identity") {
+      throw new httpErrors.UnsupportedMediaType(
+        `Unsupported content-encoding: ${encoding}`,
+      );
+    }
+    if (!this.hasBody) {
+      return (this.#body = { type: "undefined", value: undefined });
+    }
+    const contentType = this.headers.get("content-type");
+    if (contentType) {
+      if (asReader) {
+        return (this.#body = {
+          type: "reader",
+          value: this.#serverRequest.body,
+        });
+      }
+      const rawBody = await (this.#rawBodyPromise ??
+        (this.#rawBodyPromise = Deno.readAll(this.#serverRequest.body)));
+      const value = decoder.decode(rawBody);
+      const contentTypesRaw = contentTypes.raw;
+      const contentTypesJson = [
+        ...defaultBodyContentTypes.json,
+        ...(contentTypes.json ?? []),
+      ];
+      const contentTypesForm = [
+        ...defaultBodyContentTypes.form,
+        ...(contentTypes.form ?? []),
+      ];
+      const contentTypesText = [
+        ...defaultBodyContentTypes.text,
+        ...(contentTypes.text ?? []),
+      ];
+      if (contentTypesRaw && isMediaType(contentType, contentTypesRaw)) {
+        return (this.#body = { type: "raw", value: rawBody });
+      } else if (isMediaType(contentType, contentTypesJson)) {
+        return (this.#body = { type: "json", value: JSON.parse(value) });
+      } else if (isMediaType(contentType, contentTypesForm)) {
+        return (this.#body = {
+          type: "form",
+          value: new URLSearchParams(value.replace(/\+/g, " ")),
+        });
+      } else if (isMediaType(contentType, contentTypesText)) {
+        return (this.#body = { type: "text", value });
+      } else {
+        return (this.#body = { type: "raw", value: rawBody });
+      }
+    }
+    throw new httpErrors.UnsupportedMediaType(
+      contentType
+        ? `Unsupported content-type: ${contentType}`
+        : "Missing content-type",
+    );
+  }
+}
