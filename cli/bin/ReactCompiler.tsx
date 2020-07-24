@@ -77,9 +77,8 @@ export class ReactCompiler {
 
     const indexFile = `
 import { React, ReactDOM } from "/view/deps.tsx";
-import { AttainRouter } from "https://deno.land/x/attain@cli-beta-0.1/react/AttainRouter.js";
+import { AttainRouter } from "https://deno.land/x/attain@cli-beta-0.2/react/AttainRouter.js";
 import ${this.#config.entryName} from "/view/${this.#config.entryName}.tsx";
-import Document from "/view/document.tsx";
 ${pageImportString}
 ${pageImportObject}
 
