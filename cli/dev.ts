@@ -25,7 +25,7 @@ export async function startDev() {
     startServer("dev");
     startWS();
 
-    const watchingLists = ["view"].map(async e => await watchFile(`file://${Deno.realPathSync(`${currentPath}/${e}`)}`))
+    const watchingLists = ["view"].map(async e => await watchFile(`${currentPath}/${e}`))
 
     await Promise.all(watchingLists);
   } catch (initError) {
