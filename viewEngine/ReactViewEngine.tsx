@@ -18,6 +18,7 @@ export default class ReactViewEngine {
       MainComponent,
       DocumentComponent
     }
+    console.log(`${this.#currentPath}${pagesPath}`, Deno.realPathSync(`${this.#currentPath}${pagesPath}`));
     this.#pagesPath = Deno.realPathSync(`${this.#currentPath}${pagesPath}`);
   }
 
