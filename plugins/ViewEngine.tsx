@@ -5,7 +5,8 @@ import React from 'https://jspm.dev/react@16.13.1';
 import ReactDOMServer from 'https://jspm.dev/react-dom@16.13.1/server';
 import { AttainRouter } from "../react/AttainRouter.js";
 import { getHead } from "../react/AttainReactUtils.js";
-import ReactViewEngine from "../viewEngine/react.tsx";
+import ReactViewEngine from "../viewEngine/ReactViewEngine.tsx";
+
 
 export async function ViewEngine({
   MainComponentPath,
@@ -25,8 +26,10 @@ export async function ViewEngine({
 
   const reactViewEngine = new ReactViewEngine(MainComponentPath, DocumentComponentPath, PageComponentPath);
   await reactViewEngine.load()
+  //@ts-ignore
+  const preloadList = Object.keys(reactViewEngine.pages).map(key => <link rel="preload" href={reactViewEngine.pages[key].filePath} as="script" />)
   if (!isProduction) {
-    reactViewEngine.watchFile();
+    await reactViewEngine.build();
   }
 
   router.get("/*", async (req, res) => {
@@ -34,8 +37,6 @@ export async function ViewEngine({
     const isReactPath = pathname.split(".").length === 1;
 
     if (isReactPath) {
-      //@ts-ignore
-      const preloadList = Object.keys(reactViewEngine.pages).map(key => <link rel="preload" href={reactViewEngine.pages[key].filePath} as="script" />)
       const SSR = await reactViewEngine.MainComponent.ServerSideAttain({ req, res, pages: reactViewEngine.pages, isServer: true })
       //@ts-ignore
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({

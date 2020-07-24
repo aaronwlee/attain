@@ -1,6 +1,6 @@
 import Denomander from "https://deno.land/x/denomander/mod.ts";
 import { start } from "./cli/start.ts";
-import { startDev } from "./cli/dev.ts";
+import { dev } from "./cli/dev.ts";
 import { initializer } from "./cli/init.ts";
 import { startBuild } from "./cli/build.ts";
 import { startInstall } from "./cli/install.ts";
@@ -46,7 +46,7 @@ program
   .command("development", "Start the development server")
   .alias("dev", "Start the development server")
   .action(async () => {
-    await startDev();
+    await dev();
   });
 
 program

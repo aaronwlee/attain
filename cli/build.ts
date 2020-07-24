@@ -1,5 +1,5 @@
-import { ensureDir, yamlParse, green, red, cyan } from "../deps.ts";
-import { ReactCompiler } from "./bin/ReactCompiler.tsx";
+import { ensureDir, green, red, cyan } from "../deps.ts";
+import { ReactCompiler } from "../viewEngine/ReactCompiler.tsx";
 
 const currentPath = Deno.cwd();
 const distPath = "dist"
@@ -62,7 +62,6 @@ async function startBundle() {
   const pages: any = {};
   await getPageFiles(pages, `${Deno.cwd()}`, `${Deno.cwd()}/view/pages`);
 
-  console.log("here")
   const compiler = new ReactCompiler({
     dist: "dist",
     pageFileInfo: pages,
@@ -78,7 +77,7 @@ async function copyStatics(path?: string) {
     if (dirEntry.name !== "index.html") {
       if (dirEntry.isDirectory) {
         try {
-          ensureDir(`${currentPath}/${distPath}${`/${dirEntry.name}`}`)
+          await ensureDir(`${currentPath}/${distPath}${`/${dirEntry.name}`}`)
         } catch (e) { }
         await copyStatics(`/${dirEntry.name}`)
       } else if (dirEntry.isFile) {

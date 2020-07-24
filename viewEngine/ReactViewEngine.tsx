@@ -1,7 +1,7 @@
-import { blue, red, green, yellow } from "../deps.ts";
+import { blue, red, green, yellow, ensureDir } from "../deps.ts";
+import { ReactCompiler } from "./ReactCompiler.tsx";
 
 export default class ReactViewEngine {
-  #processingList: any = {};
   #pages: any = {};
   #pagesPath: string;
   #Components: {
@@ -43,25 +43,52 @@ export default class ReactViewEngine {
     return this.#Components.DocumentComponent;
   }
 
-  public async load(key?: string) {
-    key && console.log(yellow("[dev - server]"), `Detected a file change ${key}`)
+  public async load() {
     await this.getPageFiles(this.#currentPath, this.#pagesPath);
-    console.log(green("[dev - server]"), `Successfully hot reloaded PageComponents`)
+    console.log(green("[dev - server]"), `Successfully load PageComponents`)
     await this.loadMainComponent();
     await this.loadDocumentComponent();
-    if (key) {
-      delete this.#processingList[key];
-      // eventEmitter.emit("bundled")
+  }
+
+  public async build() {
+    try {
+      await Deno.remove(`${this.#currentPath}/.attain`, { recursive: true });
+    } catch (err) {
+      console.log(green("[dev]"), "Don't need to remove cached files")
+    }
+
+    try {
+      try {
+        await ensureDir(`${this.#currentPath}/.attain`);
+      } catch (e) { }
+      const compiler = new ReactCompiler({
+        dist: ".attain",
+        pageFileInfo: this.#pages,
+        jsbundlePath: "/main.js",
+        entryName: this.MainComponent.name
+      })
+      await compiler.build();
+      console.log(green("[dev]"), "Successfully build the react")
+
+      await this.copyStatics();
+      console.log(green("[dev]"), "Successfully copy static files")
+    } catch (initError) {
+      console.log(red("[dev] - init error:"), initError)
+      Deno.exit(1);
     }
   }
 
-  public async watchFile() {
-    console.log(blue("[dev - server]"), `start to watching ${Deno.cwd()}/view`)
-    for await (const event of Deno.watchFs(`${Deno.cwd()}/view`)) {
-      const key = event.paths[0]
-      if (!Object.keys(this.#processingList).find((p: any) => p === key)) {
-        this.#processingList[key] = true
-        this.load(key).catch(e => console.log(red("[dev - server]"), e));
+  private async copyStatics(path?: string) {
+    for await (const dirEntry of Deno.readDir(`${this.#currentPath}/view/public${path ? path : ""}`)) {
+      if (dirEntry.name !== "index.html") {
+        if (dirEntry.isDirectory) {
+          try {
+            await ensureDir(`${this.#currentPath}/.attain${`/${dirEntry.name}`}`)
+          } catch (e) { }
+          await this.copyStatics(`/${dirEntry.name}`)
+        } else if (dirEntry.isFile) {
+          await Deno.copyFile(`${this.#currentPath}/view/public${path ? path : ""}${`/${dirEntry.name}`}`, `${this.#currentPath}/.attain${path ? path : ""}${`/${dirEntry.name}`}`);
+        }
       }
     }
   }
@@ -71,7 +98,7 @@ export default class ReactViewEngine {
       delete this.#Components.MainComponent;
     }
     this.#Components.MainComponent = (await import(`file://${this.#componentPaths.MainComponent}`)).default
-    console.log(green("[dev - server]"), `Successfully hot reloaded MainComponent`)
+    console.log(green("[dev]"), `Successfully load MainComponent`)
   }
 
   private async loadDocumentComponent() {
@@ -79,7 +106,7 @@ export default class ReactViewEngine {
       delete this.#Components.DocumentComponent;
     }
     this.#Components.DocumentComponent = (await import(`file://${this.#componentPaths.DocumentComponent}`)).default
-    console.log(green("[dev - server]"), `Successfully hot reloaded DocumentComponent`)
+    console.log(green("[dev]"), `Successfully load DocumentComponent`)
   }
 
   private async getPageFiles(entry: string, path: string) {
