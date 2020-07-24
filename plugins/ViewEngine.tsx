@@ -27,7 +27,7 @@ export async function ViewEngine({
   const reactViewEngine = new ReactViewEngine(MainComponentPath, DocumentComponentPath, PageComponentPath);
   await reactViewEngine.load()
   //@ts-ignore
-  const preloadList = Object.keys(reactViewEngine.pages).map(key => <link rel="preload" href={reactViewEngine.pages[key].filePath} as="script" />)
+  const preloadList = Object.keys(reactViewEngine.pages).map((key, index) => <link key={index + 1} rel="preload" href={reactViewEngine.pages[key].filePath} as="script" />)
   if (!isProduction) {
     await reactViewEngine.build();
   }
@@ -42,7 +42,7 @@ export async function ViewEngine({
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({
         req, res,
         //@ts-ignore
-        PreloadScript: () => [...preloadList, <link rel="preload" href={"/main.js"} as="script" />],
+        PreloadScript: () => [...preloadList, <link key="0" rel="preload" href={"/main.js"} as="script" />],
         //@ts-ignore
         MainScript: () => <script type="module" src={"/main.js"} async />,
         Main:
