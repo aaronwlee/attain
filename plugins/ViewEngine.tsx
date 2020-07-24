@@ -25,7 +25,7 @@ export async function ViewEngine({
 
   const reactViewEngine = new ReactViewEngine(MainComponentPath, DocumentComponentPath, PageComponentPath);
   await reactViewEngine.load()
-  if(!isProduction) {
+  if (!isProduction) {
     reactViewEngine.watchFile();
   }
 
@@ -34,8 +34,8 @@ export async function ViewEngine({
     const isReactPath = pathname.split(".").length === 1;
 
     if (isReactPath) {
-       //@ts-ignore
-      const preloadList = Object.keys(this.pages).map(key => <link rel="preload" href={pages[key].filePath} as="script" />)
+      //@ts-ignore
+      const preloadList = Object.keys(reactViewEngine.pages).map(key => <link rel="preload" href={reactViewEngine.pages[key].filePath} as="script" />)
       const SSR = await reactViewEngine.MainComponent.ServerSideAttain({ req, res, pages: reactViewEngine.pages, isServer: true })
       //@ts-ignore
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({
