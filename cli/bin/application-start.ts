@@ -12,8 +12,8 @@ export async function startServer(envState: "dev" | "start") {
         "run",
         "-A",
         "--unstable",
-        "-c tsconfig.json",
-        "server.tsx",
+        "-c ./tsconfig.json",
+        "./server.tsx",
       ],
     });
 
