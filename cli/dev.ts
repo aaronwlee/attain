@@ -11,7 +11,7 @@ export async function startDev() {
   try {
     await Deno.remove(`${currentPath}/.attain`, { recursive: true });
   } catch (err) {
-    console.log(green("[dev]"), "don't need to remove cached files")
+    console.log(green("[dev]"), "Don't need to remove cached files")
   }
 
   try {
@@ -21,8 +21,7 @@ export async function startDev() {
     console.log(green("[dev]"), "Start DEV server")
     await startBundle();
     await injectWSClient();
-    await copyStatics();
-    console.log(green("[dev]"), "static files are successfully copied")
+    console.log(green("[dev]"), "Successfully copy static files")
     startServer("dev");
     startWS();
 
@@ -90,6 +89,7 @@ async function startBundle(key?: string) {
     entryName: "Main"
   })
   await compiler.build();
+  await copyStatics();
   console.log(green("[dev]"), "Successfully build the react")
   if (key) {
     delete processingList[key];
@@ -123,7 +123,7 @@ async function injectWSClient() {
 `
 
   await Deno.writeTextFile(`${currentPath}/.attain/reload.websocket.js`, wsClient);
-  console.log(green("[dev]"), "reload.websocket.js has been successfully created")
+  console.log(green("[dev]"), "Successfully create reload.websocket.js")
 }
 
 function startWS() {
