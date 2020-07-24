@@ -30,14 +30,14 @@ export default class ReactViewEngine {
   }
 
   get MainComponent() {
-    if (this.#Components.MainComponent) {
+    if (!this.#Components.MainComponent) {
       throw "MainComponet is empty"
     }
     return this.#Components.MainComponent;
   }
 
   get DocumentComponent() {
-    if (this.#Components.DocumentComponent) {
+    if (!this.#Components.DocumentComponent) {
       throw "DocumentComponent is empty"
     }
     return this.#Components.DocumentComponent;
