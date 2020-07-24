@@ -1,4 +1,4 @@
-import { blue, red, green } from "../deps.ts";
+import { blue, red, green, yellow } from "../deps.ts";
 
 export default class ReactViewEngine {
   #processingList: any = {};
@@ -15,7 +15,7 @@ export default class ReactViewEngine {
     MainComponent: string,
     DocumentComponent: string
   }
-  #currentPath: string = Deno.cwd();
+  #currentPath: string = Deno.realPathSync(Deno.cwd());
 
   constructor(MainComponentPath: string, DocumentComponentPath: string, pagesPath: string) {
     this.#componentPaths = {
@@ -49,6 +49,7 @@ export default class ReactViewEngine {
   }
 
   public async load(key?: string) {
+    key && console.log(yellow("[dev - server]"), `Detected a file change ${key}`)
     await this.getPageFiles(this.#currentPath, this.#pagesPath);
     console.log(green("[dev - server]"), `Successfully hot reloaded PageComponents`)
     await this.loadMainComponent();
