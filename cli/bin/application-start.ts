@@ -12,8 +12,8 @@ export async function startServer(envState: "dev" | "start") {
         "run",
         "-A",
         "--unstable",
-        "https://deno.land/x/denon@v2.2.1/denon.ts",
-        "start"
+        "-c tsconfig.json",
+        "server.tsx",
       ],
     });
 
