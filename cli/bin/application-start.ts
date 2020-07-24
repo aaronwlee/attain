@@ -12,8 +12,9 @@ export async function startServer(envState: "dev" | "start") {
         "run",
         "-A",
         "--unstable",
-        `-c ${Deno.cwd()}/tsconfig.json`,
-        `${Deno.cwd()}/server.ts`,
+        "-c",
+        `${Deno.cwd()}/tsconfig.json`,
+        `${Deno.cwd()}/server.tsx`,
       ],
     });
 
