@@ -1,6 +1,4 @@
 import { blue, red, green, yellow } from "../deps.ts";
-// @deno-types="https://deno.land/x/types/react/v16.13.1/react.d.ts"
-import React from 'https://jspm.dev/react@16.13.1';
 
 export default class ReactViewEngine {
   #processingList: any = {};
@@ -43,11 +41,6 @@ export default class ReactViewEngine {
       throw "DocumentComponent is empty"
     }
     return this.#Components.DocumentComponent;
-  }
-
-  get preloadList() {
-    //@ts-ignore
-    return Object.keys(this.pages).map(key => <link rel="preload" href={pages[key].filePath} as="script" />)
   }
 
   public async load(key?: string) {
