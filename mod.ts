@@ -8,4 +8,4 @@ export { parser } from "./plugins/parser.ts";
 export { logger } from "./plugins/logger.ts";
 export { staticServe } from "./plugins/staticServe.ts";
 export { security } from "./plugins/security.ts";
-export { reactServe } from "./plugins/reactServe.ts";
+export { reactServe } from "./plugins/reactServe.tsx";

@@ -1,5 +1,5 @@
 import { ensureDir, cyan, green, red, blue } from "../deps.ts";
-export { download } from "https://deno.land/x/download/mod.ts";
+// export { download } from "https://deno.land/x/download/mod.ts";
 
 
 // const fileList: any = {
@@ -41,15 +41,15 @@ async function getDownload(projectPath: string, path: string = "") {
         console.log(green("[init download]"), `start - ${info.download_url}`)
 
 
-        try {
-          await download(info.download_url, {
-            file: info.name,
-            dir: destinationPath
-          })
-          console.log(green("[init download]"), `done - ${info.download_url}`)
-        } catch (error) {
-          console.error(red(`[init download]`), error)
-        }
+        // try {
+        //   await download(info.download_url, {
+        //     file: info.name,
+        //     dir: destinationPath
+        //   })
+        //   console.log(green("[init download]"), `done - ${info.download_url}`)
+        // } catch (error) {
+        //   console.error(red(`[init download]`), error)
+        // }
 
       } else if (!info.download_url) {
         await getDownload(projectPath, `/${info.path}`)

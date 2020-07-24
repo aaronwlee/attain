@@ -11,10 +11,9 @@ export async function startServer(envState: "dev" | "start") {
       cmd: [
         "deno",
         "run",
-        `--importmap=${currentPath}/import_map.json`,
         "-A",
         "--unstable",
-        `${currentPath}/server.ts`,
+        `${currentPath}/server.tsx`,
       ],
     });
 

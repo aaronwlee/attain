@@ -1,5 +1,6 @@
 import { ensureDir, EventEmitter, listenAndServe, acceptable, acceptWebSocket, isWebSocketCloseEvent, green, yellow, red, blue, yamlParse } from "../deps.ts";
 import { startServer } from "./bin/application-start.ts";
+import { ReactCompiler } from "./bin/ReactCompiler.tsx";
 
 const currentPath = Deno.cwd();
 
@@ -14,7 +15,10 @@ export async function startDev() {
   }
 
   try {
-    await ensureDir(`${currentPath}/.attain`);
+    try {
+      await ensureDir(`${currentPath}/.attain`);
+    } catch (e) { }
+    console.log(green("[dev]"), "Start DEV server")
     await startBundle();
     await injectWSClient();
     await copyStatics();
@@ -22,7 +26,7 @@ export async function startDev() {
     startServer("dev");
     startWS();
 
-    const watchingLists = ["view", "config/cdn-packages.yaml"].map(async e => await watchFile(`${currentPath}/${e}`))
+    const watchingLists = ["view"].map(async e => await watchFile(`${currentPath}/${e}`))
 
     await Promise.all(watchingLists);
   } catch (initError) {
@@ -42,24 +46,51 @@ async function watchFile(path: string) {
   }
 }
 
+const getPageFiles = async (list: any, entry: string, path: string) => {
+  for await (const dirEntry of Deno.readDirSync(`${path}`)) {
+    if (dirEntry.isFile && dirEntry.name.includes(".tsx")) {
+      const rootPath = path.replace(entry, "");
+      const routePath = rootPath.replace("/view/pages", "")
+      const browerPath = dirEntry.name.replace(".tsx", "")
+      let fullPath = ""
+      if (browerPath === "index") {
+        if (!routePath) {
+          fullPath = "/"
+        }
+        else {
+          fullPath = `${routePath}`
+        }
+      } else {
+        fullPath = `${routePath}/${browerPath}`
+      }
+      const component: any = (await import(`file://${Deno.realPathSync(`${path}/${dirEntry.name}`)}`)).default;
+
+      if (component.name) {
+        list[fullPath] = {
+          filePath: `${rootPath}/${dirEntry.name}`,
+          Component: component,
+          name: component.name
+        }
+      }
+    } else if (dirEntry.isDirectory) {
+      getPageFiles(list, entry, `${path}/${dirEntry.name}`)
+    }
+  }
+}
+
 async function startBundle(key?: string) {
   key && console.log(yellow("[dev]"), `Detected a file change ${key}`)
-  const process = Deno.run({
-    cmd: [
-      "deno",
-      "bundle",
-      "--unstable",
-      `--importmap=${currentPath}/import_map.json`,
-      "-c",
-      `${currentPath}/tsconfig.json`,
-      `${currentPath}/view/index.tsx`,
-      `${currentPath}/.attain/index.bundle.js`
-    ],
-  });
+  const pages: any = {};
+  await getPageFiles(pages, `${Deno.cwd()}`, `${Deno.cwd()}/view/pages`);
 
-  await process.status();
-  await rewireIndex();
-
+  const compiler = new ReactCompiler({
+    dist: ".attain",
+    pageFileInfo: pages,
+    jsbundlePath: "/main.js",
+    entryName: "Main"
+  })
+  await compiler.build();
+  console.log(green("[dev]"), "Successfully build the react")
   if (key) {
     delete processingList[key];
     eventEmitter.emit("bundled")
@@ -70,33 +101,15 @@ async function copyStatics(path?: string) {
   for await (const dirEntry of Deno.readDir(`${currentPath}/view/public${path ? path : ""}`)) {
     if (dirEntry.name !== "index.html") {
       if (dirEntry.isDirectory) {
-        ensureDir(`${currentPath}/.attain${`/${dirEntry.name}`}`)
+        try {
+          ensureDir(`${currentPath}/.attain${`/${dirEntry.name}`}`)
+        } catch (e) { }
         await copyStatics(`/${dirEntry.name}`)
       } else if (dirEntry.isFile) {
         await Deno.copyFile(`${currentPath}/view/public${path ? path : ""}${`/${dirEntry.name}`}`, `${currentPath}/.attain${path ? path : ""}${`/${dirEntry.name}`}`);
       }
     }
   }
-}
-
-async function rewireIndex() {
-  const indexHTML = await Deno.readTextFile(`${currentPath}/view/public/index.html`);
-
-  const devTools = `
-    <!-- dev tools -->
-    <script type="module" src="./reload.websocket.js" defer></script>
-  `
-  let replacedHTML = indexHTML.replace("{{ DevTools }}", devTools)
-
-  const packagesYaml: any = yamlParse(Deno.readTextFileSync(`${currentPath}/config/cdn-packages.yaml`));
-  if (packagesYaml["DEVELOPMENT"]) {
-    const list = packagesYaml["DEVELOPMENT"].map((p: string) => `<script crossorigin src="${p}"></script>`)
-    replacedHTML = replacedHTML.replace("{{ Packages }}", list.join(""))
-  }
-
-  await Deno.writeTextFile(`${currentPath}/.attain/index.html`, replacedHTML);
-
-  console.log(green("[dev]"), "index.html has been successfully rewired")
 }
 
 async function injectWSClient() {

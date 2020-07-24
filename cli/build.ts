@@ -1,4 +1,5 @@
 import { ensureDir, yamlParse, green, red, cyan } from "../deps.ts";
+import { ReactCompiler } from "./bin/ReactCompiler.tsx";
 
 const currentPath = Deno.cwd();
 const distPath = "dist"
@@ -10,7 +11,9 @@ export async function startBuild() {
     console.log(green("[build]"), "don't need to clear build files")
   }
   try {
-    await ensureDir(`${currentPath}/${distPath}`);
+    try {
+      await ensureDir(`${currentPath}/${distPath}`);
+    } catch (e) { }
     await startBundle();
     await copyStatics();
     console.log(green("[build]"), "static files are successfully copied")
@@ -23,48 +26,64 @@ export async function startBuild() {
   }
 }
 
-async function startBundle() {
-  const process = Deno.run({
-    cmd: [
-      "deno",
-      "bundle",
-      "--unstable",
-      `--importmap=${currentPath}/import_map.json`,
-      "-c",
-      `${currentPath}/tsconfig.json`,
-      `${currentPath}/view/index.tsx`,
-      `${currentPath}/dist/index.bundle.js`
-    ],
-  });
+const getPageFiles = async (list: any, entry: string, path: string) => {
+  for await (const dirEntry of Deno.readDirSync(`${path}`)) {
+    if (dirEntry.isFile && dirEntry.name.includes(".tsx")) {
+      const rootPath = path.replace(entry, "");
+      const routePath = rootPath.replace("/view/pages", "")
+      const browerPath = dirEntry.name.replace(".tsx", "")
+      let fullPath = ""
+      if (browerPath === "index") {
+        if (!routePath) {
+          fullPath = "/"
+        }
+        else {
+          fullPath = `${routePath}`
+        }
+      } else {
+        fullPath = `${routePath}/${browerPath}`
+      }
+      const component: any = (await import(`file://${Deno.realPathSync(`${path}/${dirEntry.name}`)}`)).default;
 
-  await process.status();
-  await rewireIndex();
+      if (component.name) {
+        list[fullPath] = {
+          filePath: `${rootPath}/${dirEntry.name}`,
+          Component: component,
+          name: component.name
+        }
+      }
+    } else if (dirEntry.isDirectory) {
+      getPageFiles(list, entry, `${path}/${dirEntry.name}`)
+    }
+  }
+}
+
+async function startBundle() {
+  const pages: any = {};
+  await getPageFiles(pages, `${Deno.cwd()}`, `${Deno.cwd()}/view/pages`);
+
+  console.log("here")
+  const compiler = new ReactCompiler({
+    dist: "dist",
+    pageFileInfo: pages,
+    jsbundlePath: "/main.js",
+    entryName: "Main"
+  })
+  await compiler.build();
+
 }
 
 async function copyStatics(path?: string) {
   for await (const dirEntry of Deno.readDir(`${currentPath}/view/public${path ? path : ""}`)) {
     if (dirEntry.name !== "index.html") {
       if (dirEntry.isDirectory) {
-        ensureDir(`${currentPath}/${distPath}${`/${dirEntry.name}`}`)
+        try {
+          ensureDir(`${currentPath}/${distPath}${`/${dirEntry.name}`}`)
+        } catch (e) { }
         await copyStatics(`/${dirEntry.name}`)
       } else if (dirEntry.isFile) {
         await Deno.copyFile(`${currentPath}/view/public${path ? path : ""}${`/${dirEntry.name}`}`, `${currentPath}/${distPath}${path ? path : ""}${`/${dirEntry.name}`}`);
       }
     }
   }
-}
-
-async function rewireIndex() {
-  const indexHTML = await Deno.readTextFile(`${currentPath}/view/public/index.html`);
-  let replacedHTML = indexHTML.replace("{{ DevTools }}", "")
-
-  const packagesYaml: any = yamlParse(Deno.readTextFileSync(`${currentPath}/config/cdn-packages.yaml`));
-  if (packagesYaml["PRODUCTION"]) {
-    const list = packagesYaml["PRODUCTION"].map((p: string) => `<script crossorigin src="${p}"></script>`)
-    replacedHTML = replacedHTML.replace("{{ Packages }}", list.join(""))
-  }
-
-  await Deno.writeTextFile(`${currentPath}/${distPath}/index.html`, replacedHTML);
-
-  console.log(green("[build]"), "index.html has been successfully rewired")
 }
