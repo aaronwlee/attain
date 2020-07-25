@@ -3,7 +3,6 @@ import { start } from "./cli/start.ts";
 import { dev } from "./cli/dev.ts";
 import { initializer } from "./cli/init.ts";
 import { startBuild } from "./cli/build.ts";
-import { startInstall } from "./cli/install.ts";
 
 function envValidater(env?: any) {
   if (typeof env !== "string") {
@@ -34,13 +33,6 @@ program
     await start();
   });
 
-program
-  .command("install [path]", "install packages for view")
-  .alias("i", "install packages for view")
-  .option("-e --env", "install target environment", envValidater)
-  .action(async ({ path }: any) => {
-    await startInstall(path, program.env)
-  });
 
 program
   .command("development", "Start the development server")

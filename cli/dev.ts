@@ -2,6 +2,8 @@
 // import { startServer } from "./bin/application-start.ts";
 // import { ReactCompiler } from "./bin/ReactCompiler.tsx";
 
+import { blue, yellow } from "../deps.ts";
+
 // const currentPath = Deno.cwd();
 
 // const processingList: any = {}
@@ -166,9 +168,28 @@
 
 // }
 
+let worker: any = null;
+const processingList: any = {}
 
-import { startServer } from "./bin/application-start.ts";
+function setWorker() {
+  worker = new Worker(new URL(`../devWorker.ts`, import.meta.url).href, {
+    type: "module",
+    deno: true,
+  });
+}
 
-export function dev() {
-  startServer("dev")
+export async function dev() {
+  setWorker();
+  worker.postMessage({});
+  console.log(blue("[dev]"), `Watching view changes for development`)
+  for await (const event of Deno.watchFs(`${Deno.cwd()}/view`)) {
+    const key = event.paths[0]
+    if (!Object.keys(processingList).find((p: any) => p === key)) {
+      console.log(yellow("[dev]"), `Detected a file change ${key}`)
+      processingList[key] = true
+      worker.postMessage({});
+      setWorker();
+      delete processingList[key];
+    }
+  }
 }

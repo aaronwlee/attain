@@ -1,7 +1,13 @@
-export async function start() {
+import { red } from "../../deps.ts";
+
+self.onmessage = async (e) => {
+  self.close();
+};
+
+try {
   const process = Deno.run({
     env: {
-      "PRODUCTION": "true"
+      "DEVElOPMENT": "true"
     },
     cmd: [
       "deno",
@@ -15,4 +21,8 @@ export async function start() {
   });
   
   await process.status();
+} catch (e) {
+  console.error(red("[Server Error]"), e);
 }
+
+
