@@ -172,7 +172,7 @@ let worker: any = null;
 const processingList: any = {}
 
 function setWorker() {
-  worker = new Worker(new URL(`../devWorker.ts`, import.meta.url).href, {
+  worker = new Worker(new URL(`./bin/devWorker.ts`, import.meta.url).href, {
     type: "module",
     deno: true,
   });
