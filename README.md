@@ -4,9 +4,11 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v1.0.0 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.1 - [Website](https://aaronwlee.github.io/Attain/)
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
+
+[![nest badge](https://nest.land/badge.svg)](https://nest.land/package/attain)
 
 ## This is beta version!
 
@@ -20,11 +22,15 @@ Any contributions to the code would be appreciated. :)
 
 Download and use
 ```js
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.0/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.0/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.1/mod.ts";
+// or
+import { App, Router, Request, Response } from "https://x.nest.land/attain@VERSION/mod.ts";
+// or
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.1/mod.ts";
 // download cli
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.0/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.1/attain-cli.ts
 
 ```
 ```
@@ -128,7 +134,7 @@ app.listen({ port: 3500 });
 
 ## CLI
 ```
-deno install -A -f --unstable -n attain https://deno.land/x/attain@cli-beta-0.1/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.1/attain-cli.ts
 ```
 It's providing a full-stack server-side rendering development environment using React and Attain. 
 
