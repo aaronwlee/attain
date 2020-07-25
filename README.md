@@ -4,31 +4,44 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v0.9.5 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.1 - [Website](https://aaronwlee.github.io/Attain/)
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
+
+[![nest badge](https://nest.land/badge.svg)](https://nest.land/package/attain)
+
+## This is beta version!
 
 A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak). Fast and stable with proper memory usage.
 
 Only for [Deno](https://deno.land/)
+
+Any contributions to the code would be appreciated. :)
 
 <br />
 
 Download and use
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
-import { App, Router, Request, Response } from "https://deno.land/x/attain@0.9.5/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/master/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.1/mod.ts";
+// or
+import { App, Router, Request, Response } from "https://x.nest.land/attain@VERSION/mod.ts";
+// or
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.1/mod.ts";
+// download cli
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.1/attain-cli.ts
 
 ```
 ```
-# deno run --allow-net main.ts
+# deno run --allow-net --unstable main.ts
 ```
 
 ## Contents
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
+- [CLI](#cli)
+- [React](#react)
 - [How To](#how-to)
 - [Boilerplate](#boilerplate)
 - [Methods and Properies](#methods-and-properies)
@@ -61,9 +74,8 @@ app.use(sampleMiddleware, (req, res) => {
 });
 
 app.listen({ port: 3500 });
-
-console.log("http://localhost:3500");
 ```
+
 ### Procedure explain
 The middleware process the function step by step based on registered order.  
 
@@ -118,9 +130,65 @@ app.error((err, req, res) => {
 })
 
 app.listen({ port: 3500 });
-
-console.log("http://localhost:3500");
 ```
+
+## CLI
+```
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.1/attain-cli.ts
+```
+It's providing a full-stack server-side rendering development environment using React and Attain. 
+
+It's a beta version and there are possibly exist some bugs.
+__important__: This beta project yet to supporting any type of CSS modules.
+
+### TODO
+- [ ] - Dynamic routing supporting
+- [ ] - CSS supporting
+- [ ] - Implement self request method for SSR
+- [ ] - Improve hot reload
+
+All commands are must be executed in the project directory
+- `-h`
+<br /> Get Help.
+
+- `init [path]`
+<br /> Initialize the project to the path.
+<br /> ex) attain init react-attain
+
+- `dev | development`
+<br /> Starts the dev server and watch the front-end file changes.
+<br /> ex) attain dev
+
+- `build`
+<br /> Build the bundles to the dist folder with "PRODUCTION" scripts
+<br /> ex) attain build
+
+- `start`
+<br /> Starts the production server
+<br /> ex) attain start
+
+## React
+Documentation soon
+
+### React Components and SSR methods
+- `useRouter`
+<br /> Documentation soon
+
+- `Component.ServerSideAttain`
+<br /> Documentation soon
+
+### SEO tools
+- `useDocument`
+<br /> Documentation soon
+
+- `addMeta`
+<br /> Documentation soon
+
+- `addScript`
+<br /> Documentation soon
+
+- `setTitle`
+<br /> Documentation soon
 
 ## How To
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
@@ -198,7 +266,7 @@ Methods
 ### Request 
 > [Oak](https://github.com/oakserver/oak/tree/master#request) for deno
 
-This method use the Oak request, check this out.
+This class used Oak's request library. Check this.
 
 ### Router
   Methods
@@ -357,8 +425,6 @@ app.use((req, res) => {
 });
 
 app.listen({ port: 3500 });
-
-console.log("http://localhost:3500");
 ```
 
 ```
@@ -429,7 +495,6 @@ app.post("/submit", (req, res) => {
 });
 
 app.listen({ port: 4000 });
-console.log("Start listening on http://localhost:4000");
 
 ```
 

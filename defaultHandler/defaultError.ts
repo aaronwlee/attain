@@ -1,4 +1,4 @@
-import { ErrorCallBackType } from "../types.ts";
+import { ErrorCallBackType } from "../mod.ts";
 
 export const defaultError: ErrorCallBackType = (error: Error, req, res) => {
   res.status(500).send(`<!doctype html>

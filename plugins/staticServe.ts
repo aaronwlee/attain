@@ -22,7 +22,7 @@ export const staticServe = (
         var t = new Date();
         t.setSeconds(t.getSeconds() + maxAge);
         res.setHeader("Expires", t.toUTCString());
-        await res.status(200).sendFile(fullPath);
+        await res.sendFile(fullPath);
       }
     } catch (e) {
       if (e instanceof Deno.errors.PermissionDenied) {
