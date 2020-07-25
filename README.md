@@ -419,8 +419,6 @@ app.use((req, res) => {
 });
 
 app.listen({ port: 3500 });
-
-console.log("http://localhost:3500");
 ```
 
 ```
@@ -491,7 +489,6 @@ app.post("/submit", (req, res) => {
 });
 
 app.listen({ port: 4000 });
-console.log("Start listening on http://localhost:4000");
 
 ```
 
