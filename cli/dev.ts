@@ -183,21 +183,9 @@ export async function dev() {
   console.log(blue("[dev]"), `Watching view changes for development`)
   for await (const event of Deno.watchFs(`${Deno.cwd()}/view`)) {
     const key = event.paths[0]
-    if (!Object.keys(processingList).find((p: any) => p === key)) {
-      processingList[key] = true
-      reload(key)
-    }
-  }
-}
-
-function reload(key: string) {
-  return new Promise((resolve) => {
-    console.log(yellow("[dev]"), `Detected a file change ${key}`)
+    processingList[key] = true
     worker.postMessage({});
     worker.terminate();
     setWorker();
-    delete processingList[key];
-    resolve();
-  })
-
+  }
 }
