@@ -4,7 +4,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - vcli-beta-0.2 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.0 - [Website](https://aaronwlee.github.io/Attain/)
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
 
@@ -20,11 +20,11 @@ Any contributions to the code would be appreciated. :)
 
 Download and use
 ```js
-import { App, Router, Request, Response } from "https://deno.land/x/attain@cli-beta-0.2/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.0/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/cli-beta-0.2/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.0/mod.ts";
 // download cli
-deno install -A -f --unstable -n attain https://deno.land/x/attain@cli-beta-0.2/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.0/attain-cli.ts
 
 ```
 ```
