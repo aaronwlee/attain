@@ -20,9 +20,9 @@ export const parser = async (req: Request, res: Response) => {
   if (req.hasBody) {
     const params = await req.body();
     if (params.type === "json") {
-      req.params = params.value;
+      req.params = await params.value;
     } else {
-      req.params = { value: params.value };
+      req.params = { value: await params.value };
     }
   }
   setQueryVariable(req);

@@ -2,11 +2,26 @@ import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { Sha1, lookup, match, extname, parse } from "../deps.ts";
 
+const CR = "\r".charCodeAt(0);
+const LF = "\n".charCodeAt(0);
+const HTAB = "\t".charCodeAt(0);
+const SPACE = " ".charCodeAt(0);
 
 /** Returns the content-type based on the extension of a path. */
 function contentType(path: string): string | undefined {
   const result = lookup(extname(path));
   return result ? result : undefined;
+}
+
+export function stripEol(value: Uint8Array): Uint8Array {
+  if (value[value.byteLength - 1] == LF) {
+    let drop = 1;
+    if (value.byteLength > 1 && value[value.byteLength - 2] === CR) {
+      drop = 2;
+    }
+    return value.subarray(0, value.byteLength - drop);
+  }
+  return value;
 }
 
 export const checkPathAndParseURLParams = (
@@ -23,6 +38,12 @@ export const checkPathAndParseURLParams = (
   return isMatch;
 };
 
+export function getRandomFilename(prefix = "", extension = ""): string {
+  return `${prefix}${
+    new Sha1().update(crypto.getRandomValues(new Uint8Array(256))).hex()
+  }${extension ? `.${extension}` : ""}`;
+}
+
 export const etag = (entity: Uint8Array, len: number) => {
   if (!entity) {
     // fast-path empty
@@ -37,6 +58,16 @@ export const etag = (entity: Uint8Array, len: number) => {
 
   return `W/"${len.toString(16)}-${hash}"`;
 };
+
+export function skipLWSPChar(u8: Uint8Array): Uint8Array {
+  const result = new Uint8Array(u8.length);
+  let j = 0;
+  for (let i = 0; i < u8.length; i++) {
+    if (u8[i] === SPACE || u8[i] === HTAB) continue;
+    result[j++] = u8[i];
+  }
+  return result.slice(0, j);
+}
 
 export const fresh = (req: Request, res: Response) => {
   const modifiedSince = req.headers.get("if-modified-since");

@@ -14,6 +14,8 @@ A middleware web framework for Deno which is using [http](https://github.com/den
 
 Only for [Deno](https://deno.land/)
 
+Any contributions to the code would be appreciated. :)
+
 <br />
 
 Download and use
@@ -33,6 +35,7 @@ deno install -A -f --unstable -n attain https://deno.land/x/attain@cli-beta-0.2/
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
 - [CLI](#cli)
+- [React](#react)
 - [How To](#how-to)
 - [Boilerplate](#boilerplate)
 - [Methods and Properies](#methods-and-properies)
@@ -65,9 +68,8 @@ app.use(sampleMiddleware, (req, res) => {
 });
 
 app.listen({ port: 3500 });
-
-console.log("http://localhost:3500");
 ```
+
 ### Procedure explain
 The middleware process the function step by step based on registered order.  
 
@@ -122,18 +124,22 @@ app.error((err, req, res) => {
 })
 
 app.listen({ port: 3500 });
-
-console.log("http://localhost:3500");
 ```
 
 ## CLI
 ```
 deno install -A -f --unstable -n attain https://deno.land/x/attain@cli-beta-0.1/attain-cli.ts
 ```
-It's providing a full-stack development environment using React and Attain. 
+It's providing a full-stack server-side rendering development environment using React and Attain. 
 
 It's a beta version and there are possibly exist some bugs.
-__important__: This beta project yet to supporting any type of CSS modules and most of "umd" scripts are also may not work.
+__important__: This beta project yet to supporting any type of CSS modules.
+
+### TODO
+- [ ] - Dynamic routing supporting
+- [ ] - CSS supporting
+- [ ] - Implement self request method for SSR
+- [ ] - Improve hot reload
 
 All commands are must be executed in the project directory
 - `-h`
@@ -142,11 +148,6 @@ All commands are must be executed in the project directory
 - `init [path]`
 <br /> Initialize the project to the path.
 <br /> ex) attain init react-attain
-
-- `i | install [cdn] --env PRODUCTION | DEVELOPMENT | undefined`
-<br /> Install a front-end script which must be a "umd" type from the CDN.
-<br /> "env" is for the targeting specific environment. If it's not provided, the script will be installed into both env.
-<br /> ex) attain install https://unpkg.com/styled-components/dist/styled-components.min.js
 
 - `dev | development`
 <br /> Starts the dev server and watch the front-end file changes.
@@ -160,7 +161,28 @@ All commands are must be executed in the project directory
 <br /> Starts the production server
 <br /> ex) attain start
 
+## React
+Documentation soon
 
+### React Components and SSR methods
+- `useRouter`
+<br /> Documentation soon
+
+- `Component.ServerSideAttain`
+<br /> Documentation soon
+
+### SEO tools
+- `useDocument`
+<br /> Documentation soon
+
+- `addMeta`
+<br /> Documentation soon
+
+- `addScript`
+<br /> Documentation soon
+
+- `setTitle`
+<br /> Documentation soon
 
 ## How To
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
@@ -238,7 +260,7 @@ Methods
 ### Request 
 > [Oak](https://github.com/oakserver/oak/tree/master#request) for deno
 
-This method use the Oak request, check this out.
+This class used Oak's request library. Check this.
 
 ### Router
   Methods

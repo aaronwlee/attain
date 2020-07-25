@@ -25,87 +25,39 @@
  * THE SOFTWARE.
  */
 
-import { ServerRequest, Response } from "../deps.ts";
-import { preferredEncodings } from "./encoding.ts";
-import httpErrors from "./http-errors.ts";
-import { isMediaType } from "./type-is.ts";
-import { preferredMediaTypes } from "./mediaType.ts";
+import type {
+  Body,
+  BodyForm,
+  BodyFormData,
+  BodyOptions,
+  BodyJson,
+  BodyRaw,
+  BodyReader,
+  BodyText,
+} from "./body.ts";
+import { RequestBody } from "./body.ts";
+import { ServerRequest } from "../deps.ts";
 import { SupportMethodType } from "./types.ts";
-
-export type BodyType =
-  | "json"
-  | "form"
-  | "text"
-  | "raw"
-  | "undefined"
-  | "reader";
-
-export type BodyJson = { type: "json"; value: any };
-export type BodyForm = { type: "form"; value: URLSearchParams };
-export type BodyText = { type: "text"; value: string };
-export type BodyRaw = { type: "raw"; value: Uint8Array };
-export type BodyUndefined = { type: "undefined"; value: undefined };
-
-export type BodyReader = { type: "reader"; value: Deno.Reader };
-
-export type Body =
-  | BodyJson
-  | BodyForm
-  | BodyText
-  | BodyRaw
-  | BodyUndefined;
-
-export interface BodyOptions {
-  /** If `true`, return a body value of `Deno.Reader`. */
-  asReader?: boolean;
-
-  /** A map of extra content types to determine how to parse the body. */
-  contentTypes?: {
-    /** Content types listed here will always return a "raw" Uint8Array. */
-    raw?: string[];
-    /** Content types listed here will be parsed as a JSON string. */
-    json?: string[];
-    /** Content types listed here will be parsed as form data and return
-     * `URLSearchParameters` as the value of the body. */
-    form?: string[];
-    /** Content types listed here will be parsed as text. */
-    text?: string[];
-  };
-}
-
-export interface BodyOptionsAsReader extends BodyOptions {
-  asReader: true;
-}
+import { preferredCharsets } from "./negotiation/charset.ts";
+import { preferredEncodings } from "./negotiation/encoding.ts";
+import { preferredLanguages } from "./negotiation/language.ts";
+import { preferredMediaTypes } from "./negotiation/mediaType.ts";
 
 const decoder = new TextDecoder();
 
-export interface BodyContentTypes {
-  json?: string[];
-  form?: string[];
-  text?: string[];
-}
-
-const defaultBodyContentTypes = {
-  json: ["json", "application/*+json", "application/csp-report"],
-  form: ["urlencoded"],
-  text: ["text"],
-};
-
+/** An interface which provides information about the current request. */
 export class Request {
-  #body?: Body | BodyReader;
-  #rawBodyPromise?: Promise<Uint8Array>;
+  #body: RequestBody;
   #serverRequest: ServerRequest;
   #url?: URL;
+  #secure: boolean;
   #startDate: number;
 
   [dynamicProperty: string]: any
 
   /** Is `true` if the request has a body, otherwise `false`. */
   get hasBody(): boolean {
-    return (
-      this.headers.get("transfer-encoding") !== null ||
-      !!parseInt(this.headers.get("content-length") ?? "")
-    );
+    return this.#body.has();
   }
 
   /** The `Headers` supplied in the request. */
@@ -113,41 +65,40 @@ export class Request {
     return this.#serverRequest.headers;
   }
 
-  get startDate(): number {
-    return this.#startDate;
-  }
-
   /** The HTTP Method used by the request. */
   get method(): SupportMethodType {
     return this.#serverRequest.method as SupportMethodType;
   }
 
-  /** Shortcut to `request.url.protocol === "https"`. */
-  get secure(): boolean {
-    return this.url.protocol === "https:";
-  }
-
-  /** Returns the _original_ Deno server request. */
+  /** Set to the value of the _original_ Deno server request. */
   get serverRequest(): ServerRequest {
     return this.#serverRequest;
   }
 
-  /** A WHATWG parsed URL. */
+  get startDate(): number {
+    return this.#startDate;
+  }
+
+  /** A parsed URL for the request which complies with the browser standards.
+   * When the application's `.proxy` is `true`, this value will be based off of
+   * the `X-Forwarded-Proto` and `X-Forwarded-Host` header values if present in
+   * the request. */
   get url(): URL {
     if (!this.#url) {
       const serverRequest = this.#serverRequest;
-      const proto = serverRequest.proto.split("/")[0].toLowerCase();
-      this.#url = new URL(
-        `${proto}://${serverRequest.headers.get("host")}${serverRequest.url}`,
-      );
+      let proto: string;
+      let host: string;
+      proto = this.#secure ? "https" : "http";
+        host = serverRequest.headers.get("host") ?? "";
+      this.#url = new URL(`${proto}://${host}${serverRequest.url}`);
     }
     return this.#url;
   }
 
-  constructor(
-    serverRequest: ServerRequest,
-  ) {
+  constructor(serverRequest: ServerRequest, secure = false) {
     this.#serverRequest = serverRequest;
+    this.#secure = secure;
+    this.#body = new RequestBody(serverRequest);
     this.#startDate = Date.now();
   }
 
@@ -155,7 +106,7 @@ export class Request {
    * preference.  If there are no encodings supplied by the requestor,
    * `undefined` is returned.
    */
-  accepts(): string[];
+  accepts(): string[] | undefined;
   /** For a given set of media types, return the best match accepted by the
    * requestor.  If there are no encoding that match, then the method returns
    * `undefined`.
@@ -172,17 +123,33 @@ export class Request {
     return preferredMediaTypes(acceptValue);
   }
 
-  acceptsCharsets(): string[];
+  /** Returns an array of charsets, accepted by the requestor, in order of
+   * preference.  If there are no charsets supplied by the requestor,
+   * `undefined` is returned.
+   */
+  acceptsCharsets(): string[] | undefined;
+  /** For a given set of charsets, return the best match accepted by the
+   * requestor.  If there are no charsets that match, then the method returns
+   * `undefined`. */
   acceptsCharsets(...charsets: string[]): string | undefined;
   acceptsCharsets(...charsets: string[]): string[] | string | undefined {
-    return undefined;
+    const acceptCharsetValue = this.#serverRequest.headers.get(
+      "Accept-Charset",
+    );
+    if (!acceptCharsetValue) {
+      return;
+    }
+    if (charsets.length) {
+      return preferredCharsets(acceptCharsetValue, charsets)[0];
+    }
+    return preferredCharsets(acceptCharsetValue);
   }
 
-  /** Returns an array of encodings, accepted the the requestor, in order of
+  /** Returns an array of encodings, accepted by the requestor, in order of
    * preference.  If there are no encodings supplied by the requestor,
    * `undefined` is returned.
    */
-  acceptsEncodings(): string[];
+  acceptsEncodings(): string[] | undefined;
   /** For a given set of encodings, return the best match accepted by the
    * requestor.  If there are no encodings that match, then the method returns
    * `undefined`.
@@ -205,107 +172,36 @@ export class Request {
     return preferredEncodings(acceptEncodingValue);
   }
 
-  acceptsLanguages(): string[];
+  /** Returns an array of languages, accepted by the requestor, in order of
+   * preference.  If there are no languages supplied by the requestor,
+   * `undefined` is returned.
+   */
+  acceptsLanguages(): string[] | undefined;
+  /** For a given set of languages, return the best match accepted by the
+   * requestor.  If there are no languages that match, then the method returns
+   * `undefined`. */
   acceptsLanguages(...langs: string[]): string | undefined;
   acceptsLanguages(...langs: string[]): string[] | string | undefined {
-    return undefined;
+    const acceptLanguageValue = this.#serverRequest.headers.get(
+      "Accept-Language",
+    );
+    if (!acceptLanguageValue) {
+      return;
+    }
+    if (langs.length) {
+      return preferredLanguages(acceptLanguageValue, langs)[0];
+    }
+    return preferredLanguages(acceptLanguageValue);
   }
 
-  /** If there is a body in the request, resolves with an object which
-   * describes the body.  The `type` provides what type the body is and `body`
-   * provides the actual body.
-   * 
-   * If you need access to the "raw" interface for the body, pass `true` as the
-   * first argument and the method will resolve if the `Deno.Reader`.
-   * 
-   *       app.use(async (ctx) => {
-   *         const result = await ctx.request.body(true);
-   *         const body = await Deno.readAll(result.body);
-   *       });
-   * 
-   */
-  async body(options: BodyOptionsAsReader): Promise<BodyReader>;
-  /** If there is a body in the request, resolves with an object which
-   * describes the body.  The `type` provides what type the body is and `body`
-   * provides the actual body.
-   * 
-   * If you need access to the "raw" interface for the body, pass `true` as the
-   * first argument and the method will resolve if the `Deno.Reader`.
-   * 
-   *       app.use(async (ctx) => {
-   *         const result = await ctx.request.body(true);
-   *         const body = await Deno.readAll(result.body);
-   *       });
-   * 
-   */
-  async body(options?: BodyOptions): Promise<Body>;
-  async body(
-    { asReader, contentTypes = {} }: BodyOptions = {},
-  ): Promise<Body | BodyReader> {
-    if (this.#body) {
-      if (asReader && this.#body.type !== "reader") {
-        return Promise.reject(
-          new TypeError(`Body already consumed as type: "${this.#body.type}".`),
-        );
-      } else if (this.#body.type === "reader") {
-        return Promise.reject(
-          new TypeError(`Body already consumed as type: "reader".`),
-        );
-      }
-      return this.#body;
-    }
-    const encoding = this.headers.get("content-encoding") || "identity";
-    if (encoding !== "identity") {
-      throw new httpErrors.UnsupportedMediaType(
-        `Unsupported content-encoding: ${encoding}`,
-      );
-    }
-    if (!this.hasBody) {
-      return (this.#body = { type: "undefined", value: undefined });
-    }
-    const contentType = this.headers.get("content-type");
-    if (contentType) {
-      if (asReader) {
-        return (this.#body = {
-          type: "reader",
-          value: this.#serverRequest.body,
-        });
-      }
-      const rawBody = await (this.#rawBodyPromise ??
-        (this.#rawBodyPromise = Deno.readAll(this.#serverRequest.body)));
-      const value = decoder.decode(rawBody);
-      const contentTypesRaw = contentTypes.raw;
-      const contentTypesJson = [
-        ...defaultBodyContentTypes.json,
-        ...(contentTypes.json ?? []),
-      ];
-      const contentTypesForm = [
-        ...defaultBodyContentTypes.form,
-        ...(contentTypes.form ?? []),
-      ];
-      const contentTypesText = [
-        ...defaultBodyContentTypes.text,
-        ...(contentTypes.text ?? []),
-      ];
-      if (contentTypesRaw && isMediaType(contentType, contentTypesRaw)) {
-        return (this.#body = { type: "raw", value: rawBody });
-      } else if (isMediaType(contentType, contentTypesJson)) {
-        return (this.#body = { type: "json", value: JSON.parse(value) });
-      } else if (isMediaType(contentType, contentTypesForm)) {
-        return (this.#body = {
-          type: "form",
-          value: new URLSearchParams(value.replace(/\+/g, " ")),
-        });
-      } else if (isMediaType(contentType, contentTypesText)) {
-        return (this.#body = { type: "text", value });
-      } else {
-        return (this.#body = { type: "raw", value: rawBody });
-      }
-    }
-    throw new httpErrors.UnsupportedMediaType(
-      contentType
-        ? `Unsupported content-type: ${contentType}`
-        : "Missing content-type",
-    );
+  body(options: BodyOptions<"form">): BodyForm;
+  body(options: BodyOptions<"form-data">): BodyFormData;
+  body(options: BodyOptions<"json">): BodyJson;
+  body(options: BodyOptions<"raw">): BodyRaw;
+  body(options: BodyOptions<"reader">): BodyReader;
+  body(options: BodyOptions<"text">): BodyText;
+  body(options?: BodyOptions): Body;
+  body(options: BodyOptions = {}): Body | BodyReader {
+    return this.#body.get(options);
   }
 }
