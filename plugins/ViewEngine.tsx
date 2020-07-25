@@ -42,7 +42,7 @@ export const ViewEngine = async ({
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({
         req, res,
         //@ts-ignore
-        PreloadScript: () => [...preloadList, <link key="0" rel="preload" href={"/main.js"} as="script" />],
+        PreloadScript: () => [...preloadList, <link key={0} rel="preload" href={"/main.js"} as="script" />],
         //@ts-ignore
         MainScript: () => <script type="module" src={"/main.js"} async />,
         Main:
