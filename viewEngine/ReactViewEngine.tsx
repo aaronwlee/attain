@@ -41,7 +41,7 @@ export default class ReactViewEngine {
 
   public async load() {
     await this.getPageFiles(this.#currentPath, this.#pagesPath);
-    console.log(green("[dev - server]"), `Successfully load PageComponents`)
+    console.log(green("[dev]"), `Successfully load PageComponents`)
   }
 
   public async build() {
@@ -62,10 +62,10 @@ export default class ReactViewEngine {
         entryName: this.MainComponent.name
       })
       await compiler.build();
-      console.log(green("[dev]"), "Successfully build the react")
+      console.log(green("[dev]"), "Successfully built view files")
 
       await this.copyStatics();
-      console.log(green("[dev]"), "Successfully copy static files")
+      console.log(green("[dev]"), "Successfully copied static files")
     } catch (initError) {
       console.log(red("[dev] - init error:"), initError)
       Deno.exit(1);

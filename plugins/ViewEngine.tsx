@@ -8,7 +8,7 @@ import { getHead } from "../react/AttainReactUtils.js";
 import ReactViewEngine from "../viewEngine/ReactViewEngine.tsx";
 
 
-export async function ViewEngine({
+export const ViewEngine = async ({
   MainComponent,
   DocumentComponent,
   PageComponentPath,
@@ -20,7 +20,7 @@ export async function ViewEngine({
   PageComponentPath: string,
   developmentPath?: string,
   productionPath?: string
-}) {
+}) => {
   const router = new Router();
   const isProduction = Deno.env.get("PRODUCTION");
 

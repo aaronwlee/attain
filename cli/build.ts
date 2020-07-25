@@ -16,9 +16,9 @@ export async function startBuild() {
     } catch (e) { }
     await startBundle();
     await copyStatics();
-    console.log(green("[build]"), "static files are successfully copied")
-    console.log(green("[build]"), "Project build job has successfully done!")
-    console.log(cyan("\n\t\t Now you can start the server 'attain-cli start'\n\n"))
+    console.log(green("[build]"), "Successfully copied static files")
+    console.log(green("[build]"), "Successfully built the view files!")
+    console.log(cyan("\n\t\t Now you can start the server 'attain-cli/attain start'\n\n"))
 
   } catch (e) {
     console.error(red("[bundle error]"), e)
