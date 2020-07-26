@@ -1,4 +1,5 @@
 import { ensureDir, cyan, green, red, blue } from "../deps.ts";
+import version from "../version.ts";
 
 export async function initializer(projectPath: string) {
   console.log(blue("[init]"), `Start to initialize the project at`, cyan(projectPath))
@@ -9,10 +10,10 @@ export async function initializer(projectPath: string) {
 
 async function getDownload(projectPath: string, path: string = "") {
   const destinationPath = `${Deno.cwd()}/${projectPath}${path}`
-  const downloadUrl = "https://api.github.com/repos/aaronwlee/attain-react-ssr/contents"
+  const downloadUrl = `https://api.github.com/repos/aaronwlee/attain-react-ssr/contents?ref=${version}`
   try {
     const res = await fetch(`${downloadUrl}${path}`)
-    if(res.status >= 400) {
+    if (res.status >= 400) {
       throw res.statusText
     }
     const data = await res.json();

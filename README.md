@@ -4,7 +4,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v1.0.3 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.4 - [Website](https://aaronwlee.github.io/Attain/)
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
 
@@ -24,18 +24,18 @@ Download and use
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.3/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.4/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.3/mod.ts";
+import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.4/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.3/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.4/mod.ts";
 ```
 
 ```
 // download cli
 deno install -A -f --unstable -n attain https://deno.land/x/attain/attain-cli.ts
 // or
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.3/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.4/attain-cli.ts
 ```
 
 
