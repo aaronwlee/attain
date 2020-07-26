@@ -10,9 +10,9 @@ export async function initializer(projectPath: string) {
 
 async function getDownload(projectPath: string, path: string = "") {
   const destinationPath = `${Deno.cwd()}/${projectPath}${path}`
-  const downloadUrl = `https://api.github.com/repos/aaronwlee/attain-react-ssr/contents?ref=${version}`
+  const downloadUrl = `https://api.github.com/repos/aaronwlee/attain-react-ssr/contents`
   try {
-    const res = await fetch(`${downloadUrl}${path}`)
+    const res = await fetch(`${downloadUrl}${path}?ref=${version}`)
     if (res.status >= 400) {
       throw res.statusText
     }
@@ -21,7 +21,7 @@ async function getDownload(projectPath: string, path: string = "") {
     for await (const info of data) {
       if (info.download_url) {
         await ensureDir(destinationPath)
-        console.log(green("[init download]"), `start - ${destinationPath}/${info.name}`)
+        console.log(green("[Download]"), `${destinationPath}/${info.name}`)
 
         const gitfetch = await fetch(`${info.download_url}`)
         const gitdata = await gitfetch.text();
@@ -32,6 +32,6 @@ async function getDownload(projectPath: string, path: string = "") {
       }
     }
   } catch (gitError) {
-    console.error(red("[init error]"), gitError)
+    console.error(red("[Download]"), gitError)
   }
 }
