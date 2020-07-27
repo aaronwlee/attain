@@ -52,7 +52,7 @@ export const addMeta = (name, attr) => {
  * @param {object} attr 
  * @param {string} text 
  */
-export const addScript = (attr, text) => {
+export const addScript = (attr, text = "") => {
   if (dom) {
     const newScript = dom.createElement("script");
     Object.keys(attr).forEach(key => {

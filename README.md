@@ -1,16 +1,13 @@
-
-
 <p align="center">
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v1.0.5 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.6 - [Website](https://aaronwlee.github.io/Attain/)
+
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
 
 [![nest badge](https://nest.land/badge.svg)](https://nest.land/package/attain)
-
-## This is beta version!
 
 A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak). Fast and stable with proper memory usage.
 
@@ -20,30 +17,35 @@ Any contributions to the code would be appreciated. :)
 
 <br />
 
+**important**: If you're using React Framework, highly recommend including with a version tag.
+
 Download and use
+
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.5/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.6/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.5/mod.ts";
+import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.6/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.5/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.6/mod.ts";
 ```
+
+## This CLI is beta version!
 
 ```
 // download cli
 deno install -A -f --unstable -n attain https://deno.land/x/attain/attain-cli.ts
 // or
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.5/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.6/attain-cli.ts
 ```
-
 
 ```
 # deno run --allow-net --unstable main.ts
 ```
 
 ## Contents
+
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
 - [CLI](#cli)
@@ -67,23 +69,24 @@ import { App, Request, Response } from "https://deno.land/x/attain/mod.ts";
 const app = new App();
 
 const sampleMiddleware = (req: Request, res: Response) => {
-  console.log("before send")
+  console.log("before send");
 };
 
 app.get("/:id", (req, res) => {
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
-})
+});
 
 app.use(sampleMiddleware, (req, res) => {
-  res.status(200).send({status: "Good"});
+  res.status(200).send({ status: "Good" });
 });
 
 app.listen({ port: 3500 });
 ```
 
 ### Procedure explain
-The middleware process the function step by step based on registered order.  
+
+The middleware process the function step by step based on registered order.
 
 ![alt text](https://github.com/aaronwlee/Attain/blob/master/procedure.png?raw=true "procedure")
 
@@ -139,143 +142,254 @@ app.listen({ port: 3500 });
 ```
 
 ## CLI
+
+### This is beta version!
+
+**important**: If you're using React Framework, highly recommend including with a version tag.
+
 ```
-deno install -A -f --unstable -n attain https://deno.land/x/attain/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.6/attain-cli.ts
 ```
-It's providing a full-stack server-side rendering development environment using React and Attain. 
+
+It's providing a full-stack server-side rendering development environment combine with React and Attain.
 
 It's a beta version and there are possibly exist some bugs.
-__important__: This beta project yet to supporting any type of CSS modules.
+**important**: This beta project yet to supporting any type of CSS modules.
 
 ### TODO
-- [ ] - Dynamic routing supporting
+
+- [x] - Dynamic routing supporting
 - [ ] - CSS supporting
 - [ ] - Implement self request method for SSR
 - [ ] - Improve hot reload
 
 All commands are must be executed in the project directory
+
 - `-h`
-<br /> Get Help.
+  <br /> Get Help.
 
 - `init [path]`
-<br /> Initialize the project to the path.
-<br /> ex) attain init react-attain
+  <br /> Initialize the project to the path.
+  <br /> ex) attain init react-attain
 
 - `dev | development`
-<br /> Starts the dev server and watch the front-end file changes.
-<br /> ex) attain dev
+  <br /> Starts the dev server and watch the front-end file changes.
+  <br /> ex) attain dev
 
 - `build`
-<br /> Build the bundles to the dist folder with "PRODUCTION" scripts
-<br /> ex) attain build
+  <br /> Build the bundles to the dist folder with "PRODUCTION" scripts
+  <br /> ex) attain build
 
 - `start`
-<br /> Starts the production server
-<br /> ex) attain start
+  <br /> Starts the production server
+  <br /> ex) attain start
 
 ## React
-Documentation soon
 
-### React Components and SSR methods
-- `useRouter`
-<br /> Documentation soon
+**This react framework is only provided through the CLI.
+Please initialize and start with the `init` command line.**
 
+### Routing and Page Guidline
+
+Attain framework's used the high order component to serving routing and other contexts. At the compiler level, moreover, all the pages automatically imported into it. Thus, you don't need to worry about creating a route index.
+
+You just need to create a page component into the following path to create a new page. `/view/pages/<pathname>.tsx`
+
+**important**: Page component's name must be unique.
+
+Now, if the browser requests to `<pathname>` like "http://localhost:3000/<pathname>", Attain server automatically serves a rendered page.
+
+### Dynamic Routing
+
+Any browser request route like /user/1, /user/abc, will be matched by pages/user/[id].tsx in the server. The matched path parameter will be sent as a parameter to the page, and search parameters will be merged with query parameter.
+
+ex) `/view/pages/user/[id].tsx` equals `/user/1`
+
+### Linking between pages
+
+To client-side routing, the Attain framework provides you convince hook method which called `useRouter()`. This allows you to do client-side route transitions between pages, similarly to a single-page application.
+
+- `const router = useRouter()` import path `deps.tsx`
+  <br /> useRouter returns you pathname, push, query, params.
+  <br /> `pathname` is current pathname
+  <br /> `push("/")` is for client-side route transition
+  <br /> `query` is current search params
+  <br /> `params` is current matched params like [id]
+
+```jsx
+function Component() {
+  const router = useRouter()
+
+  return (
+    <a onClick={() => router.push("/user")}>
+      view user
+    </a>
+  )
+}
+```
+
+### Server Side Rendering
 - `Component.ServerSideAttain`
-<br /> Documentation soon
+  <br /> `ServerSideAttain` enabled server-side rendering in a page and allows you to do the initial data population, it means sending the page with the data already populated from the server.
+
+  <br /> This static function will be executed only one time when the browser requests the page. which means client-side rendering will not execute it.
+
+  <br /> **You can only define it in the page component.
+  
+  <br /> In the server-side execution, you can get `req, res, Component, query, isServer` as parameters.
+  <br /> However, if it's been executed in the client, you only can get `req, Component, query, isServer`
+
+- `req`
+  <br /> In the server, you can get the entire request object from the Attain middleware.
+  <br /> In the client, you only can get `url` object.
+
+- `res`
+  <br /> Entire Attain response object, only available on the server.
+
+- `Component`
+  <br /> This is current Component
+
+- `isServer`
+  <br /> Determinator you're on the client or server. `true` or `false`
+
+- `return`
+  <br /> You must return the object and it can be any.
+
+```ts
+UserComponent.ServerSideAttain = async () => {
+  // due to windows can't get proxy, must have prefix with http://localhost:
+  const response: any = await fetch("http://localhost:3000/api/user");
+  const data = await response.json();
+
+  return {
+    data,
+  };
+};
+```
 
 ### SEO tools
+The Attain framework also provides you with elegant SEO tools.
+
+__Import path__: `deps.tsx`
+
 - `useDocument`
-<br /> Documentation soon
+  <br /> Due to Deno does not provide document API, it's useful for avoiding errors when you use the document in the client-side. Which means the server can't handle the document code.
+
+```ts
+const dom = useDocument()
+if(dom) {
+  // use document
+}
+```
 
 - `addMeta`
-<br /> Documentation soon
+
+```ts
+addMeta("description", {
+  content: "This is an example of a description"
+})
+```
 
 - `addScript`
-<br /> Documentation soon
+
+```ts
+addScript({
+  id: "google-recaptcha-v3",
+  src: "https://google...."
+})
+```
 
 - `setTitle`
-<br /> Documentation soon
+
+```ts
+setTitle("Welcome to my home page :)");
+```
 
 ## How To
+
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)
 
 [Auto Recovery](https://github.com/aaronwlee/Attain/tree/master/howto/autorecovery.md)
 
-
 ## Boilerplate
+
 [A Deno web boilerplate](https://github.com/burhanahmeed/Denamo) by [burhanahmeed](https://github.com/burhanahmeed)
 
-
 ## Methods and Properies
+
 ### Response
+
 Methods
- Getter
+Getter
+
 - `getResponse(): AttainResponse`
- <br /> Get current response object, It will contain the body, status and headers.
+  <br /> Get current response object, It will contain the body, status and headers.
 
 - `headers(): Headers`
- <br /> Get current header map
+  <br /> Get current header map
 
 - `getStatus(): number | undefined`
- <br /> Get current status
+  <br /> Get current status
 
 - `getBody(): Uint8Array`
- <br /> Get current body contents
+  <br /> Get current body contents
 
- Functions
+Functions
+
 - `pend(...fn: CallBackType[]): void`
- <br /> Pend the jobs. It'll start right before responding.
+  <br /> Pend the jobs. It'll start right before responding.
 
 - `status(status: number)`
- <br /> Set status number
+  <br /> Set status number
 
 - `body(body: ContentsType)`
- <br /> Set body. Allows setting `Uint8Array, Deno.Reader, string, object, boolean`. This will not respond.
+  <br /> Set body. Allows setting `Uint8Array, Deno.Reader, string, object, boolean`. This will not respond.
 
 - `setHeaders(headers: Headers)`
- <br /> You can overwrite the response header.
+  <br /> You can overwrite the response header.
 
 - `getHeader(name: string)`
- <br /> Get a header from the response by key name.
+  <br /> Get a header from the response by key name.
 
 - `setHeader(name: string, value: string)`
- <br /> Set a header.
+  <br /> Set a header.
 
 - `setContentType(type: string)`
- <br /> This is a shortcut for the "Content-Type" in the header. It will try to find "Content-Type" from the header then set or append the values.
+  <br /> This is a shortcut for the "Content-Type" in the header. It will try to find "Content-Type" from the header then set or append the values.
 
 - `send(contents: ContentsType): Promise<void | this>`
- <br /> Setting the body then executing the end() method.
+  <br /> Setting the body then executing the end() method.
 
 - `await sendFile(filePath: string): Promise<void>`
- <br /> Transfers the file at the given path. Sets the Content-Type response HTTP header field based on the filename's extension.
- <br /> <span style="color: red;"> *Required to be await* </span>
- <br /> These response headers might be needed to set for fully functioning
+  <br /> Transfers the file at the given path. Sets the Content-Type response HTTP header field based on the filename's extension.
+  <br /> <span style="color: red;"> _Required to be await_ </span>
+  <br /> These response headers might be needed to set for fully functioning
 
-| Property        | Description                |
-|-----------------|---------------------------------|
-| maxAge           | Sets the max-age property of the Cache-Control header in milliseconds or a string in ms format|
-| root             | Root directory for relative filenames. |
-| cacheControl     | Enable or disable setting Cache-Control response header. |
-
+| Property     | Description                                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------------- |
+| maxAge       | Sets the max-age property of the Cache-Control header in milliseconds or a string in ms format |
+| root         | Root directory for relative filenames.                                                         |
+| cacheControl | Enable or disable setting Cache-Control response header.                                       |
 
 - `await download(filePath: string, name?: string): Promise<void>`
- <br /> Transfers the file at the path as an "attachment". Typically, browsers will prompt the user to download and save it as a name if provided.
- <br /> <span style="color: red;"> *Required to be await* </span>
+  <br /> Transfers the file at the path as an "attachment". Typically, browsers will prompt the user to download and save it as a name if provided.
+  <br /> <span style="color: red;"> _Required to be await_ </span>
 
 - `redirect(url: string | "back")`
- <br /> Redirecting the current response.
+  <br /> Redirecting the current response.
 
 - `end(): Promise<void>`
- <br /> Executing the pended job then respond back to the current request. It'll end the current procedure.
+  <br /> Executing the pended job then respond back to the current request. It'll end the current procedure.
 
-### Request 
+### Request
+
 > [Oak](https://github.com/oakserver/oak/tree/master#request) for deno
 
 This class used Oak's request library. Check this.
 
 ### Router
-  Methods
+
+Methods
 
 - `use(app: App | Router): void`
 - `use(callBack: CallBackType): void`
@@ -297,44 +411,46 @@ This class used Oak's request library. Check this.
   <br /> It'll handle the error If thrown from one of the above procedures.
 
 Example
+
 ```ts
 app.use((req, res) => {
-  throw new Error("Something wrong!")
-})
+  throw new Error("Something wrong!");
+});
 
 app.error((error, req, res) => {
-  console.error("I handle the Error!" , error);
+  console.error("I handle the Error!", error);
   res.status(500).send("It's critical!");
-})
-
+});
 ```
+
 - `param(paramName: string, ...callback: ParamCallBackType[]): void;`
   <br> Parameter handler [router.param](https://expressjs.com/en/api.html#router.param)
 
 Example
+
 ```ts
 const userController = new Router();
 
 userController.param("username", (req, res, username) => {
   const user = await User.findOne({ username: username });
-  if (!user) { 
-    throw new Error("user not found"); 
+  if (!user) {
+    throw new Error("user not found");
   }
   req.profile = user;
-})
+});
 
 userController.get("/:username", (req, res) => {
-  res.status(200).send({profile: req.profile})
-})
+  res.status(200).send({ profile: req.profile });
+});
 
 userController.post("/:username/follow", (req, res) => {
   const user = await User.findById(req.payload.id);
-     if(user.following.indexOf(req.profile._id) === -1){
+  if (user.following.indexOf(req.profile._id) === -1) {
     user.following.push(req.profile._id);
   }
-  const profile = await user.save()
-  return res.status(200).send({profile: profile});
-})
+  const profile = await user.save();
+  return res.status(200).send({ profile: profile });
+});
 
 export default userController;
 ```
@@ -343,11 +459,13 @@ These are middleware methods and it's like express.js.
 
 ### App
 
-*App extends Router*
+_App extends Router_
 Methods
+
 - `This has all router's methods`
 
 Properties
+
 - `listen(options)`
   <br/> Start the Attain server.
 
@@ -362,14 +480,11 @@ Properties
   }
 ```
 
-
-
-
 ## Nested Routing
 
 > **Path** - router.ts
 
- __warn__: <span style="color: red;">async await</span> will block your procedures.
+**warn**: <span style="color: red;">async await</span> will block your procedures.
 
 ```ts
 import { Router } from "https://deno.land/x/attain/mod.ts";
@@ -399,8 +514,8 @@ api.get("/block", async (req, res) => {
 // It will not stop here
 api.get("/nonblock", (req, res) => {
   console.log("here '/nonblock'");
-  sleep(1000).then(_ => {
-      res.status(200).send(`
+  sleep(1000).then((_) => {
+    res.status(200).send(`
       <!doctype html>
       <html lang="en">
         <body>
@@ -409,10 +524,9 @@ api.get("/nonblock", (req, res) => {
       </html>
       `);
   });
-})
+});
 
 export default api;
-
 ```
 
 > **Path** - main.ts
@@ -424,7 +538,7 @@ import api from "./router.ts";
 const app = new App();
 
 // nested router applied
-app.use("/api", api)
+app.use("/api", api);
 
 app.use((req, res) => {
   res.status(404).send("page not found");
@@ -438,30 +552,38 @@ app.listen({ port: 3500 });
 ```
 
 ## Extra plugins
- - __logger__ : `Logging response "response - method - status - path - time"`
- - __parser__ : `Parsing the request body and save it to request.params`
- - __security__: `Helping you make secure application by setting various HTTP headers` [Helmet](https://helmetjs.github.io/)
+
+- **logger** : `Logging response "response - method - status - path - time"`
+- **parser** : `Parsing the request body and save it to request.params`
+- **security**: `Helping you make secure application by setting various HTTP headers` [Helmet](https://helmetjs.github.io/)
 
 ### Security options
 
-|     Options                                             |   Default?   |
-|---------------------------------------------------------|--------------|
-| `xss` (adds some small XSS protections)                 | yes          |
-| `removePoweredBy` (remove the X-Powered-By header)      | yes          |
-| `DNSPrefetchControl` (controls browser DNS prefetching) | yes          |
-| `noSniff` (to keep clients from sniffing the MIME type) | yes          |
-| `frameguard` (prevent clickjacking)                     | yes          |
+| Options                                                 | Default? |
+| ------------------------------------------------------- | -------- |
+| `xss` (adds some small XSS protections)                 | yes      |
+| `removePoweredBy` (remove the X-Powered-By header)      | yes      |
+| `DNSPrefetchControl` (controls browser DNS prefetching) | yes      |
+| `noSniff` (to keep clients from sniffing the MIME type) | yes      |
+| `frameguard` (prevent clickjacking)                     | yes      |
 
- - __staticServe__ : `It'll serve the static files from a provided path by joining the request path.`
+- **staticServe** : `It'll serve the static files from a provided path by joining the request path.`
 
- > Out of box
- - [__Attain-GraphQL__](https://deno.land/x/attain_graphql#attain-graphql) : `GraphQL middleware`
- - [__deno_graphql__](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
- - [__session__](https://deno.land/x/session): `cookie session`
- - [__cors__](https://deno.land/x/cors/#examples): `CORS`
+> Out of box
+
+- [**Attain-GraphQL**](https://deno.land/x/attain_graphql#attain-graphql) : `GraphQL middleware`
+- [**deno_graphql**](https://deno.land/x/deno_graphql#setup-with-attain): `GraphQL middleware`
+- [**session**](https://deno.land/x/session): `cookie session`
+- [**cors**](https://deno.land/x/cors/#examples): `CORS`
 
 ```ts
-import { App, logger, parser, security, staticServe } from "https://deno.land/x/attain/mod.ts";
+import {
+  App,
+  logger,
+  parser,
+  security,
+  staticServe,
+} from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
@@ -477,7 +599,7 @@ app.use(parser);
 
 // Serve static files
 // This path must be started from your command line path.
-app.use(staticServe("./public", {maxAge: 1000}));
+app.use(staticServe("./public", { maxAge: 1000 }));
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");
@@ -485,13 +607,13 @@ app.use("/", (req, res) => {
 
 app.use("/google", (req, res) => {
   res.redirect("https://www.google.ca");
-})
+});
 
 app.use("/:id", (req, res) => {
   // This data has parsed by the embedded URL parser.
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
-})
+});
 
 app.post("/submit", (req, res) => {
   // By the parser middleware, the body and search query get parsed and saved.
@@ -501,12 +623,11 @@ app.post("/submit", (req, res) => {
 });
 
 app.listen({ port: 4000 });
-
 ```
 
 ---
 
-There are several modules that are directly adapted from other modules. 
+There are several modules that are directly adapted from other modules.
 They have preserved their individual licenses and copyrights. All of the modules,
 including those directly adapted are licensed under the MIT License.
 
