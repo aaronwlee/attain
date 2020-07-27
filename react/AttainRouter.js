@@ -5,9 +5,10 @@ const RouterContext = React.createContext({
   pathname: "/"
 });
 export const useRouter = () => React.useContext(RouterContext);
-export function getComponentAndQuery(pages, currentPath) {
+export function getComponentAndQuery(pages, currentPath, url) {
   let targetPath = "/404";
   let query = undefined;
+  let params = undefined;
   Object.keys(pages).forEach(path => {
     const matcher = match(path, {
       decode: decodeURIComponent
@@ -19,26 +20,38 @@ export function getComponentAndQuery(pages, currentPath) {
         0: extra,
         ...result
       } = isMatch.params;
-      query = result;
+      const queries = url.search && url.search.substring(1).split("&") || [];
+
+      if (queries.length > 0 && queries[0] !== "") {
+        queries.map(qs => {
+          const pair = qs.split("=");
+          query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+        });
+      }
+
+      params = result;
       targetPath = path;
     }
   });
   return {
     targetPath,
-    query
+    query,
+    params
   };
 }
 export function AttainRouter({
-  pathname,
+  url,
   _currentComponentPath,
   _query,
+  _params,
   pages,
   MainComponent,
   SSR
 }) {
-  const [routePath, serRoutePath] = React.useState(pathname);
+  const [routePath, serRoutePath] = React.useState(url.pathname);
   const [currentComponentPath, setCurrentComponentPath] = React.useState(_currentComponentPath);
   const [query, setQuery] = React.useState(_query);
+  const [params, setParams] = React.useState(_params);
 
   window.onpopstate = function (e) {
     if (e.state) {
@@ -49,21 +62,27 @@ export function AttainRouter({
   React.useEffect(() => {
     const {
       targetPath,
-      query: QueryResult
-    } = getComponentAndQuery(pages, routePath);
+      query: Query,
+      params: Params
+    } = getComponentAndQuery(pages, routePath, window.location ? window.location : url);
 
     if (targetPath) {
       setCurrentComponentPath(targetPath);
     }
 
-    if (QueryResult) {
-      setQuery(QueryResult);
+    if (Query) {
+      setQuery(Query);
+    }
+
+    if (Params) {
+      setParams(Params);
     }
   }, [routePath]);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(RouterContext.Provider, {
     value: {
       pathname: routePath,
       query,
+      params,
       push: value => {
         window.history.pushState({
           value

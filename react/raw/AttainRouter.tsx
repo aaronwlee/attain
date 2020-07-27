@@ -7,33 +7,45 @@ const RouterContext = React.createContext({
 });
 export const useRouter = () => React.useContext(RouterContext);
 
-export function getComponentAndQuery(pages: any, currentPath: string) {
+export function getComponentAndQuery(pages: any, currentPath: string, url: { search: string }) {
   let targetPath: any = "/404";
   let query: any = undefined;
+  let params: any = undefined;
   Object.keys(pages).forEach((path: string) => {
     const matcher = match(path, { decode: decodeURIComponent });
     const isMatch: any = matcher(currentPath);
     if (isMatch.params) {
       const { 0: extra, ...result } = isMatch.params;
-      query = result;
+      const queries = url.search && url.search.substring(1).split("&") || [];
+      if (queries.length > 0 && queries[0] !== "") {
+        queries.map((qs) => {
+          const pair = qs.split("=");
+          query[decodeURIComponent(pair[0])] = decodeURIComponent(
+            pair[1] || "",
+          );
+        });
+      }
+      params = result;
       targetPath = path;
     }
   })
 
-  return { targetPath, query };
+  return { targetPath, query, params };
 }
 
 export function AttainRouter({
-  pathname,
+  url,
   _currentComponentPath,
   _query,
+  _params,
   pages,
   MainComponent,
   SSR,
 }: any) {
-  const [routePath, serRoutePath] = React.useState(pathname);
+  const [routePath, serRoutePath] = React.useState(url.pathname);
   const [currentComponentPath, setCurrentComponentPath] = React.useState(_currentComponentPath)
   const [query, setQuery] = React.useState(_query);
+  const [params, setParams] = React.useState(_params);
 
   (window as any).onpopstate = function (e: any) {
     if (e.state) {
@@ -42,12 +54,15 @@ export function AttainRouter({
   };
 
   React.useEffect(() => {
-    const { targetPath, query: QueryResult } = getComponentAndQuery(pages, routePath);
+    const { targetPath, query: Query, params: Params } = getComponentAndQuery(pages, routePath, (window as any).location ? (window as any).location : url);
     if (targetPath) {
       setCurrentComponentPath(targetPath);
     }
-    if (QueryResult) {
-      setQuery(QueryResult);
+    if (Query) {
+      setQuery(Query);
+    }
+    if (Params) {
+      setParams(Params);
     }
   }, [routePath])
 
@@ -56,6 +71,7 @@ export function AttainRouter({
       <RouterContext.Provider value={{
         pathname: routePath,
         query,
+        params,
         push: (value: string) => {
           (window as any).history.pushState({
             value
