@@ -88,10 +88,11 @@ export function AttainRouter({
       query,
       params,
       push: value => {
+        const url = new URL(`${window.location.protocol}//${window.location.host}${value}`);
         window.history.pushState({
-          value
+          value: url.pathname
         }, "", value);
-        serRoutePath(value);
+        serRoutePath(url.pathname);
       }
     }
   }, /*#__PURE__*/React.createElement(MainComponent, {
