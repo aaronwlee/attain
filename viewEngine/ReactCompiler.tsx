@@ -78,14 +78,16 @@ export class ReactCompiler {
 
     const indexFile = `
 import { React, ReactDOM } from "/view/deps.tsx";
-import { AttainRouter } from "https://deno.land/x/attain@${version}/react/AttainRouter.js";
+import { AttainRouter, getComponentAndQuery } from "https://deno.land/x/attain@${version}/react/AttainRouter.js";
 import ${this.#config.entryName} from "/view/${this.#config.entryName.toLowerCase()}.tsx";
 ${pageImportString}
 ${pageImportObject}
 
-${this.#config.entryName}.ServerSideAttain({req: { url: window.location }, res: undefined, pages: pageList, isServer: false})
+const { Component, query } = getComponentAndQuery(pageList, window.location.pathname);
+
+${this.#config.entryName}.ServerSideAttain({req: { url: window.location }, res: undefined, Component, query, isServer: false})
     .then((SSR) => ReactDOM.hydrate(
-        <AttainRouter pathname={window.location.pathname}>
+        <AttainRouter pathname={window.location.pathname} Component={Component} query={query}>
           <${this.#config.entryName} SSR={SSR}/>
         </AttainRouter>
       , document.getElementById('root')))

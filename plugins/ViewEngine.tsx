@@ -3,7 +3,7 @@ import { Router, staticServe } from "../mod.ts";
 import React from 'https://jspm.dev/react@16.13.1';
 // @deno-types="https://deno.land/x/types/react-dom/v16.13.1/server.d.ts"
 import ReactDOMServer from 'https://jspm.dev/react-dom@16.13.1/server';
-import { AttainRouter } from "../react/AttainRouter.js";
+import { AttainRouter, getComponentAndQuery } from "../react/AttainRouter.js";
 import { getHead } from "../react/AttainReactUtils.js";
 import ReactViewEngine from "../viewEngine/ReactViewEngine.tsx";
 
@@ -36,7 +36,8 @@ export const ViewEngine = async ({
     const isReactPath = pathname.split(".").length === 1;
 
     if (isReactPath) {
-      const SSR = await reactViewEngine.MainComponent.ServerSideAttain({ req, res, pages: reactViewEngine.pages, isServer: true })
+      const { Component, query } = getComponentAndQuery(reactViewEngine.pages, pathname);
+      const SSR = await reactViewEngine.MainComponent.ServerSideAttain({ req, res, Component, query, isServer: true })
       //@ts-ignore
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({
         req, res,
@@ -44,7 +45,7 @@ export const ViewEngine = async ({
         MainScript: () => <script type="module" src={"/main.js"} async />,
         Main:
           //@ts-ignore
-          <AttainRouter pathname={pathname}>
+          <AttainRouter pathname={pathname} pages={pages} Component={Component} query={query}>
             <reactViewEngine.MainComponent SSR={SSR} />
           </AttainRouter>
 
