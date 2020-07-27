@@ -11,15 +11,15 @@
 
 A middleware web framework for Deno which is using [http](https://github.com/denoland/deno_std/tree/master/http#http) standard library inspired by [express](https://github.com/expressjs/express) and [Oak](https://github.com/oakserver/oak). Fast and stable with proper memory usage.
 
-Only for [Deno](https://deno.land/)
+Only for [Deno](https://deno.land/) - __Require Deno version: 1.2.x__
 
 Any contributions to the code would be appreciated. :)
 
 <br />
 
-**Important**: If you're using React Framework, highly recommend including with a version tag.
+### Download and use
 
-Download and use
+**Important**: If you're using React Framework, highly recommend including with a version tag.
 
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
@@ -31,7 +31,7 @@ import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.6
 import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.6/mod.ts";
 ```
 
-## This CLI is beta version!
+### This CLI is beta version!
 
 ```
 // download cli
