@@ -45,7 +45,7 @@ export const ViewEngine = async ({
         MainScript: () => <script type="module" src={"/main.js"} async />,
         Main:
           //@ts-ignore
-          <AttainRouter pathname={pathname} pages={pages} Component={Component} query={query}>
+          <AttainRouter pathname={pathname} pages={reactViewEngine.pages} Component={Component} query={query}>
             <reactViewEngine.MainComponent SSR={SSR} />
           </AttainRouter>
 

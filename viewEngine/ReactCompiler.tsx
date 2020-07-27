@@ -87,7 +87,7 @@ const { Component, query } = getComponentAndQuery(pageList, window.location.path
 
 ${this.#config.entryName}.ServerSideAttain({req: { url: window.location }, res: undefined, Component, query, isServer: false})
     .then((SSR) => ReactDOM.hydrate(
-        <AttainRouter pathname={window.location.pathname} Component={Component} query={query}>
+        <AttainRouter pathname={window.location.pathname} pages={pageList} Component={Component} query={query}>
           <${this.#config.entryName} SSR={SSR}/>
         </AttainRouter>
       , document.getElementById('root')))
