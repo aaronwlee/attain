@@ -6,7 +6,7 @@ const RouterContext = React.createContext({
 });
 export const useRouter = () => React.useContext(RouterContext);
 export function getComponentAndQuery(pages, currentPath) {
-  let Component = undefined;
+  let Component = pages["/404"] ? pages["/404"] : undefined;
   let query = undefined;
   Object.keys(pages).forEach(path => {
     const matcher = match(path, {
@@ -29,14 +29,15 @@ export function getComponentAndQuery(pages, currentPath) {
   };
 }
 export function AttainRouter({
-  children,
   pathname,
   Component,
   query,
-  pages
+  pages,
+  MainComponent,
+  SSR
 }) {
   const [routePath, serRoutePath] = React.useState(pathname);
-  const [ComponentValue, setComponentValue] = React.useState(Component ? Component : pages["404"] ? pages["404"] : undefined);
+  const [ComponentValue, setComponentValue] = React.useState(Component ? Component : undefined);
   const [queryValue, setQueryValue] = React.useState(query);
 
   window.onpopstate = function (e) {
@@ -70,7 +71,8 @@ export function AttainRouter({
         serRoutePath(value);
       }
     }
-  }, React.cloneElement(children, {
+  }, /*#__PURE__*/React.createElement(MainComponent, {
+    SSR: SSR,
     Component: ComponentValue
   })));
 }

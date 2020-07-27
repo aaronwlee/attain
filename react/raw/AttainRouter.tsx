@@ -24,11 +24,12 @@ export function getComponentAndQuery(pages: any, currentPath: string) {
 }
 
 export function AttainRouter({
-  children,
   pathname,
   Component,
   query,
-  pages
+  pages,
+  MainComponent,
+  SSR,
 }: any) {
   const [routePath, serRoutePath] = React.useState(pathname);
   const [ComponentValue, setComponentValue] = React.useState(Component ? Component : undefined)
@@ -62,7 +63,7 @@ export function AttainRouter({
           serRoutePath(value);
         }
       }}>
-        {React.cloneElement(children, { Component: ComponentValue })}
+        <MainComponent SSR={SSR} Component={ComponentValue} />
       </RouterContext.Provider>
     </div>
   )
