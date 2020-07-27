@@ -23,6 +23,10 @@ export function getComponentAndQuery(pages, currentPath, url) {
       const queries = url.search && url.search.substring(1).split("&") || [];
 
       if (queries.length > 0 && queries[0] !== "") {
+        if (!query) {
+          query = {};
+        }
+
         queries.map(qs => {
           const pair = qs.split("=");
           query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
