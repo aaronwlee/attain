@@ -73,7 +73,7 @@ export function AttainRouter({
     }
   }, /*#__PURE__*/React.createElement(MainComponent, {
     SSR: SSR,
-    Component: pages[currentComponentPath]
+    Component: pages[currentComponentPath].Component ? pages[currentComponentPath].Component : pages[currentComponentPath]
   })));
 }
 export default RouterContext;

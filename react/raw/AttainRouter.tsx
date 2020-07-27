@@ -63,7 +63,11 @@ export function AttainRouter({
           serRoutePath(value);
         }
       }}>
-        <MainComponent SSR={SSR} Component={pages[currentComponentPath]} />
+        <MainComponent SSR={SSR} Component={
+          pages[currentComponentPath].Component
+            ? pages[currentComponentPath].Component
+            : pages[currentComponentPath]
+        } />
       </RouterContext.Provider>
     </div>
   )

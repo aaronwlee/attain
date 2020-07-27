@@ -1,8 +1,6 @@
 import { Request, Response } from "../mod.ts";
+import { posix } from "../deps.ts"
 
-import {
-  posix,
-} from "https://deno.land/std@0.61.0/path/mod.ts";
 
 export const staticServe = (
   path: string,

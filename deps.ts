@@ -60,4 +60,7 @@ export { parse as yamlParse, stringify as yamlStringify } from "https://deno.lan
 
 export { assert } from "https://deno.land/std@0.62.0/testing/asserts.ts";
 
-export { copyBytes, equal } from "https://deno.land/std@0.61.0/bytes/mod.ts";
+export { copyBytes, equal } from "https://deno.land/std@0.62.0/bytes/mod.ts";
+export {
+  posix,
+} from "https://deno.land/std@0.62.0/path/mod.ts";

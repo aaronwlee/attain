@@ -1,7 +1,7 @@
 import babelCore from "https://dev.jspm.io/@babel/core";
 import presetReact from "https://dev.jspm.io/@babel/preset-react";
 import minify from "https://dev.jspm.io/babel-preset-minify"
-import { ensureDir } from "https://deno.land/std@0.61.0/fs/mod.ts";
+import { ensureDir } from "../deps.ts";
 import version from "../version.ts";
 
 type ConfigProps = {
