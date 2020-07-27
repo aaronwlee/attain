@@ -58,8 +58,21 @@ export const ViewEngine = async ({
       })
       const headers = getHead()
       let html = "<!DOCTYPE html>\n" + (ReactDOMServer as any).renderToString(
-        //@ts-ignore
-        <reactViewEngine.DocumentComponent {...{ ...HTML, Main: () => <div dangerouslySetInnerHTML={{ __html: HTML.Main }} /> }} headers={headers} />
+
+        <reactViewEngine.DocumentComponent {...{
+          ...HTML,
+          //@ts-ignore
+          Main: () => <div dangerouslySetInnerHTML={{ __html: HTML.Main }} />,
+          preload: [
+            //@ts-ignore
+            <link key={0} rel="preload" crossOrigin="anonymous" href="/main.js" as="script" />,
+            ...Object.keys(reactViewEngine.pages).map((pagekey, index) =>
+              //@ts-ignore
+              <link key={index + 1} rel="preload" crossOrigin="anonymous" href={reactViewEngine.pages[pagekey].filePath} as="script" />
+            ),
+          ]
+        }}
+          headers={headers} />
       )
 
       res.status(200).send(html);
