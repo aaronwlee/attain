@@ -58,15 +58,9 @@ export function AttainRouter({
 
   React.useEffect(() => {
     const { targetPath, query: Query, params: Params } = getComponentAndQuery(pages, routePath, (window as any).location ? (window as any).location : url);
-    if (targetPath) {
-      setCurrentComponentPath(targetPath);
-    }
-    if (Query) {
-      setQuery(Query);
-    }
-    if (Params) {
-      setParams(Params);
-    }
+    setCurrentComponentPath(targetPath);
+    setQuery(Query);
+    setParams(Params);
   }, [routePath])
 
   return (
@@ -76,10 +70,11 @@ export function AttainRouter({
         query,
         params,
         push: (value: string) => {
+          const url = new URL(`${window.location.protocol}//${window.location.host}${value}`);
           (window as any).history.pushState({
-            value
+            value: url.pathname
           }, "", value);
-          serRoutePath(value);
+          serRoutePath(url.pathname);
         }
       }}>
         <MainComponent SSR={SSR} Component={

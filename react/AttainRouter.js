@@ -70,17 +70,9 @@ export function AttainRouter({
       params: Params
     } = getComponentAndQuery(pages, routePath, window.location ? window.location : url);
 
-    if (targetPath) {
-      setCurrentComponentPath(targetPath);
-    }
-
-    if (Query) {
-      setQuery(Query);
-    }
-
-    if (Params) {
-      setParams(Params);
-    }
+    setCurrentComponentPath(targetPath);
+    setQuery(Query);
+    setParams(Params);
   }, [routePath]);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(RouterContext.Provider, {
     value: {
