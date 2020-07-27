@@ -85,7 +85,7 @@ ${pageImportObject}
 
 const { targetPath, query } = getComponentAndQuery(pageList, window.location.pathname);
 
-${this.#config.entryName}.ServerSideAttain({req: { url: window.location }, res: undefined, Component, query, isServer: false})
+${this.#config.entryName}.ServerSideAttain({req: { url: window.location }, res: undefined, Component: pageList[targetPath], query, isServer: false})
     .then((SSR) => ReactDOM.hydrate(
         <AttainRouter 
           pathname={window.location.pathname}
