@@ -6,7 +6,7 @@ const RouterContext = React.createContext({
 });
 export const useRouter = () => React.useContext(RouterContext);
 export function getComponentAndQuery(pages, currentPath) {
-  let Component = pages["/404"] ? pages["/404"] : undefined;
+  let targetPath = "/404";
   let query = undefined;
   Object.keys(pages).forEach(path => {
     const matcher = match(path, {
@@ -20,25 +20,25 @@ export function getComponentAndQuery(pages, currentPath) {
         ...result
       } = isMatch.params;
       query = result;
-      Component = pages[path];
+      targetPath = path;
     }
   });
   return {
-    Component,
+    targetPath,
     query
   };
 }
 export function AttainRouter({
   pathname,
-  Component,
-  query,
+  _currentComponentPath,
+  _query,
   pages,
   MainComponent,
   SSR
 }) {
   const [routePath, serRoutePath] = React.useState(pathname);
-  const [ComponentValue, setComponentValue] = React.useState(Component ? Component : undefined);
-  const [queryValue, setQueryValue] = React.useState(query);
+  const [currentComponentPath, setCurrentComponentPath] = React.useState(_currentComponentPath);
+  const [query, setQuery] = React.useState(_query);
 
   window.onpopstate = function (e) {
     if (e.state) {
@@ -48,22 +48,22 @@ export function AttainRouter({
 
   React.useEffect(() => {
     const {
-      Component: ComponentResult,
+      targetPath,
       query: QueryResult
     } = getComponentAndQuery(pages, routePath);
 
-    if (ComponentResult) {
-      setComponentValue(ComponentResult);
+    if (targetPath) {
+      setCurrentComponentPath(targetPath);
     }
 
     if (QueryResult) {
-      setQueryValue(QueryResult);
+      setQuery(QueryResult);
     }
   }, [routePath]);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(RouterContext.Provider, {
     value: {
       pathname: routePath,
-      query: queryValue,
+      query,
       push: value => {
         window.history.pushState({
           value
@@ -73,7 +73,7 @@ export function AttainRouter({
     }
   }, /*#__PURE__*/React.createElement(MainComponent, {
     SSR: SSR,
-    Component: ComponentValue
+    Component: pages[currentComponentPath]
   })));
 }
 export default RouterContext;

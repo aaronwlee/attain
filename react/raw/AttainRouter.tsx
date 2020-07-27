@@ -8,7 +8,7 @@ const RouterContext = React.createContext({
 export const useRouter = () => React.useContext(RouterContext);
 
 export function getComponentAndQuery(pages: any, currentPath: string) {
-  let Component: any = pages["/404"] ? pages["/404"] : undefined;
+  let targetPath: any = "/404";
   let query: any = undefined;
   Object.keys(pages).forEach((path: string) => {
     const matcher = match(path, { decode: decodeURIComponent });
@@ -16,24 +16,24 @@ export function getComponentAndQuery(pages: any, currentPath: string) {
     if (isMatch.params) {
       const { 0: extra, ...result } = isMatch.params;
       query = result;
-      Component = pages[path];
+      targetPath = path;
     }
   })
 
-  return { Component, query };
+  return { targetPath, query };
 }
 
 export function AttainRouter({
   pathname,
-  Component,
-  query,
+  _currentComponentPath,
+  _query,
   pages,
   MainComponent,
   SSR,
 }: any) {
   const [routePath, serRoutePath] = React.useState(pathname);
-  const [ComponentValue, setComponentValue] = React.useState(Component ? Component : undefined)
-  const [queryValue, setQueryValue] = React.useState(query);
+  const [currentComponentPath, setCurrentComponentPath] = React.useState(_currentComponentPath)
+  const [query, setQuery] = React.useState(_query);
 
   (window as any).onpopstate = function (e: any) {
     if (e.state) {
@@ -42,12 +42,12 @@ export function AttainRouter({
   };
 
   React.useEffect(() => {
-    const { Component: ComponentResult, query: QueryResult } = getComponentAndQuery(pages, routePath);
-    if (ComponentResult) {
-      setComponentValue(ComponentResult);
+    const { targetPath, query: QueryResult } = getComponentAndQuery(pages, routePath);
+    if (targetPath) {
+      setCurrentComponentPath(targetPath);
     }
     if (QueryResult) {
-      setQueryValue(QueryResult);
+      setQuery(QueryResult);
     }
   }, [routePath])
 
@@ -55,7 +55,7 @@ export function AttainRouter({
     <div>
       <RouterContext.Provider value={{
         pathname: routePath,
-        query: queryValue,
+        query,
         push: (value: string) => {
           (window as any).history.pushState({
             value
@@ -63,7 +63,7 @@ export function AttainRouter({
           serRoutePath(value);
         }
       }}>
-        <MainComponent SSR={SSR} Component={ComponentValue} />
+        <MainComponent SSR={SSR} Component={pages[currentComponentPath]} />
       </RouterContext.Provider>
     </div>
   )
