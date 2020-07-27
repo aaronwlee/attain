@@ -36,8 +36,8 @@ export const ViewEngine = async ({
     const isReactPath = pathname.split(".").length === 1;
 
     if (isReactPath) {
-      const { Component, query } = getComponentAndQuery(reactViewEngine.pages, pathname);
-      const SSR = await reactViewEngine.MainComponent.ServerSideAttain({ req, res, Component, query, isServer: true })
+      const { Component, query }: any = getComponentAndQuery(reactViewEngine.pages, pathname);
+      const SSR = await reactViewEngine.MainComponent.ServerSideAttain({ req, res, Component: Component ? Component.Component : undefined, query, isServer: true })
       //@ts-ignore
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({
         req, res,
@@ -45,7 +45,7 @@ export const ViewEngine = async ({
         MainScript: () => <script type="module" src={"/main.js"} async />,
         Main:
           //@ts-ignore
-          <AttainRouter pathname={pathname} pages={reactViewEngine.pages} Component={Component} query={query}>
+          <AttainRouter pathname={pathname} pages={reactViewEngine.pages} Component={Component ? Component.Component : undefined} query={query}>
             <reactViewEngine.MainComponent SSR={SSR} />
           </AttainRouter>
 

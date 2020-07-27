@@ -8,7 +8,7 @@ const RouterContext = React.createContext({
 export const useRouter = () => React.useContext(RouterContext);
 
 export function getComponentAndQuery(pages: any, currentPath: string) {
-  let Component: any = undefined;
+  let Component: any = pages["/404"] ? pages["/404"] : undefined;
   let query: any = undefined;
   Object.keys(pages).forEach((path: string) => {
     const matcher = match(path, { decode: decodeURIComponent });
@@ -31,7 +31,7 @@ export function AttainRouter({
   pages
 }: any) {
   const [routePath, serRoutePath] = React.useState(pathname);
-  const [ComponentValue, setComponentValue] = React.useState(Component ? Component : (pages["404"] ? pages["404"] : undefined))
+  const [ComponentValue, setComponentValue] = React.useState(Component ? Component : undefined)
   const [queryValue, setQueryValue] = React.useState(query);
 
   (window as any).onpopstate = function (e: any) {
