@@ -45,9 +45,14 @@ export const ViewEngine = async ({
         MainScript: () => <script type="module" src={"/main.js"} async />,
         Main:
           //@ts-ignore
-          <AttainRouter pathname={pathname} pages={reactViewEngine.pages} Component={Component ? Component.Component : undefined} query={query}>
-            <reactViewEngine.MainComponent SSR={SSR} />
-          </AttainRouter>
+          <AttainRouter
+            pathname={pathname}
+            pages={reactViewEngine.pages}
+            Component={Component ? Component.Component : undefined}
+            query={query}
+            MainComponent={reactViewEngine.MainComponent}
+            SSR={SSR}
+          />
 
       })
       const headers = getHead()
