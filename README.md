@@ -17,7 +17,7 @@ Any contributions to the code would be appreciated. :)
 
 <br />
 
-**important**: If you're using React Framework, highly recommend including with a version tag.
+**Important**: If you're using React Framework, highly recommend including with a version tag.
 
 Download and use
 
@@ -145,7 +145,7 @@ app.listen({ port: 3500 });
 
 ### This is beta version!
 
-**important**: If you're using React Framework, highly recommend including with a version tag.
+**Important**: If you're using React Framework, highly recommend including with a version tag.
 
 ```
 deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.6/attain-cli.ts
@@ -154,7 +154,8 @@ deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.6/attain-
 It's providing a full-stack server-side rendering development environment combine with React and Attain.
 
 It's a beta version and there are possibly exist some bugs.
-**important**: This beta project yet to supporting any type of CSS modules.
+
+__note__: This beta project yet to supporting any type of CSS modules.
 
 ### TODO
 
@@ -195,7 +196,7 @@ Attain framework's used the high order component to serving routing and other co
 
 You just need to create a page component into the following path to create a new page. `/view/pages/<pathname>.tsx`
 
-**important**: Page component's name must be unique.
+__Important__: Page component's name must be unique.
 
 Now, if the browser requests to `<pathname>` like "http://localhost:3000/<pathname>", Attain server automatically serves a rendered page.
 
@@ -233,11 +234,11 @@ function Component() {
   <br /> `ServerSideAttain` enabled server-side rendering in a page and allows you to do the initial data population, it means sending the page with the data already populated from the server.
 
   <br /> This static function will be executed only one time when the browser requests the page. which means client-side rendering will not execute it.
-
-  <br /> **You can only define it in the page component.
   
   <br /> In the server-side execution, you can get `req, res, Component, query, isServer` as parameters.
   <br /> However, if it's been executed in the client, you only can get `req, Component, query, isServer`
+
+  <br /> **You can only define it in the page component.
 
 - `req`
   <br /> In the server, you can get the entire request object from the Attain middleware.
