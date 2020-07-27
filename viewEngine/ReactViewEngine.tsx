@@ -104,6 +104,8 @@ export default class ReactViewEngine {
         } else {
           fullPath = `${routePath}/${browerPath}`
         }
+
+        fullPath = fullPath.replaceAll("[", ":").replaceAll("]", "");
         const component: any = (await import(`file://${Deno.realPathSync(`${path}/${dirEntry.name}`)}`)).default;
 
         if (component.name) {
