@@ -8,6 +8,6 @@ export { parser } from "./plugins/parser.ts";
 export { logger } from "./plugins/logger.ts";
 export { staticServe } from "./plugins/staticServe.ts";
 export { security } from "./plugins/security.ts";
-export { ViewEngine } from "./plugins/ViewEngine.tsx";
+export { ViewEngine } from "./plugins/ViewEngine.ts";
 
 export * from "./core/types.ts";

@@ -2,7 +2,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/attain/blob/master/Attain.png?raw=true" alt="attain" />
 </p>
 
-# Attain - v1.0.8 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.9 - [Website](https://aaronwlee.github.io/Attain/)
 
 ![attain ci](https://github.com/aaronwlee/attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
@@ -24,11 +24,11 @@ Any contributions to the code would be appreciated. :)
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.8/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.9/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.8/mod.ts";
+import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.9/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/attain/1.0.8/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/attain/1.0.9/mod.ts";
 ```
 
 ### This CLI is beta version!
@@ -37,7 +37,7 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
 // download cli
 deno install -A -f --unstable -n attain https://deno.land/x/Attain/attain-cli.ts
 // or
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.8/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.9/attain-cli.ts
 ```
 
 ```
@@ -148,7 +148,7 @@ app.listen({ port: 3500 });
 **Important**: If you're using React Framework, highly recommend including with a version tag.
 
 ```
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.8/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.9/attain-cli.ts
 ```
 
 It's providing a full-stack server-side rendering development environment combine with React and Attain.

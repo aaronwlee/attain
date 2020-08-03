@@ -1,3 +1,6 @@
+//@ts-ignore
+function _extends(...arg: any) { _extends = Object.assign || function (target) { for (var i = 1; i < arg.length; i++) { var source = arg[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arg); }
+
 import { Router, staticServe } from "../mod.ts";
 // @deno-types="https://raw.githubusercontent.com/Soremwar/deno_types/master/react/v16.13.1/react.d.ts"
 import React from 'https://jspm.dev/react@16.13.1';
@@ -42,39 +45,55 @@ export const ViewEngine = async ({
       const HTML = await reactViewEngine.DocumentComponent.ServerSideAttain({
         req, res,
         //@ts-ignore
-        MainScript: () => <script type="module" src={"/main.js"} async />,
+        MainScript: () => /*#__PURE__*/React.createElement("script", {
+          type: "module",
+          src: "/main.js",
+          async: true
+        }),
         Main:
+          /*#__PURE__*/
           //@ts-ignore
-          <AttainRouter
-            url={req.url}
-            pages={reactViewEngine.pages}
-            _currentComponentPath={targetPath}
-            _query={query}
-            _params={params}
-            MainComponent={reactViewEngine.MainComponent}
-            SSR={SSR}
-          />
-
-      })
+          React.createElement(AttainRouter, {
+            url: req.url,
+            pages: reactViewEngine.pages,
+            _currentComponentPath: targetPath,
+            _query: query,
+            _params: params,
+            MainComponent: reactViewEngine.MainComponent,
+            SSR: SSR
+          })
+      });
       const headers = getHead()
-      let html = "<!DOCTYPE html>\n" + (ReactDOMServer as any).renderToString(
-
-        <reactViewEngine.DocumentComponent {...{
-          ...HTML,
+      let html = "<!DOCTYPE html>\n" + ReactDOMServer.renderToString( /*#__PURE__*/React.createElement(reactViewEngine.DocumentComponent, _extends({
+        ...HTML,
+        //@ts-ignore
+        Main: () => /*#__PURE__*/React.createElement("div", {
+          dangerouslySetInnerHTML: {
+            __html: HTML.Main
+          }
+        }),
+        preload: [
+          /*#__PURE__*/
           //@ts-ignore
-          Main: () => <div dangerouslySetInnerHTML={{ __html: HTML.Main }} />,
-          preload: [
+          React.createElement("link", {
+            key: 0,
+            rel: "preload",
+            crossOrigin: "anonymous",
+            href: "/main.js",
+            as: "script"
+          }), ...Object.keys(reactViewEngine.pages).map((pagekey, index) =>
+            /*#__PURE__*/
             //@ts-ignore
-            <link key={0} rel="preload" crossOrigin="anonymous" href="/main.js" as="script" />,
-            ...Object.keys(reactViewEngine.pages).map((pagekey, index) =>
-              //@ts-ignore
-              <link key={index + 1} rel="preload" crossOrigin="anonymous" href={reactViewEngine.pages[pagekey].filePath} as="script" />
-            ),
-          ]
-        }}
-          headers={headers} />
-      )
-
+            React.createElement("link", {
+              key: index + 1,
+              rel: "preload",
+              crossOrigin: "anonymous",
+              href: reactViewEngine.pages[pagekey].filePath,
+              as: "script"
+            }))]
+      }, {
+        headers: headers
+      })));
       res.status(200).send(html);
     }
   }, async (req, res) => {

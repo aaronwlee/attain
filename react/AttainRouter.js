@@ -1,4 +1,4 @@
-// @deno-types="https://deno.land/x/types/react/v16.13.1/react.d.ts"
+// @deno-types="https://raw.githubusercontent.com/Soremwar/deno_types/master/react/v16.13.1/react.d.ts"
 import React from 'https://jspm.dev/react@16.13.1';
 import { match } from "https://jspm.dev/path-to-regexp@6.1.0";
 const RouterContext = React.createContext({

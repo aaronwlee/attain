@@ -1,5 +1,5 @@
 import { blue, red, green, yellow, ensureDir } from "../deps.ts";
-import { ReactCompiler } from "./ReactCompiler.tsx";
+import { ReactCompiler } from "./ReactCompiler.ts";
 
 export default class ReactViewEngine {
   #pages: any = {};
