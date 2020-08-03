@@ -2,7 +2,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/Attain/blob/master/Attain.png?raw=true" alt="Attain" />
 </p>
 
-# Attain - v1.0.7 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.0.8 - [Website](https://aaronwlee.github.io/Attain/)
 
 ![attain ci](https://github.com/aaronwlee/Attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
@@ -22,22 +22,22 @@ Any contributions to the code would be appreciated. :)
 **Important**: If you're using React Framework, highly recommend including with a version tag.
 
 ```js
-import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/Attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.0.7/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/Attain@1.0.8/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://x.nest.land/attain@1.0.7/mod.ts";
+import { App, Router, Request, Response } from "https://x.nest.land/Attain@1.0.8/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.7/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/Attain/1.0.8/mod.ts";
 ```
 
 ### This CLI is beta version!
 
 ```
 // download cli
-deno install -A -f --unstable -n attain https://deno.land/x/attain/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/Attain/attain-cli.ts
 // or
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.7/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/Attain@1.0.8/attain-cli.ts
 ```
 
 ```
@@ -64,7 +64,7 @@ deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.7/attain-
 ## Getting Start
 
 ```ts
-import { App, Request, Response } from "https://deno.land/x/attain/mod.ts";
+import { App, Request, Response } from "https://deno.land/x/Attain/mod.ts";
 
 const app = new App();
 
@@ -91,7 +91,7 @@ The middleware process the function step by step based on registered order.
 ![alt text](https://github.com/aaronwlee/Attain/blob/master/procedure.png?raw=true "procedure")
 
 ```ts
-import { App } from "https://deno.land/x/attain/mod.ts";
+import { App } from "https://deno.land/x/Attain/mod.ts";
 
 const app = new App();
 
@@ -148,7 +148,7 @@ app.listen({ port: 3500 });
 **Important**: If you're using React Framework, highly recommend including with a version tag.
 
 ```
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.7/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/Attain@1.0.8/attain-cli.ts
 ```
 
 It's providing a full-stack server-side rendering development environment combine with React and Attain.
@@ -584,7 +584,7 @@ import {
   parser,
   security,
   staticServe,
-} from "https://deno.land/x/attain/mod.ts";
+} from "https://deno.land/x/Attain/mod.ts";
 
 const app = new App();
 
