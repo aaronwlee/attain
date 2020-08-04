@@ -387,6 +387,7 @@ Functions
 > [Oak](https://github.com/oakserver/oak/tree/master#request) for deno
 
 This class used Oak's request library. Check this.
+<br /> Note: to access Oak's `Context.params` use `Request.params`. but require to use a `app.use(parser)` plugin.
 
 ### Router
 

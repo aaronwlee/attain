@@ -1,5 +1,5 @@
 import { ensureDir, green, red, cyan } from "../deps.ts";
-import { ReactCompiler } from "../viewEngine/ReactCompiler.tsx";
+import { ReactCompiler } from "../viewEngine/ReactCompiler.ts";
 
 const currentPath = Deno.cwd();
 const distPath = "dist"
