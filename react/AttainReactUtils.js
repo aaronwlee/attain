@@ -101,3 +101,27 @@ export function getHead() {
     header = [];
   }
 }
+
+
+/**
+ * Helper hooks to make working with react easier
+ */
+
+export function useWindowSize() {
+  try {
+    if (window) {
+      const [size, setSize] = React.useState([window.innerWidth, window.innerHeight]);
+      React.useLayoutEffect(() => {
+        function updateSize() {
+          setSize([window.innerWidth, window.innerHeight]);
+        }
+        window.addEventListener("resize", updateSize);
+        updateSize();
+        return () => window.removeEventListener("resize", updateSize);
+      }, []);
+  return size;
+    } else return [0, 0]
+  } catch(err) {
+    return [0, 0]
+  }
+}
