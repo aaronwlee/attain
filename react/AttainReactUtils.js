@@ -101,3 +101,53 @@ export function getHead() {
     header = [];
   }
 }
+
+
+/**
+ * Helper hooks to make working with react easier
+ */
+
+export function useWindowSize() {
+  try {
+    if (window) {
+      const [size, setSize] = React.useState([window.innerWidth, window.innerHeight]);
+      React.useLayoutEffect(() => {
+        function updateSize() {
+          setSize([window.innerWidth, window.innerHeight]);
+        }
+        window.addEventListener("resize", updateSize);
+        updateSize();
+        return () => window.removeEventListener("resize", updateSize);
+      }, []);
+      return size;
+    } else return [0, 0]
+  } catch(err) {
+    return [0, 0]
+  }
+}
+
+/**
+ * 
+ * @param {string} url 
+ * @param {object} options 
+ */
+export function useAsyncFetch(url, options) {
+  const [data, setData] = React.useState(null);
+  const [status, setStatus] = React.useState(200);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(url, options);
+        setStatus(res.status);
+        const data = await res.json();
+        setData(data);
+      } catch(err) {
+        setError(err);
+      }
+    })();
+  });
+
+  return { data, status, error }
+}
