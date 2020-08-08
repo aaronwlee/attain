@@ -317,18 +317,6 @@ const { data, status, error } = useAsyncFetch('/api/users/login', {
 })
 ```
 
-## Responsive app design made easier
-
-- `useWindowSize`
-
-```tsx
-const [width, height] = useWindowSize();
-
-return (
-  <div style={{ width: 0.5 * width }}></div>
-)
-```
-
 ## How To
 
 [Web Socket Example](https://github.com/aaronwlee/Attain/tree/master/howto/websocket.md)

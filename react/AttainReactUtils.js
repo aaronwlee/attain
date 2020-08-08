@@ -106,7 +106,7 @@ export function getHead() {
 /**
  * Helper hooks to make working with react easier
  */
-
+/* 
 export function useWindowSize() {
   try {
     // @ts-ignore
@@ -128,6 +128,7 @@ export function useWindowSize() {
     return [0, 0]
   }
 }
+*/
 
 /**
  * 
