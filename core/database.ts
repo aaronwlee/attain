@@ -1,31 +1,24 @@
-import { HttpError } from "./httpError.ts";
-
-// Error class to throw, with a 500 status code
-export class DatabaseError extends HttpError {
+export class DatabaseError extends Error {
     constructor(message: string) {
         super(`Database Error: ${message}`);
-        // set status code
-        super.status = 500;
     }
 }
 
 // the interface to use
-export interface AttainDatabase {
-    connect(): Promise<void>;
+export class AttainDatabase {
+    async connect() {
+        console.log('database connected')
+    }
 }
 
-// list of databases, may be useful in the future
-export enum DatabaseService {
-    MongoDB,
-    PostgreSQL,
-    MySQL,
-    Redis,
-    Cassandra,
-    MSSQL,
-    Oracle
+export interface NoParamConstructor<I> {
+    new(): I
 }
 
-export enum DatabaseType {
-    SQL,
-    NOSQL
+/*
+async function createDatabase<T extends AttainDatabase>(ctor: NoParamConstructor<T>): Promise<T> {
+    const database = new ctor();
+    await database.connect();
+    return database;
 }
+*/
