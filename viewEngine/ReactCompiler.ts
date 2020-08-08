@@ -1,6 +1,6 @@
-import babelCore from "https://jspm.dev/@babel/core";
-import presetReact from "https://jspm.dev/@babel/preset-react";
-import minify from "https://jspm.dev/babel-preset-minify"
+import babelCore from "https://dev.jspm.io/@babel/core";
+import presetReact from "https://dev.jspm.io/@babel/preset-react";
+import minify from "https://dev.jspm.io/babel-preset-minify"
 import { ensureDir } from "../deps.ts";
 import version from "../version.ts";
 
