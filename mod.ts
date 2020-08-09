@@ -10,4 +10,6 @@ export { staticServe } from "./plugins/staticServe.ts";
 export { security } from "./plugins/security.ts";
 export { ViewEngine } from "./plugins/ViewEngine.ts";
 
+export { AttainDatabase } from "./core/database.ts"
+
 export * from "./core/types.ts";

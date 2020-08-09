@@ -106,10 +106,13 @@ export function getHead() {
 /**
  * Helper hooks to make working with react easier
  */
-
+/* 
 export function useWindowSize() {
   try {
-    if (window) {
+    // @ts-ignore
+    if (window.innerWidth) { 
+      // in the server, the window Object refers to the globalThis object 
+      // therefore won't have the properties
       const [size, setSize] = React.useState([window.innerWidth, window.innerHeight]);
       React.useLayoutEffect(() => {
         function updateSize() {
@@ -125,6 +128,7 @@ export function useWindowSize() {
     return [0, 0]
   }
 }
+*/
 
 /**
  * 
