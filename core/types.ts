@@ -28,18 +28,21 @@ export interface AttainResponse extends Omit<DenoResponse, "headers"> {
 export type CallBackType = (
   request: Request,
   response: Response,
+  db?: any
 ) => Promise<any> | void;
 
 export type ParamCallBackType = (
   request: Request,
   response: Response,
   param: any,
+  db?: any
 ) => Promise<any> | void;
 
 export type ErrorCallBackType = (
   error: any,
   request: Request,
   response: Response,
+  db?: any
 ) => Promise<any> | void;
 
 export interface MiddlewareProps {

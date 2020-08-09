@@ -12,14 +12,15 @@ const Process = async (
   srq: ServerRequest,
   middlewares: MiddlewareProps[],
   errorMiddlewares: ErrorMiddlewareProps[],
+  database: any
 ) => {
   const res = new Response(srq);
   const req = new Request(srq);
 
   try {
-    await attainProcedure(req, res, middlewares);
+    await attainProcedure(req, res, middlewares, database);
   } catch (error) {
-    await attainErrorProcedure(error, req, res, errorMiddlewares);
+    await attainErrorProcedure(error, req, res, errorMiddlewares, database);
   }
 
   await res.executePendingJobs(req);
@@ -37,6 +38,7 @@ const attainProcedure: any = async (
   req: Request,
   res: Response,
   current: MiddlewareProps[],
+  database?: any,
 ) => {
   try {
     const currentMethod = req.method;
@@ -47,20 +49,20 @@ const attainProcedure: any = async (
       ) {
         if (!middleware.url) {
           middleware.callBack
-            ? await middleware.callBack(req, res)
-            : await attainProcedure(req, res, middleware.next);
+            ? await middleware.callBack(req, res, database)
+            : await attainProcedure(req, res, middleware.next, database);
         } else if (
           checkPathAndParseURLParams(req, middleware.url, currentUrl)
         ) {
           if (middleware.paramHandlers && req.params) {
-            await paramHandlersProcedure(middleware.paramHandlers, req, res);
+            await paramHandlersProcedure(middleware.paramHandlers, req, res, database);
             if (res.processDone) {
               break;
             }
           }
           middleware.callBack
-            ? await middleware.callBack(req, res)
-            : await attainProcedure(req, res, middleware.next);
+            ? await middleware.callBack(req, res, database)
+            : await attainProcedure(req, res, middleware.next, database);
         }
       }
       if (res.processDone) {
@@ -80,10 +82,11 @@ const paramHandlersProcedure = async (
   paramHandlers: ParamStackProps[],
   req: Request,
   res: Response,
+  database: any
 ) => {
   for await (const paramHandler of paramHandlers) {
-    await paramHandler.callBack(req, res, req.params[paramHandler.paramName])
-    if(res.processDone) {
+    await paramHandler.callBack(req, res, req.params[paramHandler.paramName], database)
+    if (res.processDone) {
       break;
     }
   }
@@ -94,20 +97,21 @@ const attainErrorProcedure: any = async (
   req: Request,
   res: Response,
   current: ErrorMiddlewareProps[],
+  database: any,
 ) => {
   try {
     const currentUrl = req.url.pathname;
     for (const middleware of current) {
       if (!middleware.url) {
         middleware.callBack
-          ? await middleware.callBack(error, req, res)
-          : await attainErrorProcedure(error, req, res, middleware.next);
+          ? await middleware.callBack(error, req, res, database)
+          : await attainErrorProcedure(error, req, res, middleware.next, database);
       } else if (
         checkPathAndParseURLParams(req, middleware.url, currentUrl)
       ) {
         middleware.callBack
-          ? await middleware.callBack(error, req, res)
-          : await attainErrorProcedure(error, req, res, middleware.next);
+          ? await middleware.callBack(error, req, res, database)
+          : await attainErrorProcedure(error, req, res, middleware.next, database);
       }
       if (res.processDone) {
         break;

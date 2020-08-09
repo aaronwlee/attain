@@ -4,7 +4,7 @@ export class DatabaseError extends Error {
     }
 }
 
-// the interface to use
+// the class to expand
 export class AttainDatabase {
     async connect() {
         console.log('database connected')

@@ -13,12 +13,18 @@ import version from "../version.ts";
 import { defaultError, defaultPageNotFound } from "../defaultHandler/index.ts";
 import Process from "./process.ts";
 import { circulateMiddlewares, circulateErrorMiddlewares } from "./debug.ts";
+import { AttainDatabase, NoParamConstructor } from "./database.ts";
 
 export class App extends Router {
   #serve?: Server;
   #serveTLS?: Server;
   #process?: Promise<void>;
   #processTLS?: Promise<void>;
+  #database: any;
+
+  get db() {
+    return this.#database;
+  }
 
   #debug = async () => {
     console.log(red("------- Debug Middlewares -----------------"));
@@ -83,7 +89,14 @@ export class App extends Router {
 
   #start = async (server: Server) => {
     for await (const srq of server) {
-      Process(srq, this.middlewares, this.errorMiddlewares);
+      Process(srq, this.middlewares, this.errorMiddlewares, this.db);
     }
   };
+
+  async database<T extends AttainDatabase>(dbClass: NoParamConstructor<T>) {
+    const db = new dbClass();
+    await db.connect();
+    this.#database = db;
+    return db;
+  }
 }

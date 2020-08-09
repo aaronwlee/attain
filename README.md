@@ -59,6 +59,7 @@ deno install -A -f --unstable -n attain https://deno.land/x/attain@1.0.10/attain
   - [App](#app)
 - [Nested Routing](#nested-routing)
 - [Extra plugins](#extra-plugins)
+- [More Features](#more-features)
 - [Performance](https://github.com/aaronwlee/attain/blob/master/performance/performance.md)
 
 ## Getting Start
@@ -493,6 +494,45 @@ Properties
   }
 ```
 
+- `database(dbCls)` **NEW FEATURE!**
+  <br /> Register a database to use in all of your middleware functions.
+  <br /> Example:
+
+```ts 
+/* ExampleDatabase.ts */
+class ExampleDatabase extends AttainDatabase {
+    async connect() {
+        console.log('database connected');
+    }
+    async getAllUsers() {
+        return [{ name: 'Shaun' }, { name: 'Mike' }];
+    }
+}
+
+/* router.ts */
+const router = new Router();
+
+router.get('/', async (req: Request, res: Response, db: ExampleDatabase) => {
+  const users = await db.getAllUsers();
+  res.status(200).send(users);
+})
+
+/* index.ts */
+const app = new App();
+
+await app.database(ExampleDatabase);
+
+app.use('/api/users', router);
+
+```
+
+**NOTE:** for this feature to work as expected, you must:
+- provide a `connect()` method to your database class
+- extend the `AttainDatabase` class
+
+<br /> 
+<span style="color: #555;">This feature is brand new and any contributins and ideas will be welcomed</span>
+
 ## Nested Routing
 
 > **Path** - router.ts
@@ -636,6 +676,60 @@ app.post("/submit", (req, res) => {
 });
 
 app.listen({ port: 4000 });
+```
+
+## More Features
+
+### Switch your database with just one line of code
+Using the `app.database()` option, you can switch your database with just one line of code! To use this feature, create a database class that extends the `AttainDatabase` class:
+
+```ts
+class PostgresDatabase extends AttainDatabase {
+  #client: Client
+  async connect() {
+    const client = new Client({
+      user: Deno.env.get('USER'),
+      database: Deno.env.get('DB'),
+      hostname: Deno.env.get('HOST'),
+      password: Deno.env.get('PASSWORD')!,
+      port: parseInt(Deno.env.get('PORT')),
+    });
+    await client.connect();
+    this.#client = client;
+  }
+  async getAllProducts() {
+    const data = await this.#client.query('SELECT * FROM products');
+    /* map data */
+    return products;
+  }
+}
+
+/* OR */
+class MongoDatabase extends AttainDatabase {
+  #Product: Collection<Product>
+  async connect() {
+     const client = new MongoClient();
+     await client.connectWithUri(Deno.env.get('DB_URL'));
+     const database = client.database(Deno.env.get('DB_NAME'));
+     this.#Product = database.collection('Product');
+  }
+  async getAllProducts() {
+    return await this.#Product.findAll()
+  }
+}
+```
+
+Then pick one of the databases to use in your app:
+```ts
+await app.database(MongoDatabase);
+/* OR */
+await app.database(PostgresDatabase);
+
+app.get('/products', (req, res, db) => {
+  const products = await db.getAllProducts();
+  res.status(200).send(products); /* will work the same! */
+})
+
 ```
 
 ---
