@@ -29,6 +29,6 @@ jobs:
 
       - name: run test (windows)
         if: startsWith(matrix.os, 'windows')
-        run: ./start_test.exe
+        run: ./start_test.bat
 
 
