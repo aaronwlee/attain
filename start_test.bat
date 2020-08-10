@@ -25,3 +25,5 @@ deno test -A --unstable test/database/
 IF ERRORLEVEL 1 (
 EXIT 1
 )
+
+EXIT 0

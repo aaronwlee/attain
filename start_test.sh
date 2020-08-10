@@ -37,3 +37,5 @@ then
   echo "Error code - $status"
   exit $status
 fi
+
+exit 0
