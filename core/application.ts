@@ -8,23 +8,21 @@ import {
   blue,
   Server,
 } from "../deps.ts";
-import { ListenProps } from "./types.ts";
+import { ListenProps, ThenArg } from "./types.ts";
 import version from "../version.ts";
 import { defaultError, defaultPageNotFound } from "../defaultHandler/index.ts";
 import Process from "./process.ts";
 import { circulateMiddlewares, circulateErrorMiddlewares } from "./debug.ts";
 import { AttainDatabase, NoParamConstructor } from "./database.ts";
 
-export class App extends Router {
+
+export class App<T = any> extends Router<T> {
   #serve?: Server;
   #serveTLS?: Server;
   #process?: Promise<void>;
   #processTLS?: Promise<void>;
-  #database: any;
-
-  get db() {
-    return this.#database;
-  }
+  #database?: T;
+  #databaseInitializer?: () => Promise<T>
 
   #debug = async () => {
     console.log(red("------- Debug Middlewares -----------------"));
@@ -88,15 +86,49 @@ export class App extends Router {
   };
 
   #start = async (server: Server) => {
+    if (this.#database) {
+      await (this.#database as any).connect();
+    } else if (this.#databaseInitializer) {
+      this.database = await this.#databaseInitializer;
+    }
+
     for await (const srq of server) {
-      Process(srq, this.middlewares, this.errorMiddlewares, this.db);
+      if (this.#database) {
+        Process<T>(srq, this.middlewares, this.errorMiddlewares, this.#database);
+      } else {
+        Process<undefined>(srq, this.middlewares as any, this.errorMiddlewares as any, undefined);
+      }
     }
   };
 
-  async database<T extends AttainDatabase>(dbClass: NoParamConstructor<T>) {
-    const db = new dbClass();
-    await db.connect();
-    this.#database = db;
-    return db;
+  constructor(db?: T, dbinit?: () => Promise<T>) {
+    super()
+    if (db) {
+      this.#database = db;
+    }
+
+    if (dbinit) {
+      this.#databaseInitializer = dbinit;
+    }
+  }
+
+  static startWith<T extends typeof App, U>(this: T, func: () => Promise<U>): App<ThenArg<U>>;
+  static startWith<T extends typeof App, U extends AttainDatabase>(this: T, dbClass: NoParamConstructor<U>): App<U>
+  static startWith<T extends typeof App, U>(this: T, arg: U) {
+    if ((arg as any).__type) {
+      return new this<U>(new (arg as any)())
+    } else {
+      return new this<ThenArg<U>>(undefined, arg as any)
+    }
+  }
+
+  public database<U>(func: () => Promise<U>): void;
+  public database<U extends AttainDatabase>(dbClass: NoParamConstructor<U>): void;
+  public database(arg: any) {
+    if (arg.__type) {
+      this.#database = new (arg as any)();
+    } else {
+      this.#databaseInitializer = arg;
+    }
   }
 }

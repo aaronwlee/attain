@@ -10,10 +10,10 @@ import {
 import { App } from "./application.ts";
 import { isEmpty } from "../deps.ts";
 
-export class Router {
-  #middlewares: MiddlewareProps[] = [];
-  #errorMiddlewares: ErrorMiddlewareProps[] = [];
-  #paramHandlerStacks: ParamStackProps[] = [];
+export class Router<T = any> {
+  #middlewares: MiddlewareProps<T>[] = [];
+  #errorMiddlewares: ErrorMiddlewareProps<T>[] = [];
+  #paramHandlerStacks: ParamStackProps<T>[] = [];
 
   get middlewares() {
     return this.#middlewares;
@@ -37,9 +37,9 @@ export class Router {
 
   private appendNextPaths(
     parentsPath: string,
-    middlewares: MiddlewareProps[] | ErrorMiddlewareProps[],
-  ): MiddlewareProps[] | ErrorMiddlewareProps[] {
-    const newMiddlewares: MiddlewareProps[] = [];
+    middlewares: MiddlewareProps<T>[] | ErrorMiddlewareProps<T>[],
+  ): MiddlewareProps<T>[] | ErrorMiddlewareProps<T>[] {
+    const newMiddlewares: MiddlewareProps<T>[] = [];
     middlewares.forEach((middleware: any) => {
       if (middleware.url && parentsPath !== "/") {
         const combinedUrl = `${parentsPath}${
@@ -73,7 +73,7 @@ export class Router {
     type: SupportMethodType,
     args: any[],
   ) {
-    let temp: MiddlewareProps = { method: type };
+    let temp: MiddlewareProps<T> = { method: type };
     args.forEach((arg) => {
       if (this.isString(arg)) {
         temp.url = arg;
@@ -88,7 +88,7 @@ export class Router {
               (this.appendNextPaths(
                 temp.url,
                 arg.middlewares,
-              ) as MiddlewareProps[]);
+              ) as MiddlewareProps<T>[]);
             temp.url = this.appendParentsPaths(temp.url);
           } else {
             temp.next = arg.middlewares;
@@ -105,7 +105,7 @@ export class Router {
               temp.paramHandlers = matchedParamHandler;
             }
           }
-          temp.callBack = arg as CallBackType;
+          temp.callBack = arg as CallBackType<T>;
         }
       }
 
@@ -118,7 +118,7 @@ export class Router {
 
   private saveParamStacks(
     paramName: string,
-    args: ParamCallBackType[],
+    args: ParamCallBackType<T>[],
   ) {
     args.forEach((arg) => {
       this.#paramHandlerStacks.push({ paramName, callBack: arg });
@@ -128,7 +128,7 @@ export class Router {
   private saveErrorMiddlewares(
     args: any[],
   ) {
-    let temp: ErrorMiddlewareProps = {};
+    let temp: ErrorMiddlewareProps<T> = {};
     args.forEach((arg) => {
       if (this.isString(arg)) {
         temp.url = arg;
@@ -144,7 +144,7 @@ export class Router {
               (this.appendNextPaths(
                 temp.url,
                 arg.errorMiddlewares,
-              ) as ErrorMiddlewareProps[]);
+              ) as ErrorMiddlewareProps<T>[]);
             temp.url = this.appendParentsPaths(temp.url);
           } else {
             temp.next = arg.errorMiddlewares;
@@ -155,7 +155,7 @@ export class Router {
               ? temp.url
               : temp.url.replace(/\*/g, "(.*)");
           }
-          temp.callBack = arg as ErrorCallBackType;
+          temp.callBack = arg as ErrorCallBackType<T>;
         }
       }
 
@@ -167,10 +167,10 @@ export class Router {
   }
 
   public use(app: App | Router): void;
-  public use(callBack: CallBackType): void;
-  public use(...callBack: CallBackType[]): void;
-  public use(url: string, callBack: CallBackType): void;
-  public use(url: string, ...callBack: CallBackType[]): void;
+  public use(callBack: CallBackType<T>): void;
+  public use(...callBack: CallBackType<T>[]): void;
+  public use(url: string, callBack: CallBackType<T>): void;
+  public use(url: string, ...callBack: CallBackType<T>[]): void;
   public use(url: string, app: App | Router): void;
   public use(
     ...args: any
@@ -179,10 +179,10 @@ export class Router {
   }
 
   public get(app: App | Router): void;
-  public get(callBack: CallBackType): void;
-  public get(...callBack: CallBackType[]): void;
-  public get(url: string, callBack: CallBackType): void;
-  public get(url: string, ...callBack: CallBackType[]): void;
+  public get(callBack: CallBackType<T>): void;
+  public get(...callBack: CallBackType<T>[]): void;
+  public get(url: string, callBack: CallBackType<T>): void;
+  public get(url: string, ...callBack: CallBackType<T>[]): void;
   public get(url: string, app: App | Router): void;
   public get(
     ...args: any
@@ -191,10 +191,10 @@ export class Router {
   }
 
   public post(app: App | Router): void;
-  public post(callBack: CallBackType): void;
-  public post(...callBack: CallBackType[]): void;
-  public post(url: string, callBack: CallBackType): void;
-  public post(url: string, ...callBack: CallBackType[]): void;
+  public post(callBack: CallBackType<T>): void;
+  public post(...callBack: CallBackType<T>[]): void;
+  public post(url: string, callBack: CallBackType<T>): void;
+  public post(url: string, ...callBack: CallBackType<T>[]): void;
   public post(url: string, app: App | Router): void;
   public post(
     ...args: any
@@ -203,10 +203,10 @@ export class Router {
   }
 
   public put(app: App | Router): void;
-  public put(callBack: CallBackType): void;
-  public put(...callBack: CallBackType[]): void;
-  public put(url: string, callBack: CallBackType): void;
-  public put(url: string, ...callBack: CallBackType[]): void;
+  public put(callBack: CallBackType<T>): void;
+  public put(...callBack: CallBackType<T>[]): void;
+  public put(url: string, callBack: CallBackType<T>): void;
+  public put(url: string, ...callBack: CallBackType<T>[]): void;
   public put(url: string, app: App | Router): void;
   public put(
     ...args: any
@@ -215,10 +215,10 @@ export class Router {
   }
 
   public patch(app: App | Router): void;
-  public patch(callBack: CallBackType): void;
-  public patch(...callBack: CallBackType[]): void;
-  public patch(url: string, callBack: CallBackType): void;
-  public patch(url: string, ...callBack: CallBackType[]): void;
+  public patch(callBack: CallBackType<T>): void;
+  public patch(...callBack: CallBackType<T>[]): void;
+  public patch(url: string, callBack: CallBackType<T>): void;
+  public patch(url: string, ...callBack: CallBackType<T>[]): void;
   public patch(url: string, app: App | Router): void;
   public patch(
     ...args: any
@@ -227,10 +227,10 @@ export class Router {
   }
 
   public delete(app: App | Router): void;
-  public delete(callBack: CallBackType): void;
-  public delete(...callBack: CallBackType[]): void;
-  public delete(url: string, callBack: CallBackType): void;
-  public delete(url: string, ...callBack: CallBackType[]): void;
+  public delete(callBack: CallBackType<T>): void;
+  public delete(...callBack: CallBackType<T>[]): void;
+  public delete(url: string, callBack: CallBackType<T>): void;
+  public delete(url: string, ...callBack: CallBackType<T>[]): void;
   public delete(url: string, app: App | Router): void;
   public delete(
     ...args: any
@@ -239,10 +239,10 @@ export class Router {
   }
 
   public options(app: App | Router): void;
-  public options(callBack: CallBackType): void;
-  public options(...callBack: CallBackType[]): void;
-  public options(url: string, callBack: CallBackType): void;
-  public options(url: string, ...callBack: CallBackType[]): void;
+  public options(callBack: CallBackType<T>): void;
+  public options(...callBack: CallBackType<T>[]): void;
+  public options(url: string, callBack: CallBackType<T>): void;
+  public options(url: string, ...callBack: CallBackType<T>[]): void;
   public options(url: string, app: App | Router): void;
   public options(
     ...args: any
@@ -251,10 +251,10 @@ export class Router {
   }
 
   public error(app: App | Router): void;
-  public error(callBack: ErrorCallBackType): void;
-  public error(...callBack: ErrorCallBackType[]): void;
-  public error(url: string, callBack: ErrorCallBackType): void;
-  public error(url: string, ...callBack: ErrorCallBackType[]): void;
+  public error(callBack: ErrorCallBackType<T>): void;
+  public error(...callBack: ErrorCallBackType<T>[]): void;
+  public error(url: string, callBack: ErrorCallBackType<T>): void;
+  public error(url: string, ...callBack: ErrorCallBackType<T>[]): void;
   public error(url: string, app: App | Router): void;
   public error(
     ...args: any
@@ -267,7 +267,7 @@ export class Router {
    * @param {string} paramName param name ex) `username`
    * @param {ParamCallBackType} callBack param callback type
    */
-  public param(paramName: string, ...callBack: ParamCallBackType[]) {
+  public param(paramName: string, ...callBack: ParamCallBackType<T>[]) {
     this.saveParamStacks(paramName, callBack);
   }
 }

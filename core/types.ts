@@ -2,6 +2,8 @@ import { Response as DenoResponse, Status } from "../deps.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 
+export type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+
 export interface ListenProps {
   port: number;
   debug?: boolean;
@@ -25,47 +27,43 @@ export interface AttainResponse extends Omit<DenoResponse, "headers"> {
   headers: Headers;
 }
 
-export type CallBackType = (
+export type CallBackType<T = any> = (
   request: Request,
   response: Response,
-  db?: any
+  db: T
 ) => Promise<any> | void;
 
-export type ParamCallBackType = (
+export type ParamCallBackType<T = any> = (
   request: Request,
   response: Response,
   param: any,
-  db?: any
+  db: T
 ) => Promise<any> | void;
 
-export type ErrorCallBackType = (
+export type ErrorCallBackType<T = any> = (
   error: any,
   request: Request,
   response: Response,
-  db?: any
+  db: T
 ) => Promise<any> | void;
 
-export interface MiddlewareProps {
+export interface MiddlewareProps<T = any> {
   url?: string;
-  paramHandlers?: ParamStackProps[];
-  callBack?: CallBackType;
+  paramHandlers?: ParamStackProps<T>[];
+  callBack?: CallBackType<T>;
   method?: SupportMethodType;
-  next?: MiddlewareProps[];
+  next?: MiddlewareProps<T>[];
 }
 
-export interface ParamStackProps {
+export interface ParamStackProps<T = any> {
   paramName: string;
-  callBack: ParamCallBackType;
+  callBack: ParamCallBackType<T>;
 }
 
-export interface ErrorMiddlewareProps {
+export interface ErrorMiddlewareProps<T = any> {
   url?: string;
-  callBack?: ErrorCallBackType;
-  next?: ErrorMiddlewareProps[];
-}
-
-export interface CurrentCursorProps {
-  middlewaresCursor: MiddlewareProps[];
+  callBack?: ErrorCallBackType<T>;
+  next?: ErrorMiddlewareProps<T>[];
 }
 
 // Copyright 2018-2020 the oak authors. All rights reserved. MIT license.

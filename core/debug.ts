@@ -8,7 +8,7 @@ import {
 
 
 export async function circulateMiddlewares(
-  currentMiddlewares: MiddlewareProps[],
+  currentMiddlewares: MiddlewareProps<any>[],
   step: number = 0,
 ) {
   for (const current of currentMiddlewares) {
@@ -54,7 +54,7 @@ export async function circulateMiddlewares(
 };
 
 export async function circulateErrorMiddlewares(
-  currentErrorMiddlewares: ErrorMiddlewareProps[],
+  currentErrorMiddlewares: ErrorMiddlewareProps<any>[],
   step: number = 0,
 ) {
   for (const current of currentErrorMiddlewares) {

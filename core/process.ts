@@ -8,19 +8,19 @@ import {
   ParamStackProps,
 } from "./types.ts";
 
-const Process = async (
+const Process = async <T>(
   srq: ServerRequest,
-  middlewares: MiddlewareProps[],
-  errorMiddlewares: ErrorMiddlewareProps[],
-  database: any
+  middlewares: MiddlewareProps<T>[],
+  errorMiddlewares: ErrorMiddlewareProps<T>[],
+  database: T
 ) => {
-  const res = new Response(srq);
+  const res = new Response<T>(srq);
   const req = new Request(srq);
 
   try {
-    await attainProcedure(req, res, middlewares, database);
+    await attainProcedure<T>(req, res, middlewares, database);
   } catch (error) {
-    await attainErrorProcedure(error, req, res, errorMiddlewares, database);
+    await attainErrorProcedure<T>(error, req, res, errorMiddlewares, database);
   }
 
   await res.executePendingJobs(req);
@@ -34,11 +34,11 @@ const Process = async (
   srq.finalize();
 };
 
-const attainProcedure: any = async (
+const attainProcedure = async <T>(
   req: Request,
   res: Response,
-  current: MiddlewareProps[],
-  database?: any,
+  current: MiddlewareProps<T>[],
+  database: T,
 ) => {
   try {
     const currentMethod = req.method;
@@ -50,7 +50,7 @@ const attainProcedure: any = async (
         if (!middleware.url) {
           middleware.callBack
             ? await middleware.callBack(req, res, database)
-            : await attainProcedure(req, res, middleware.next, database);
+            : await attainProcedure(req, res, middleware.next as any, database);
         } else if (
           checkPathAndParseURLParams(req, middleware.url, currentUrl)
         ) {
@@ -62,7 +62,7 @@ const attainProcedure: any = async (
           }
           middleware.callBack
             ? await middleware.callBack(req, res, database)
-            : await attainProcedure(req, res, middleware.next, database);
+            : await attainProcedure(req, res, middleware.next as any, database);
         }
       }
       if (res.processDone) {
@@ -78,11 +78,11 @@ const attainProcedure: any = async (
   }
 };
 
-const paramHandlersProcedure = async (
-  paramHandlers: ParamStackProps[],
+const paramHandlersProcedure = async <T>(
+  paramHandlers: ParamStackProps<T>[],
   req: Request,
   res: Response,
-  database: any
+  database: T
 ) => {
   for await (const paramHandler of paramHandlers) {
     await paramHandler.callBack(req, res, req.params[paramHandler.paramName], database)
@@ -92,12 +92,12 @@ const paramHandlersProcedure = async (
   }
 };
 
-const attainErrorProcedure: any = async (
+const attainErrorProcedure = async <T>(
   error: Error | any,
   req: Request,
   res: Response,
-  current: ErrorMiddlewareProps[],
-  database: any,
+  current: ErrorMiddlewareProps<T>[],
+  database: T,
 ) => {
   try {
     const currentUrl = req.url.pathname;
@@ -105,13 +105,13 @@ const attainErrorProcedure: any = async (
       if (!middleware.url) {
         middleware.callBack
           ? await middleware.callBack(error, req, res, database)
-          : await attainErrorProcedure(error, req, res, middleware.next, database);
+          : await attainErrorProcedure(error, req, res, middleware.next as any, database);
       } else if (
         checkPathAndParseURLParams(req, middleware.url, currentUrl)
       ) {
         middleware.callBack
           ? await middleware.callBack(error, req, res, database)
-          : await attainErrorProcedure(error, req, res, middleware.next, database);
+          : await attainErrorProcedure(error, req, res, middleware.next as any, database);
       }
       if (res.processDone) {
         break;

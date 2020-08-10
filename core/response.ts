@@ -21,7 +21,7 @@ const isHtml = (value: string): boolean => {
   return /^\s*<(?:!DOCTYPE|html|body)/i.test(value);
 };
 
-export class Response {
+export class Response<T = any> {
   #serverRequest?: ServerRequest;
   #response: AttainResponse;
   #pending: Function[];
@@ -107,7 +107,7 @@ export class Response {
    * 
    * pend((afterReq, afterRes) => {...jobs})
    */
-  public pend(...fn: CallBackType[]): void {
+  public pend(...fn: CallBackType<T>[]): void {
     this.#pending.push(...fn);
   }
 
