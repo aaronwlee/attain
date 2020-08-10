@@ -6,7 +6,7 @@ on: [push, pull_request]
 jobs:
   build:
     name: Attain test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macOS-latest, windows-latest, ubuntu-latest]
