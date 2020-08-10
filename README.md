@@ -533,6 +533,12 @@ app.use('/api/users', router);
 <br /> 
 <span style="color: #555;">This feature is brand new and any contributins and ideas will be welcomed</span>
 
+- `static startWith(connectFunc)`
+Automatically initialize the app and connect to the database with a connect function.
+
+- `static startWith(dbClass)`
+Automatically initialize the app create a database instance.
+
 ## Nested Routing
 
 > **Path** - router.ts
@@ -724,12 +730,39 @@ Then pick one of the databases to use in your app:
 await app.database(MongoDatabase);
 /* OR */
 await app.database(PostgresDatabase);
+/* OR */
+const app = App.startWith(MongoDatabase);
 
 app.get('/products', (req, res, db) => {
   const products = await db.getAllProducts();
   res.status(200).send(products); /* will work the same! */
 })
 
+```
+
+You can also provide a function that returns a database connection
+```ts
+import { App, Router, Request, Response, AttainDatabase } from "./mod.ts";
+import { MongoClient, Database } from "https://deno.land/x/mongo@v0.9.2/mod.ts";
+
+async function DB() {
+  const client = new MongoClient()
+  await client.connectWithUri("mongodb://localhost:27017")
+  const database = client.database("test")
+  return database;
+}
+
+// allow auto inherit mode (auto inherit the types to the middleware)
+
+const app = App.startWith(DB);
+// or
+const app = new App<Database>()
+app.database(DB)
+
+// this db params will have automatically inherited types from the app<> or startWith method.
+app.use((req, res, db) => {
+
+})
 ```
 
 ---
