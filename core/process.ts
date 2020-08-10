@@ -10,12 +10,13 @@ import {
 
 const Process = async <T>(
   srq: ServerRequest,
+  secure: boolean,
   middlewares: MiddlewareProps<T>[],
   errorMiddlewares: ErrorMiddlewareProps<T>[],
   database: T
 ) => {
   const res = new Response<T>(srq);
-  const req = new Request(srq);
+  const req = new Request(srq, secure);
 
   try {
     await attainProcedure<T>(req, res, middlewares, database);

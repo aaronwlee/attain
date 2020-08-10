@@ -13,14 +13,14 @@ for (let i = 0; i < 10001; i++) {
   });
 }
 
-app.listen({ port: 8080 });
+app.listen({ port: 7545 });
 
 bench({
   name: "warming up",
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${0}`);
+    const response = await fetch(`http://localhost:7545/${0}`);
     const data = await response.text();
     assertEquals(data, "0");
     b.stop();
@@ -32,7 +32,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${0}`);
+    const response = await fetch(`http://localhost:7545/${0}`);
     const data = await response.text();
     assertEquals(data, "0");
     b.stop();
@@ -44,7 +44,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${10}`);
+    const response = await fetch(`http://localhost:7545/${10}`);
     const data = await response.text();
     assertEquals(data, "10");
     b.stop();
@@ -56,7 +56,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${100}`);
+    const response = await fetch(`http://localhost:7545/${100}`);
     const data = await response.text();
     assertEquals(data, "100");
     b.stop();
@@ -68,7 +68,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${1000}`);
+    const response = await fetch(`http://localhost:7545/${1000}`);
     const data = await response.text();
     assertEquals(data, "1000");
     b.stop();
@@ -80,7 +80,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${5000}`);
+    const response = await fetch(`http://localhost:7545/${5000}`);
     const data = await response.text();
     assertEquals(data, "5000");
     b.stop();
@@ -92,7 +92,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:8080/${10000}`);
+    const response = await fetch(`http://localhost:7545/${10000}`);
     const data = await response.text();
     assertEquals(data, "10000");
     b.stop();

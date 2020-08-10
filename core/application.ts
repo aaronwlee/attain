@@ -75,7 +75,7 @@ export class App<T = any> extends Router<T> {
 
     if (secure && keyFile && certFile) {
       this.#serveTLS = serveTLS({ hostname, port, keyFile, certFile });
-      this.#processTLS = this.#start(this.#serveTLS);
+      this.#processTLS = this.#start(this.#serveTLS, secure);
     } else {
       this.#serve = serve({ hostname, port });
       this.#process = this.#start(this.#serve);
@@ -85,18 +85,18 @@ export class App<T = any> extends Router<T> {
     );
   };
 
-  #start = async (server: Server) => {
+  #start = async (server: Server, secure: boolean = false) => {
     if (this.#database) {
       await (this.#database as any).connect();
     } else if (this.#databaseInitializer) {
-      this.database = await this.#databaseInitializer;
+      this.#database = await this.#databaseInitializer();
     }
 
     for await (const srq of server) {
       if (this.#database) {
-        Process<T>(srq, this.middlewares, this.errorMiddlewares, this.#database);
+        Process<T>(srq, secure, this.middlewares, this.errorMiddlewares, this.#database);
       } else {
-        Process<undefined>(srq, this.middlewares as any, this.errorMiddlewares as any, undefined);
+        Process<undefined>(srq, secure, this.middlewares as any, this.errorMiddlewares as any, undefined);
       }
     }
   };
