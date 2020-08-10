@@ -19,16 +19,6 @@ jobs:
 
       - run: deno --version
                     
-      - name: run test (macOS)
-        if: startsWith(matrix.os, 'mac')
+      - name: run test
         run: ./start_test.sh
-      
-      - name: run test (Linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        run: ./start_test.sh
-
-      - name: run test (windows)
-        if: startsWith(matrix.os, 'windows')
-        run: ./start_test.sh
-
 
