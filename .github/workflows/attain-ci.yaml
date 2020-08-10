@@ -7,6 +7,10 @@ jobs:
   build:
     name: Attain test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macOS-latest, windows-latest, ubuntu-latest]
+
     steps:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@master
@@ -15,7 +19,16 @@ jobs:
 
       - run: deno --version
                     
-      - name: run test
+      - name: run test (macOS)
+        if: startsWith(matrix.os, 'mac')
         run: ./start_test.sh
+      
+      - name: run test (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: ./start_test.sh
+
+      - name: run test (windows)
+        if: startsWith(matrix.os, 'windows')
+        run: ./start_test.bat
 
 
