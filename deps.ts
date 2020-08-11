@@ -45,6 +45,7 @@ export {
   cyan,
   bold,
   blue,
+  magenta,
 } from "https://deno.land/std@0.62.0/fmt/colors.ts";
 
 export { default as isEmpty } from "https://raw.githubusercontent.com/lodash/lodash/master/isEmpty.js";

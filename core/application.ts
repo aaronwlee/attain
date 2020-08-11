@@ -15,7 +15,6 @@ import { AttainHandler } from "./process.ts";
 import { circulateMiddlewares, circulateErrorMiddlewares } from "./debug.ts";
 import { AttainDatabase, NoParamConstructor } from "./database.ts";
 
-
 export class App<T = any> extends Router<T> {
   #serve?: Server;
   #serveTLS?: Server;
@@ -23,7 +22,7 @@ export class App<T = any> extends Router<T> {
   #processTLS?: Promise<void>;
   #database?: T;
   #databaseInitializer?: () => Promise<T>
-  #handler: AttainHandler;
+  #handler?: AttainHandler<T>;
 
   #debug = async () => {
     console.log(red("------- Debug Middlewares -----------------"));
@@ -89,20 +88,21 @@ export class App<T = any> extends Router<T> {
   #start = async (server: Server, secure: boolean = false) => {
     if (this.#database) {
       await (this.#database as any).connect();
-      this.#handler = new AttainHandler<T>(this.#database);
+      this.#handler = new AttainHandler<T>(this.#database, secure);
     } else if (this.#databaseInitializer) {
       this.#database = await this.#databaseInitializer();
-      this.#handler = new AttainHandler<T>(this.#database);
+      this.#handler = new AttainHandler<T>(this.#database, secure);
+    } else {
+      this.#handler = new AttainHandler<T>(undefined!, secure);
     }
 
     for await (const srq of server) {
-      this.#handler.execute(srq, this.middlewares, this.errorMiddlewares);
+      this.#handler.execute(srq, this.middlewares as any, this.errorMiddlewares as any);
     }
   };
 
   constructor(db?: T, dbinit?: () => Promise<T>) {
     super()
-    this.#handler = new AttainHandler(undefined);
     if (db) {
       this.#database = db;
     }
