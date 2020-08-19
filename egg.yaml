@@ -1,14 +1,13 @@
 name: attain
 description: A middleware web framework, inspired by express.js
 stable: true
-version: 1.0.6
+version: 1.1.0
 entry: ./mod.ts
 repository: https://github.com/aaronwlee/Attain
 files:
   - mod.ts
   - deps.ts
   - README.md
-  - tsconfig.json
   - attain-cli.ts
   - Attain.png
   - _config.yml
