@@ -33,7 +33,7 @@ app.use(createLinearGraph(0, 100));
 
 app.use("/nested", createNestedGraph(0, 100));
 
-app.listen({ port: 7550 });
+app.listen({ port: 9550 });
 
 /**
  * prepare section
@@ -49,7 +49,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:7550/0`);
+    const response = await fetch(`http://localhost:9550/0`);
     const data = await response.text();
     assertEquals(data, "0");
     b.stop();
@@ -61,7 +61,7 @@ bench({
   runs: 1,
   async func(b: any): Promise<void> {
     b.start();
-    const response = await fetch(`http://localhost:7550/${100}`);
+    const response = await fetch(`http://localhost:9550/${100}`);
     const data = await response.text();
     assertEquals(data, "100");
     b.stop();
@@ -74,7 +74,7 @@ bench({
   async func(b: any): Promise<void> {
     b.start();
     const response = await fetch(
-      `http://localhost:7550/nested/${urlForNested}`,
+      `http://localhost:9550/nested/${urlForNested}`,
     );
     const data = await response.text();
     assertEquals(data, "100");
