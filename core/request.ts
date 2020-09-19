@@ -36,8 +36,8 @@ import type {
   BodyText,
 } from "./body.ts";
 import { RequestBody } from "./body.ts";
-import { ServerRequest } from "../deps.ts";
-import { SupportMethodType } from "./types.ts";
+import type { ServerRequest } from "../deps.ts";
+import type { SupportMethodType } from "./types.ts";
 import { preferredCharsets } from "./negotiation/charset.ts";
 import { preferredEncodings } from "./negotiation/encoding.ts";
 import { preferredLanguages } from "./negotiation/language.ts";

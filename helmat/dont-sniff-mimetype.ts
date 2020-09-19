@@ -1,4 +1,4 @@
-import { Request, Response } from "../mod.ts";
+import type { Request, Response } from "../mod.ts";
 
 export const dontSniffMimetype = () => {
   return (_req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { Request, Response } from "../mod.ts";
+import type { Request, Response } from "../mod.ts";
 import { posix } from "../deps.ts"
 
 

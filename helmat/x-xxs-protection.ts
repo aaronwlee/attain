@@ -1,4 +1,4 @@
-import { Request, Response } from "../mod.ts";
+import type { Request, Response } from "../mod.ts";
 
 export interface XXssProtectionOptions {
   mode?: "block" | null;

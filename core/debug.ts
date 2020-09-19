@@ -1,4 +1,4 @@
-import { MiddlewareProps, ErrorMiddlewareProps } from "./types.ts";
+import type { MiddlewareProps, ErrorMiddlewareProps } from "./types.ts";
 import {
   yellow,
   cyan,

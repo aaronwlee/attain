@@ -1,4 +1,4 @@
-import { CallBackType } from "../mod.ts";
+import type { CallBackType } from "../mod.ts";
 
 export const defaultPageNotFound: CallBackType = (req, res) => {
   res.status(404).send(`<!doctype html>

@@ -1,11 +1,9 @@
-import {
+import type {
   ServerRequest,
   Response as DenoResponse,
-  Deferred,
-  deferred,
 } from "../deps.ts";
 import { Request } from "./request.ts";
-import { AttainResponse, CallBackType } from "./types.ts";
+import type { AttainResponse, CallBackType } from "./types.ts";
 import version from "../version.ts";
 import { etag, normalizeType, fileStream, last } from "./utils.ts";
 

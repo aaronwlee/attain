@@ -8,12 +8,12 @@ import {
   blue,
   Server,
 } from "../deps.ts";
-import { ListenProps, ThenArg } from "./types.ts";
+import type { ListenProps, ThenArg } from "./types.ts";
 import version from "../version.ts";
 import { defaultError, defaultPageNotFound } from "../defaultHandler/index.ts";
 import { AttainHandler } from "./process.ts";
 import { circulateMiddlewares, circulateErrorMiddlewares } from "./debug.ts";
-import { AttainDatabase, NoParamConstructor } from "./database.ts";
+import type { AttainDatabase, NoParamConstructor } from "./database.ts";
 
 export class App<T = any> extends Router<T> {
   #serve?: Server;

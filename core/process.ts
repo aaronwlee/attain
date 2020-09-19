@@ -1,8 +1,8 @@
-import { ServerRequest } from "../deps.ts";
+import type { ServerRequest } from "../deps.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { checkPathAndParseURLParams } from "./utils.ts";
-import {
+import type {
   MiddlewareProps,
   ErrorMiddlewareProps,
   ParamStackProps,

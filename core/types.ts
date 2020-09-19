@@ -1,6 +1,6 @@
-import { Response as DenoResponse, Status } from "../deps.ts";
-import { Request } from "./request.ts";
-import { Response } from "./response.ts";
+import type { Response as DenoResponse, Status } from "../deps.ts";
+import type { Request } from "./request.ts";
+import type { Response } from "./response.ts";
 
 export type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 

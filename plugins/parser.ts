@@ -1,4 +1,4 @@
-import { Request, Response } from "../mod.ts";
+import type { Request, Response } from "../mod.ts";
 
 const setQueryVariable = (req: Request) => {
   const queries = req.url.search && req.url.search.substring(1).split("&") ||

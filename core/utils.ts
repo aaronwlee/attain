@@ -1,5 +1,5 @@
-import { Request } from "./request.ts";
-import { Response } from "./response.ts";
+import type { Request } from "./request.ts";
+import type { Response } from "./response.ts";
 import { Sha1, lookup, match, extname, parse } from "../deps.ts";
 
 const CR = "\r".charCodeAt(0);
