@@ -2,7 +2,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/attain/blob/master/Attain.png?raw=true" alt="attain" />
 </p>
 
-# Attain - v1.1.0 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.1.1 - [Website](https://aaronwlee.github.io/Attain/)
 
 ![attain ci](https://github.com/aaronwlee/attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
@@ -13,7 +13,7 @@ A middleware web framework for Deno which is using [http](https://github.com/den
 
 Attain is blazingly fast due to handled the multi-structured middleware and routes effectively. It also strictly manage memory consumption.
 
-Only for [Deno](https://deno.land/) - __Require Deno version up to: 1.2.x__
+Only for [Deno](https://deno.land/) - __Require Deno version up to: 1.4.x__
 
 Any contributions to the code would be appreciated. :)
 
@@ -26,11 +26,11 @@ Any contributions to the code would be appreciated. :)
 ```js
 import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.1.0/mod.ts";
+import { App, Router, Request, Response } from "https://deno.land/x/attain@1.1.1/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://x.nest.land/attain@1.1.0/mod.ts";
+import { App, Router, Request, Response } from "https://x.nest.land/attain@1.1.1/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/attain/1.1.0/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/attain/1.1.1/mod.ts";
 ```
 
 ### This CLI is beta version!
@@ -39,7 +39,7 @@ import { App, Router, Request, Response } from "https://raw.githubusercontent.co
 // download cli
 deno install -A -f --unstable -n attain https://deno.land/x/Attain/attain-cli.ts
 // or
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.0/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.1/attain-cli.ts
 ```
 
 ```
@@ -151,7 +151,7 @@ app.listen({ port: 3500 });
 **Important**: If you're using React Framework, highly recommend including with a version tag.
 
 ```
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.0/attain-cli.ts
+deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.1/attain-cli.ts
 ```
 
 It's providing a full-stack server-side rendering development environment combine with React and Attain.
