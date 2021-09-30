@@ -34,7 +34,7 @@ app1.use((req, res, db) => {
 
   res.send("Ok")
 })
-app1.listen({ port: port });
+app1.listen(port);
 
 await fetch(
   `http://localhost:${port}`,
@@ -51,7 +51,7 @@ app2.use((req, res, db) => {
 
   res.send("Ok")
 })
-app2.listen({ port: port + 1 });
+app2.listen(port + 1);
 
 await fetch(
   `http://localhost:${port + 1}`,
@@ -66,7 +66,7 @@ app3.use((req, res, db) => {
 
   res.send("Ok")
 })
-app3.listen({ port: port + 2 });
+app3.listen(port + 2);
 
 await fetch(
   `http://localhost:${port + 2}`,
@@ -81,7 +81,7 @@ app4.use((req, res, db) => {
 
   res.send("Ok")
 })
-app4.listen({ port: port + 3 });
+app4.listen(port + 3);
 
 await fetch(
   `http://localhost:${port + 3}`,

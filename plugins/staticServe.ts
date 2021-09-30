@@ -16,7 +16,7 @@ export const staticServe = (
       let fileInfo = await Deno.stat(fullPath);
       if (fileInfo.isFile) {
         res.setHeader("Cache-Control", `public`);
-        res.headers.append("Cache-Control", `max-age=${maxAge / 1000 | 0}`);
+        res.getHeaders.append("Cache-Control", `max-age=${maxAge / 1000 | 0}`);
         var t = new Date();
         t.setSeconds(t.getSeconds() + maxAge);
         res.setHeader("Expires", t.toUTCString());

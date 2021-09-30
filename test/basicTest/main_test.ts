@@ -32,7 +32,7 @@ app.error("/error", (error, req, res) => {
   res.send(error.message);
 });
 
-app.listen({ port: 8080 });
+app.listen(8080);
 
 /**
  * basic route test

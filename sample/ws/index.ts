@@ -72,4 +72,4 @@ app.use("/socket", async (req, res) => {
 });
 
 console.log("Server at http://localhost:8080");
-await app.listen({ port: 8080 });
+await app.listen(8080);

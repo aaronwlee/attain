@@ -33,7 +33,7 @@ app.use(createLinearGraph(0, 100));
 
 app.use("/nested", createNestedGraph(0, 100));
 
-app.listen({ port: 9550 });
+app.listen(9550);
 
 /**
  * prepare section

@@ -30,5 +30,5 @@ app.use((req, res) => {
   res.status(404).send("page not found");
 });
 
-app.listen({ port: 4000 });
+app.listen(4000);
 console.log("Starting to listen at http://localhost:4000");

@@ -1,10 +1,11 @@
-import {
-  App,
-} from "../mod.ts";
+import { App, logger } from "../mod.ts";
 const app = new App();
 
+app.use(logger);
+
 app.use("/", (req, res) => {
-  res.status(200).send({ text: "hello" });
+  res.status(200).send("asd");
 });
 
-await app.listen({ port: 3500, debug: true });
+await app.listen(8000, { debug: true });
+

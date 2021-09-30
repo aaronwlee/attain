@@ -1,6 +1,5 @@
-import type { ServerRequest } from "../deps.ts";
-import { Request } from "./request.ts";
-import { Response } from "./response.ts";
+import { AttainRequest } from "./request.ts";
+import { AttainResponse } from "./response.ts";
 import { checkPathAndParseURLParams } from "./utils.ts";
 import type {
   MiddlewareProps,
@@ -20,12 +19,12 @@ export class AttainHandler<DB> {
 
   // main function
   async execute(
-    srq: ServerRequest,
+    srq: Deno.RequestEvent,
     middlewares: MiddlewareProps<DB>[],
     errorMiddlewares: ErrorMiddlewareProps<DB>[]
   ) {
-    const res = new Response<DB>(srq);
-    const req = new Request(srq, this.#secure);
+    const res = new AttainResponse<DB>(srq.request);
+    const req = new AttainRequest(srq.request, this.#secure);
 
     // execute middlewares. if any errors, execute error middlewares.
     try {
@@ -39,20 +38,17 @@ export class AttainHandler<DB> {
 
     // if the response was created, send it. if not, close connection.
     if (res.getBody) {
-      await srq.respond(res.getResponse);
-    } else {
-      srq.conn.close();
+      await srq.respondWith(res.getResponse);
     }
 
     // delete response from memory.
     res.destroy();
-    srq.finalize();
   }
 
   // handle regular middlewares
   private async handleMiddlewares(
-    req: Request,
-    res: Response<DB>,
+    req: AttainRequest,
+    res: AttainResponse<DB>,
     current: MiddlewareProps<DB>[]
   ) {
     try {
@@ -98,8 +94,8 @@ export class AttainHandler<DB> {
   // handle error middlewares
   private async handleErrorMiddlewares(
     error: Error | any,
-    req: Request,
-    res: Response<DB>,
+    req: AttainRequest,
+    res: AttainResponse<DB>,
     current: ErrorMiddlewareProps<DB>[]
   ) {
     try {
@@ -127,8 +123,8 @@ export class AttainHandler<DB> {
 
   // execute a middleware callback if exists
   #run = async (
-    req: Request,
-    res: Response<DB>,
+    req: AttainRequest,
+    res: AttainResponse<DB>,
     middleware: MiddlewareProps<DB>
   ) => {
     try {
@@ -143,8 +139,8 @@ export class AttainHandler<DB> {
   // execute an error middleware callback if exists.
   #runWithError = async (
     err: any,
-    req: Request,
-    res: Response<DB>,
+    req: AttainRequest,
+    res: AttainResponse<DB>,
     middleware: ErrorMiddlewareProps<DB>
   ) => {
     try {
@@ -159,8 +155,8 @@ export class AttainHandler<DB> {
   // execute a paramHandler callback
   #runWithParams = async (
     paramHandlers: ParamStackProps<DB>[],
-    req: Request,
-    res: Response<DB>,
+    req: AttainRequest,
+    res: AttainResponse<DB>,
   ) => {
     for await (const paramHandler of paramHandlers) {
       await paramHandler.callBack(req, res, req.params[paramHandler.paramName], this.#database!)

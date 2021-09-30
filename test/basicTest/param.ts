@@ -2,7 +2,7 @@ import { Router, parser } from "../../mod.ts";
 
 const sleep = (time: number = 100) =>
   new Promise((resolve) => {
-    setTimeout(() => resolve(), time);
+    setTimeout(() => resolve(null), time);
   });
 
 /**

@@ -27,28 +27,28 @@
 
 import type {
   Body,
+  BodyBytes,
   BodyForm,
   BodyFormData,
-  BodyOptions,
   BodyJson,
-  BodyRaw,
+  BodyOptions,
   BodyReader,
+  BodyStream,
   BodyText,
-} from "./body.ts";
-import { RequestBody } from "./body.ts";
-import type { ServerRequest } from "../deps.ts";
+} from "https://deno.land/x/oak@v9.0.1/body.ts";
+import { RequestBody } from "https://deno.land/x/oak@v9.0.1/body.ts";
 import type { SupportMethodType } from "./types.ts";
-import { preferredCharsets } from "./negotiation/charset.ts";
-import { preferredEncodings } from "./negotiation/encoding.ts";
-import { preferredLanguages } from "./negotiation/language.ts";
-import { preferredMediaTypes } from "./negotiation/mediaType.ts";
+import { preferredCharsets } from "https://deno.land/x/oak@v9.0.1/negotiation/charset.ts";
+import { preferredEncodings } from "https://deno.land/x/oak@v9.0.1/negotiation/encoding.ts";
+import { preferredLanguages } from "https://deno.land/x/oak@v9.0.1/negotiation/language.ts";
+import { preferredMediaTypes } from "https://deno.land/x/oak@v9.0.1/negotiation/mediaType.ts";
 
 const decoder = new TextDecoder();
 
 /** An interface which provides information about the current request. */
-export class Request {
+export class AttainRequest {
   #body: RequestBody;
-  #serverRequest: ServerRequest;
+  #serverRequest: Request;
   #url?: URL;
   #secure: boolean;
   #startDate: number;
@@ -71,7 +71,7 @@ export class Request {
   }
 
   /** Set to the value of the _original_ Deno server request. */
-  get serverRequest(): ServerRequest {
+  get serverRequest(): Request {
     return this.#serverRequest;
   }
 
@@ -84,18 +84,10 @@ export class Request {
    * the `X-Forwarded-Proto` and `X-Forwarded-Host` header values if present in
    * the request. */
   get url(): URL {
-    if (!this.#url) {
-      const serverRequest = this.#serverRequest;
-      let proto: string;
-      let host: string;
-      proto = this.#secure ? "https" : "http";
-        host = serverRequest.headers.get("host") ?? "";
-      this.#url = new URL(`${proto}://${host}${serverRequest.url}`);
-    }
-    return this.#url;
+    return new URL(this.#serverRequest.url);
   }
 
-  constructor(serverRequest: ServerRequest, secure = false) {
+  constructor(serverRequest: Request, secure = false) {
     this.#serverRequest = serverRequest;
     this.#secure = secure;
     this.#body = new RequestBody(serverRequest);
@@ -194,14 +186,15 @@ export class Request {
     return preferredLanguages(acceptLanguageValue);
   }
 
+  body(options: BodyOptions<"bytes">): BodyBytes;
   body(options: BodyOptions<"form">): BodyForm;
   body(options: BodyOptions<"form-data">): BodyFormData;
   body(options: BodyOptions<"json">): BodyJson;
-  body(options: BodyOptions<"raw">): BodyRaw;
   body(options: BodyOptions<"reader">): BodyReader;
+  body(options: BodyOptions<"stream">): BodyStream;
   body(options: BodyOptions<"text">): BodyText;
   body(options?: BodyOptions): Body;
-  body(options: BodyOptions = {}): Body | BodyReader {
+  body(options: BodyOptions = {}): Body | BodyReader | BodyStream {
     return this.#body.get(options);
   }
 }

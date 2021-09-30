@@ -27,7 +27,7 @@ try {
   });
   console.log("http://localhost:3500");
 
-  await app.listen({ port: 3500, debug: true });
+  await app.listen(3500, { debug: true });
 } catch (error) {
   console.log("here i error, ", error);
 }

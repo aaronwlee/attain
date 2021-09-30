@@ -3,7 +3,7 @@ import secondRouter from "./secondRouter.ts";
 const api = new Router();
 
 const sleep = (time: number) =>
-  new Promise((resolve) => setTimeout(() => resolve(), time));
+  new Promise((resolve) => setTimeout(() => resolve(null), time));
 
 // this will block the current request
 api.get("/hello", async (req, res) => {

@@ -2,7 +2,7 @@ import { Router } from "../../mod.ts";
 const api = new Router();
 
 const sleep = (time: number) =>
-  new Promise((resolve) => setTimeout(() => resolve(), time));
+  new Promise((resolve) => setTimeout(() => resolve(null), time));
 
 // this will block the current request
 api.get("/test1", async (req, res) => {

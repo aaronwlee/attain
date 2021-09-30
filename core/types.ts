@@ -1,16 +1,17 @@
-import type { Response as DenoResponse, Status } from "../deps.ts";
-import type { Request } from "./request.ts";
-import type { Response } from "./response.ts";
+import type { Status } from "../deps.ts";
+import type { AttainRequest } from "./request.ts";
+import type { AttainResponse } from "./response.ts";
 
 export type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
-export interface ListenProps {
-  port: number;
+export interface AttainListenProps {
   debug?: boolean;
-  hostname?: string;
   secure?: boolean;
+  hostname?: string;
   certFile?: string;
   keyFile?: string;
+
+  transport?: "tcp";
 }
 
 export type SupportMethodType =
@@ -23,28 +24,24 @@ export type SupportMethodType =
   | "PATCH"
   | "DELETE";
 
-export interface AttainResponse extends Omit<DenoResponse, "headers"> {
-  headers: Headers;
-}
-
 export type CallBackType<T = any> = (
-  request: Request,
-  response: Response,
-  db: T
+  request: AttainRequest,
+  response: AttainResponse,
+  db: T,
 ) => Promise<any> | void;
 
 export type ParamCallBackType<T = any> = (
-  request: Request,
-  response: Response,
+  request: AttainRequest,
+  response: AttainResponse,
   param: any,
-  db: T
+  db: T,
 ) => Promise<any> | void;
 
 export type ErrorCallBackType<T = any> = (
   error: any,
-  request: Request,
-  response: Response,
-  db: T
+  request: AttainRequest,
+  response: AttainResponse,
+  db: T,
 ) => Promise<any> | void;
 
 export interface MiddlewareProps<T = any> {

@@ -17,14 +17,14 @@ const sampleMiddleware = (req: Request, res: Response) => {
 app.use(logger);
 app.use(parser);
 
-app.use("/:id", sampleMiddleware, (req, res) => {
+app.use("/:id", sampleMiddleware, (req: Request, res: Response) => {
   console.log(req.params);
   res.status(200).send(`id: ${req.params.id}`);
 });
 
 app.use("/api", api);
 
-app.use(sampleMiddleware, (req, res) => {
+app.use(sampleMiddleware, (req: Request, res: Response) => {
   res.status(404).send(`
   <!doctype html>
   <html lang="en">
@@ -35,6 +35,6 @@ app.use(sampleMiddleware, (req, res) => {
   `);
 });
 
-app.listen({ port: 3500, debug: true });
+app.listen(3500, { debug: true });
 
 console.log("http://localhost:3500");

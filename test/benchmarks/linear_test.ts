@@ -13,7 +13,7 @@ for (let i = 0; i < 10001; i++) {
   });
 }
 
-app.listen({ port: 9555 });
+app.listen(9555);
 
 bench({
   name: "warming up",
