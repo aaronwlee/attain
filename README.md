@@ -2,7 +2,7 @@
   <img width="380" height="200" src="https://github.com/aaronwlee/attain/blob/master/Attain.png?raw=true" alt="attain" />
 </p>
 
-# Attain - v1.1.1 - [Website](https://aaronwlee.github.io/Attain/)
+# Attain - v1.1.2 - [Website](https://aaronwlee.github.io/attain/)
 
 ![attain ci](https://github.com/aaronwlee/attain/workflows/attain%20ci/badge.svg)
 ![license](https://img.shields.io/github/license/aaronwlee/attain)
@@ -13,7 +13,7 @@ A middleware web framework for Deno which is using [http](https://github.com/den
 
 Attain is blazingly fast due to handled the multi-structured middleware and routes effectively. It also strictly manage memory consumption.
 
-Only for [Deno](https://deno.land/) - __Require Deno version up to: 1.4.x__
+Only for [Deno](https://deno.land/) - __Require Deno version up to: v1.16.4__
 
 Any contributions to the code would be appreciated. :)
 
@@ -22,26 +22,14 @@ Any contributions to the code would be appreciated. :)
 
 ### Download and use
 
-**Important**: If you're using React Framework, highly recommend including with a version tag.
-
 ```js
-import { App, Router, Request, Response } from "https://deno.land/x/attain/mod.ts";
+import { App, Router } from "https://deno.land/x/attain/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://deno.land/x/attain@1.1.1/mod.ts";
+import { App, Router } from "https://deno.land/x/attain@1.1.2/mod.ts";
 // or
-import { App, Router, Request, Response } from "https://x.nest.land/attain@1.1.1/mod.ts";
-// or
-import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/attain/1.1.1/mod.ts";
+import { App, Router, Request, Response } from "https://raw.githubusercontent.com/aaronwlee/attain/1.1.2/mod.ts";
 ```
 
-### This CLI is beta version!
-
-```
-// download cli
-deno install -A -f --unstable -n attain https://deno.land/x/Attain/attain-cli.ts
-// or
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.1/attain-cli.ts
-```
 
 ```
 # deno run --allow-net --unstable main.ts
@@ -51,8 +39,6 @@ deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.1/attain-
 
 - [Getting Start](#getting-start)
   - [Procedure explain](#procedure-explain)
-- [CLI](#cli)
-- [React](#react)
 - [How To](#how-to)
 - [Boilerplate](#boilerplate)
 - [Methods and Properies](#methods-and-properies)
@@ -68,7 +54,8 @@ deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.1/attain-
 ## Getting Start
 
 ```ts
-import { App, Request, Response } from "https://deno.land/x/attain/mod.ts";
+import { App } from "https://deno.land/x/attain/mod.ts";
+import type { Request, Response } from "https://deno.land/x/attain/mod.ts";
 
 const app = new App();
 
@@ -143,182 +130,6 @@ app.error((err, req, res) => {
 })
 
 app.listen({ port: 3500 });
-```
-
-## CLI
-
-### This is beta version!
-
-**Important**: If you're using React Framework, highly recommend including with a version tag.
-
-```
-deno install -A -f --unstable -n attain https://deno.land/x/attain@1.1.1/attain-cli.ts
-```
-
-It's providing a full-stack server-side rendering development environment combine with React and Attain.
-
-It's a beta version and there are possibly exist some bugs.
-
-__note__: This beta project yet to supporting any type of CSS modules.
-
-### TODO
-
-- [x] - Dynamic routing supporting
-- [ ] - CSS supporting
-- [ ] - Implement self request method for SSR
-- [ ] - Improve hot reload
-
-All commands are must be executed in the project directory
-
-- `-h`
-  <br /> Get Help.
-
-- `init [path]`
-  <br /> Initialize the project to the path.
-  <br /> ex) attain init react-attain
-
-- `dev | development`
-  <br /> Starts the dev server and watch the front-end file changes.
-  <br /> ex) attain dev
-
-- `build`
-  <br /> Build the bundles to the dist folder with "PRODUCTION" scripts
-  <br /> ex) attain build
-
-- `start`
-  <br /> Starts the production server
-  <br /> ex) attain start
-
-## React
-
-**This react framework is only provided through the CLI.
-Please initialize and start with the `init` command line.**
-
-### Routing and Page Guidline
-
-Attain framework's used the high order component to serving routing and other contexts. At the compiler level, moreover, all the pages automatically imported into it. Thus, you don't need to worry about creating a route index.
-
-You just need to create a page component into the following path to create a new page. `/view/pages/<pathname>.tsx`
-
-__Important__: Page component's name must be unique.
-
-Now, if the browser requests to `<pathname>` like "http://localhost:3000/<pathname>", Attain server automatically serves a rendered page.
-
-### Dynamic Routing
-
-Any browser request route like /user/1, /user/abc, will be matched by pages/user/[id].tsx in the server. The matched path parameter will be sent as a parameter to the page, and search parameters will be merged with query parameter.
-
-ex) `/view/pages/user/[id].tsx` equals `/user/1`
-
-### Linking between pages
-
-To client-side routing, the Attain framework provides you convince hook method which called `useRouter()`. This allows you to do client-side route transitions between pages, similarly to a single-page application.
-
-- `const router = useRouter()` import path `deps.tsx`
-  <br /> useRouter returns you pathname, push, query, params.
-  <br /> `pathname` is current pathname
-  <br /> `push("/")` is for client-side route transition
-  <br /> `query` is current search params
-  <br /> `params` is current matched params like [id]
-
-```jsx
-function Component() {
-  const router = useRouter()
-
-  return (
-    <a onClick={() => router.push("/user")}>
-      view user
-    </a>
-  )
-}
-```
-
-### Server Side Rendering
-- `Component.ServerSideAttain`
-  <br /> `ServerSideAttain` enabled server-side rendering in a page and allows you to do the initial data population, it means sending the page with the data already populated from the server.
-
-  <br /> This static function will be executed only one time when the browser requests the page. which means client-side rendering will not execute it.
-  
-  <br /> In the server-side execution, you can get `req, res, Component, query, isServer` as parameters.
-  <br /> However, if it's been executed in the client, you only can get `req, Component, query, isServer`
-
-  <br /> **You can only define it in the page component.
-
-- `req`
-  <br /> In the server, you can get the entire request object from the Attain middleware.
-  <br /> In the client, you only can get `url` object.
-
-- `res`
-  <br /> Entire Attain response object, only available on the server.
-
-- `Component`
-  <br /> This is current Component
-
-- `isServer`
-  <br /> Determinator you're on the client or server. `true` or `false`
-
-- `return`
-  <br /> You must return the object and it can be any.
-
-```ts
-UserComponent.ServerSideAttain = async () => {
-  // due to windows can't get proxy, must have prefix with http://localhost:
-  const response: any = await fetch("http://localhost:3000/api/user");
-  const data = await response.json();
-
-  return {
-    data,
-  };
-};
-```
-
-### SEO tools
-The Attain framework also provides you with elegant SEO tools.
-
-__Import path__: `deps.tsx`
-
-- `useDocument`
-  <br /> Due to Deno does not provide document API, it's useful for avoiding errors when you use the document in the client-side. Which means the server can't handle the document code.
-
-```ts
-const dom = useDocument()
-if(dom) {
-  // use document
-}
-```
-
-- `addMeta`
-
-```ts
-addMeta("description", {
-  content: "This is an example of a description"
-})
-```
-
-- `addScript`
-
-```ts
-addScript({
-  id: "google-recaptcha-v3",
-  src: "https://google...."
-})
-```
-
-- `setTitle`
-
-```ts
-setTitle("Welcome to my home page :)");
-```
-
-### Fullstack apps made easier
-
-- `useAsyncFetch`
-
-```ts
-const { data, status, error } = useAsyncFetch('/api/users/login', { 
-  method: 'POST', 
-  body: JSON.stringify({ email, password }) 
-})
 ```
 
 ## How To
@@ -774,4 +585,4 @@ There are several modules that are directly adapted from other modules.
 They have preserved their individual licenses and copyrights. All of the modules,
 including those directly adapted are licensed under the MIT License.
 
-All additional work is copyright 2020 the Attain authors. All rights reserved.
+All additional work is copyright 2021 the Attain authors. All rights reserved.
